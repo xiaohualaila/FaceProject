@@ -62,6 +62,7 @@ import com.shuli.root.faceproject.adapter.FaceTokenAdapter;
 import com.shuli.root.faceproject.camera.CameraManager;
 import com.shuli.root.faceproject.camera.CameraPreview;
 import com.shuli.root.faceproject.camera.CameraPreviewData;
+import com.shuli.root.faceproject.face.FaceView;
 import com.shuli.root.faceproject.network.ByteRequest;
 import com.shuli.root.faceproject.utils.FaceApi;
 import com.shuli.root.faceproject.utils.FileUtil;

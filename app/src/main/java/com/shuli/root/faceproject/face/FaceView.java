@@ -1,4 +1,4 @@
-package com.shuli.root.faceproject.activity;
+package com.shuli.root.faceproject.face;
 
 import android.content.Context;
 import android.graphics.Canvas;

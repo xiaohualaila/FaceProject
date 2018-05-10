@@ -47,6 +47,7 @@ import com.shuli.root.faceproject.bean.People;
 import com.shuli.root.faceproject.camera.CameraManager;
 import com.shuli.root.faceproject.camera.CameraPreview;
 import com.shuli.root.faceproject.camera.CameraPreviewData;
+import com.shuli.root.faceproject.face.FaceView;
 import com.shuli.root.faceproject.fragment.VersionDialogFragment;
 import com.shuli.root.faceproject.network.ByteRequest;
 import com.shuli.root.faceproject.utils.FaceApi;
@@ -384,7 +385,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                         if (recognizeResult != null && recognizeResult.length > 0) {
                             for (FacePassRecognitionResult result : recognizeResult) {
                                 String faceToken = new String(result.faceToken);
-//                                if (FacePassRecognitionResultType.RECOG_OK == result.facePassRecognitionResultType) {
+//                                if (FacePassRecognitionResultType.RECOG_OK == result.facePassRecognitionResultType) {//成功显示对比的人脸图片
 //                                    getFaceImageByFaceToken(result.trackId, faceToken);
 //                                }
 

@@ -28,7 +28,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="center" />
 
-        <com.shuli.root.faceproject.activity.FaceView
+        <com.shuli.root.faceproject.face.FaceView
             android:id="@+id/fcview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
