@@ -7,33 +7,25 @@ import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.hardware.Camera;
-import android.os.Handler;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 import com.shuli.root.faceproject.R;
-import com.shuli.root.faceproject.activity.CameraActivity;
 import com.shuli.root.faceproject.activity.FaceLocalActivity;
 import com.shuli.root.faceproject.base.BaseFragment;
 import com.shuli.root.faceproject.utils.ClearEditTextWhite;
 import com.shuli.root.faceproject.utils.FileUtil;
-
-import org.json.JSONObject;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -44,7 +36,7 @@ import butterknife.OnClick;
  * Created by dhht on 16/9/29.
  */
 
-public class CameraFragment extends BaseFragment implements SurfaceHolder.Callback {
+public class AddFragment extends BaseFragment implements SurfaceHolder.Callback {
     @BindView(R.id.camera_sf)
     SurfaceView camera_sf;
     @BindView(R.id.faceTokenEt)
@@ -63,7 +55,7 @@ public class CameraFragment extends BaseFragment implements SurfaceHolder.Callba
     private OnFragmentInteractionListener mListener;
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_camera;
+        return R.layout.activity_add;
     }
 
     @Override

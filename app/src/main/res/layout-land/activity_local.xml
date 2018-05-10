@@ -93,7 +93,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="40sp"
-            android:textColor="@color/white" />
+            android:textColor="@color/white"
+            android:text="验证成功！"/>
     </LinearLayout>
     <TextView
         android:id="@+id/face_fail_tv_result"

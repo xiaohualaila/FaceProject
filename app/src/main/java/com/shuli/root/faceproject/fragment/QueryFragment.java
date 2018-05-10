@@ -49,7 +49,7 @@ public class QueryFragment  extends BaseFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof CameraFragment.OnFragmentInteractionListener) {
+        if (context instanceof AddFragment.OnFragmentInteractionListener) {
             mListener = (OnQueryFragmentInteractionListener) context;
         }
         else {

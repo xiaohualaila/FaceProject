@@ -22,10 +22,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.shuli.faceproject.greendaodemo.greendao.GreenDaoManager;
-import com.shuli.faceproject.greendaodemo.greendao.gen.AccountDao;
 import com.shuli.faceproject.greendaodemo.greendao.gen.PeopleDao;
 import com.shuli.root.faceproject.R;
-import com.shuli.root.faceproject.bean.Account;
 import com.shuli.root.faceproject.bean.People;
 import com.shuli.root.faceproject.utils.ClearEditTextWhite;
 import com.shuli.root.faceproject.utils.FaceApi;
@@ -53,7 +51,7 @@ import megvii.facepass.types.FacePassPose;
  * Created by dhht on 16/9/29.
  */
 
-public class CameraActivity extends AppCompatActivity implements SurfaceHolder.Callback {
+public class AddActivity extends AppCompatActivity implements SurfaceHolder.Callback {
     @BindView(R.id.camera_sf)
     SurfaceView camera_sf;
     @BindView(R.id.takePhoto)
@@ -90,7 +88,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_camera);
+        setContentView(R.layout.activity_add);
         ButterKnife.bind(this);
 
         holder = camera_sf.getHolder();
@@ -196,7 +194,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
             case R.id.toActivity:
 
                 closeCamera();
-                startActivity(new Intent(CameraActivity.this,FaceLocalActivity.class));
+                startActivity(new Intent(AddActivity.this,FaceLocalActivity.class));
                 finish();
                 break;
             case R.id.toQuery:

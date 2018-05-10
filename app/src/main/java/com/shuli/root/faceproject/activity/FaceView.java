@@ -35,9 +35,9 @@ public class FaceView extends View {
         rolls = new ArrayList<>();
         blurs = new ArrayList<>();
         rect = new ArrayList<Rect>();
-        paint.setARGB(255, 255, 255, 255);//调整颜色的地方
+        paint.setARGB(255, 255, 255, 0);//调整颜色的地方
         paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(10.0f);
+        paint.setStrokeWidth(3.0f);
 
         backPaint.setARGB(122, 255, 255, 255);
         backPaint.setStyle(Paint.Style.FILL);

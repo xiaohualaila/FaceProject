@@ -1,7 +1,5 @@
-package com.shuli.root.faceproject.activity1;
-import android.app.AlertDialog;
+package com.shuli.root.faceproject.activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
@@ -12,12 +10,11 @@ import android.util.Log;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import com.shuli.faceproject.greendaodemo.greendao.GreenDaoManager;
-import com.shuli.faceproject.greendaodemo.greendao.gen.AccountDao;
 import com.shuli.faceproject.greendaodemo.greendao.gen.PeopleDao;
 import com.shuli.root.faceproject.R;
 import com.shuli.root.faceproject.base.BaseAppCompatActivity;
 import com.shuli.root.faceproject.bean.People;
-import com.shuli.root.faceproject.fragment.CameraFragment;
+import com.shuli.root.faceproject.fragment.AddFragment;
 import com.shuli.root.faceproject.fragment.QueryFragment;
 import com.shuli.root.faceproject.utils.FaceApi;
 import java.io.File;
@@ -31,7 +28,7 @@ import megvii.facepass.types.FacePassImageRotation;
 import megvii.facepass.types.FacePassModel;
 import megvii.facepass.types.FacePassPose;
 
-public class MainFragmentActivity extends BaseAppCompatActivity implements CameraFragment.OnFragmentInteractionListener,QueryFragment.OnQueryFragmentInteractionListener {
+public class MainFragmentActivity extends BaseAppCompatActivity implements AddFragment.OnFragmentInteractionListener,QueryFragment.OnQueryFragmentInteractionListener {
     @BindView(R.id.fl_content)
     FrameLayout fl_content;
 
@@ -69,7 +66,7 @@ public class MainFragmentActivity extends BaseAppCompatActivity implements Camer
         initFaceHandler();
 
         fm = getSupportFragmentManager();
-        cameraFragment = new CameraFragment();
+        cameraFragment = new AddFragment();
         queryFragment = new QueryFragment();
         switchContent(cameraFragment);//切换页面
     }

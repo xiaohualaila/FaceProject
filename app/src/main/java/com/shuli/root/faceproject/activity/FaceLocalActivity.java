@@ -9,12 +9,8 @@ import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.ImageFormat;
 import android.graphics.Matrix;
-import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.Typeface;
-import android.graphics.YuvImage;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.os.Environment;
@@ -30,30 +26,22 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 import com.shuli.faceproject.greendaodemo.greendao.GreenDaoManager;
 import com.shuli.faceproject.greendaodemo.greendao.gen.AccountDao;
 import com.shuli.faceproject.greendaodemo.greendao.gen.PeopleDao;
 import com.shuli.root.faceproject.R;
-import com.shuli.root.faceproject.activity1.MainFragmentActivity;
 import com.shuli.root.faceproject.bean.Account;
 import com.shuli.root.faceproject.bean.People;
 import com.shuli.root.faceproject.camera.CameraManager;
@@ -62,7 +50,6 @@ import com.shuli.root.faceproject.camera.CameraPreviewData;
 import com.shuli.root.faceproject.fragment.VersionDialogFragment;
 import com.shuli.root.faceproject.network.ByteRequest;
 import com.shuli.root.faceproject.utils.FaceApi;
-import com.shuli.root.faceproject.utils.IOUtil;
 import com.shuli.root.faceproject.utils.SettingVar;
 import com.shuli.root.faceproject.utils.SoundPoolUtil;
 
@@ -80,7 +67,6 @@ import megvii.facepass.types.FacePassImageType;
 import megvii.facepass.types.FacePassModel;
 import megvii.facepass.types.FacePassPose;
 import megvii.facepass.types.FacePassRecognitionResult;
-import megvii.facepass.types.FacePassRecognitionResultType;
 
 
 public class FaceLocalActivity extends AppCompatActivity implements CameraManager.CameraListener, View.OnClickListener {
@@ -563,8 +549,6 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         frameLayout =  findViewById(R.id.frame);
         /* 注册相机回调函数 */
         manager.setListener(this);
-
-
     }
 
 
@@ -613,7 +597,6 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         }
         super.onDestroy();
     }
-
 
     private void showFacePassFace(FacePassFace[] detectResult) {
         faceView.clear();
@@ -716,7 +699,6 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         }
     }
 
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -740,7 +722,6 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                         }else {
                             dialogFragment.tv_title.setText("用户名不存在！");
                         }
-
                     }
                 });
                 break;
