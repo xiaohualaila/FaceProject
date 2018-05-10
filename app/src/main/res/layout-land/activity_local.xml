@@ -7,21 +7,46 @@
     android:background="@drawable/face_layout"
     android:orientation="vertical"
    >
-    <ImageView
-        android:id="@+id/quit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:clickable="true"
-        android:src="@drawable/back_row"/>
+    <RelativeLayout
+        android:id="@+id/ll"
+        android:layout_width="match_parent"
+        android:gravity="center_vertical"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/quit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:clickable="true"
+            android:src="@drawable/back_row"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:layout_toRightOf="@+id/quit"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:textSize="25sp"
+            android:text="人脸识别系统"/>
+
+        <ImageView
+            android:id="@+id/btn_face_operation"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginRight="80dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/face_setup"
+            android:layout_alignParentRight="true"
+            android:clickable="true" />
+    </RelativeLayout>
+
 
     <FrameLayout
         android:id="@+id/frame"
-        android:layout_width="400dp"
-        android:layout_height="400dp"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="50dp"
-        android:gravity="center">
+        android:layout_width="640dp"
+        android:layout_height="480dp"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/ll">
         <com.shuli.root.faceproject.camera.CameraPreview
             android:id="@+id/preview"
             android:layout_width="match_parent"
@@ -34,22 +59,14 @@
             android:layout_height="wrap_content" />
     </FrameLayout>
 
-    <ImageView
-        android:id="@+id/btn_face_operation"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginRight="80dp"
-        android:layout_marginTop="50dp"
-        android:background="@drawable/face_setup"
-        android:layout_alignParentRight="true"
-        android:clickable="true" />
+
     <LinearLayout
         android:id="@+id/row_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/frame"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="40dp"
+        android:layout_marginLeft="20dp"
         android:orientation="horizontal">
         <ImageView
             android:id="@+id/row_1"
@@ -69,7 +86,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="40dp"
+        android:layout_marginLeft="20dp"
         android:orientation="vertical"
         android:visibility="gone"
         android:layout_toRightOf="@+id/row_layout"
@@ -78,13 +95,13 @@
             android:id="@+id/tv_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="36sp"
+            android:textSize="30sp"
             android:textColor="@color/white" />
         <TextView
             android:id="@+id/tv_num"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="36sp"
+            android:textSize="30sp"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="20dp"
             android:textColor="@color/white" />
@@ -92,7 +109,7 @@
             android:id="@+id/tv_result"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="40sp"
+            android:textSize="36sp"
             android:textColor="@color/white"
             android:text="验证成功！"/>
     </LinearLayout>
@@ -103,7 +120,7 @@
         android:textSize="40sp"
         android:textColor="@color/white"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="40dp"
+        android:layout_marginLeft="36sp"
         android:layout_toRightOf="@+id/row_layout"
         android:visibility="gone"
         android:text="验证失败 !"/>

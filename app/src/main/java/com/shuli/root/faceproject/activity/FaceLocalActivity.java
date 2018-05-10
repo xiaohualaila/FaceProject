@@ -444,7 +444,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                 }else {
                     ll_face_success.setVisibility(View.GONE);
                     face_fail_tv_result.setVisibility(View.VISIBLE);
-                    SoundPoolUtil.play(2);
+                   // SoundPoolUtil.play(2);
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {

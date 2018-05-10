@@ -180,6 +180,7 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
     private void uploadFinish() {
         faceTokenEt.setText("");
         ce_name.setText("");
+        ce_gong_num.setText("");
         startCameraPreview();
         File file = new File(filePath);
         if (file.exists()) {

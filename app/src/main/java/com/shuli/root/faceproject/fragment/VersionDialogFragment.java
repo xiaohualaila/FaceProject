@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.shuli.root.faceproject.R;
+import com.shuli.root.faceproject.view.KeyboardEditText;
 
 /**
  * Created by Administrator on 2018/2/25.

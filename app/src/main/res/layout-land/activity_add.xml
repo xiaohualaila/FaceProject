@@ -10,14 +10,14 @@
 <LinearLayout
     android:layout_centerVertical="true"
     android:layout_alignParentLeft="true"
-    android:layout_marginLeft="50dp"
+    android:layout_marginLeft="35dp"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical">
     <SurfaceView
         android:id="@+id/camera_sf"
-        android:layout_width="400dp"
-        android:layout_height="400dp"
+        android:layout_width="512dp"
+        android:layout_height="384dp"
         />
     <ImageView
         android:id="@+id/takePhoto"

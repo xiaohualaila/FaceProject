@@ -29,4 +29,10 @@
     <style name="TabTextSize" parent="TextAppearance.AppCompat.Widget.ActionBar.Title.Inverse">
         <item name="android:textSize">20sp</item>
     </style>
+    <!-- 键盘出入动画 -->
+    <style name="AnimationFade">
+        <item name="android:windowEnterAnimation">@anim/dialog_in</item>
+        <item name="android:windowExitAnimation">@anim/dialog_out</item>
+    </style>
+
 </resources>
