@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/face_layout"
+    android:orientation="vertical"
+   >
+    <ImageView
+        android:id="@+id/quit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:clickable="true"
+        android:src="@drawable/back_row"/>
+
+    <FrameLayout
+        android:id="@+id/frame"
+        android:layout_width="400dp"
+        android:layout_height="400dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="50dp"
+        android:gravity="center">
+        <com.shuli.root.faceproject.camera.CameraPreview
+            android:id="@+id/preview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center" />
+
+        <com.shuli.root.faceproject.activity.FaceView
+            android:id="@+id/fcview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </FrameLayout>
+
+    <ImageView
+        android:id="@+id/btn_face_operation"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginRight="80dp"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/face_setup"
+        android:layout_alignParentRight="true"
+        android:clickable="true" />
+    <LinearLayout
+        android:id="@+id/row_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/frame"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="40dp"
+        android:orientation="horizontal">
+        <ImageView
+            android:id="@+id/row_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <ImageView
+            android:id="@+id/row_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <ImageView
+            android:id="@+id/row_3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/ll_face_success"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="40dp"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:layout_toRightOf="@+id/row_layout"
+        >
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="36sp"
+            android:textColor="@color/white" />
+        <TextView
+            android:id="@+id/tv_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="36sp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:textColor="@color/white" />
+        <TextView
+            android:id="@+id/tv_result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="40sp"
+            android:textColor="@color/white" />
+    </LinearLayout>
+    <TextView
+        android:id="@+id/face_fail_tv_result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="40sp"
+        android:textColor="@color/white"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="40dp"
+        android:layout_toRightOf="@+id/row_layout"
+        android:visibility="gone"
+        android:text="验证失败 !"/>
+</RelativeLayout>
