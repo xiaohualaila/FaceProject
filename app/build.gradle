@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-
+apply plugin: 'org.greenrobot.greendao'
 android {
     compileSdkVersion 27
     defaultConfig {
@@ -26,14 +26,28 @@ android {
     }
 }
 
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.greenrobot:greendao-gradle-plugin:3.2.1'
+    }
+}
+
+greendao {
+    schemaVersion 3
+    daoPackage 'com.shuli.faceproject.greendaodemo.greendao.gen'//设置DaoMaster、DaoSession、Dao包名
+    targetGenDir 'src/main/java'//设置DaoMaster、DaoSession、Dao目录
+}
+
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:27.0.2'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-
     implementation(name: 'FacePassAndroidSDK-release', ext: 'aar')
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
@@ -43,7 +57,8 @@ dependencies {
     }
     implementation 'com.android.volley:volley:1.0.0'
     implementation 'com.jakewharton:butterknife:8.5.1'
-    implementation 'org.apache.httpcomponents:httpcore:4.3.3'
-
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
+    implementation 'org.apache.httpcomponents:httpcore:4.3.3'
+    implementation 'org.greenrobot:greendao:3.2.0'
+    implementation 'com.android.support:design:27.0.2'
 }

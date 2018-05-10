@@ -35,7 +35,7 @@ public class FaceView extends View {
         rolls = new ArrayList<>();
         blurs = new ArrayList<>();
         rect = new ArrayList<Rect>();
-        paint.setARGB(122, 255, 255, 255);
+        paint.setARGB(255, 255, 255, 255);//调整颜色的地方
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(10.0f);
 
@@ -92,11 +92,11 @@ public class FaceView extends View {
 
     public void clear() {
         rect.clear();
-        ids.clear();
-        yaws.clear();
-        rolls.clear();
-        blurs.clear();
-        pitchs.clear();
+//        ids.clear();
+//        yaws.clear();
+//        rolls.clear();
+//        blurs.clear();
+//        pitchs.clear();
     }
 
     @Override
@@ -105,12 +105,12 @@ public class FaceView extends View {
         for (int i = 0; i < rect.size(); i++) {
             Rect r = rect.get(i);
             canvas.drawRect(r, paint);
-            canvas.drawRect(r.right+5, r.top - 5, r.right + ids.get(i).length() * 25, r.top + 170, backPaint);
-            canvas.drawText(ids.get(i), r.right + 5, r.top + 30, idPaint);
-            canvas.drawText(yaws.get(i), r.right + 5, r.top + 60, posePaint);
-            canvas.drawText(pitchs.get(i), r.right + 5, r.top + 93, posePaint);
-            canvas.drawText(rolls.get(i), r.right + 5, r.top + 126, posePaint);
-            canvas.drawText(blurs.get(i), r.right + 5, r.top + 159, posePaint);
+         //   canvas.drawRect(r.right+5, r.top - 5, r.right + ids.get(i).length() * 25, r.top + 170, backPaint);
+          //  canvas.drawText(ids.get(i), r.right + 5, r.top + 30, idPaint);
+         //   canvas.drawText(yaws.get(i), r.right + 5, r.top + 60, posePaint);
+          //  canvas.drawText(pitchs.get(i), r.right + 5, r.top + 93, posePaint);
+          //  canvas.drawText(rolls.get(i), r.right + 5, r.top + 126, posePaint);
+          //  canvas.drawText(blurs.get(i), r.right + 5, r.top + 159, posePaint);
         }
         this.clear();
     }

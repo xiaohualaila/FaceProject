@@ -9,11 +9,42 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 
+import java.io.File;
+import java.util.Calendar;
+
 /**
  * Created by xingchaolei on 2018/1/26.
  */
 
 public class FileUtil {
+
+
+    /**
+     * 获取图片保存路径
+     */
+    public static String getPath(){
+        String path = FileUtil.getSDPath() + File.separator + "door";
+        File pathFile = new File(path);
+        if(!pathFile.exists() || !pathFile.isDirectory()){
+            pathFile.mkdir();
+        }
+        return path;
+    }
+
+    /**
+     * 获取路径
+     * @return
+     */
+    public static String getSDPath() {
+        boolean sdCardExist = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
+        if (sdCardExist) {
+            return Environment.getExternalStorageDirectory().getAbsolutePath();
+        }
+        return null;
+    }
+    public static long getTime() {
+        return Calendar.getInstance().getTimeInMillis();
+    }
 
     //兼容 sdk>=19 版本 图片选择获取路径问题
     public static String getPath(final Context context, final Uri uri) {

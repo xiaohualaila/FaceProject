@@ -11,4 +11,22 @@
         <item name="windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
     </style>
+    <!--用于按钮的蓝色背景风格-->
+    <style name="blueButtonStyle" parent="Widget.AppCompat.Button.Borderless">
+        <item name="android:background">@drawable/button_blue_background</item>
+        <item name="android:textAppearance">@style/blueButtonTextStyle</item>
+    </style>
+    <!--用于按钮的蓝色背景风格-->
+    <style name="blue1ButtonStyle" parent="Widget.AppCompat.Button.Borderless">
+        <item name="android:background">#4bc7e8</item>
+        <item name="android:textAppearance">@style/blueButtonTextStyle</item>
+    </style>
+    <!--用于蓝色风格按钮的文本风格-->
+    <style name="blueButtonTextStyle">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">17sp</item>
+    </style>
+    <style name="TabTextSize" parent="TextAppearance.AppCompat.Widget.ActionBar.Title.Inverse">
+        <item name="android:textSize">20sp</item>
+    </style>
 </resources>
