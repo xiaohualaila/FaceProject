@@ -16,19 +16,25 @@ import android.widget.EditText;
 import android.widget.TextView;
 import com.shuli.root.faceproject.R;
 
-
 /**
  * Created by Administrator on 2018/2/25.
  */
 
-public class VersionDialogFragment extends DialogFragment {
+public class UpdatePeopleDialogFragment extends DialogFragment {
+    private static final String NAME = "name";
+    private static final String GONGHAO = "gonghao";
     private View.OnClickListener positiveCallback;
-    public EditText et_account;
-    public EditText et_secret;
     public TextView tv_title;
-
-    public static VersionDialogFragment getInstance() {
-        VersionDialogFragment versionDialogFragment = new VersionDialogFragment();
+    public String name;
+    public String gonghao;
+    public EditText et_name;
+    public EditText et_gonghao;
+    public static UpdatePeopleDialogFragment getInstance(String name,String gonghao) {
+        Bundle bundle = new Bundle();
+        bundle.putString(NAME,name);
+        bundle.putString(GONGHAO,gonghao);
+        UpdatePeopleDialogFragment versionDialogFragment = new UpdatePeopleDialogFragment();
+        versionDialogFragment.setArguments(bundle);
         return versionDialogFragment;
     }
 
@@ -51,6 +57,9 @@ public class VersionDialogFragment extends DialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle bundle = getArguments();
+        name = bundle.getString(NAME);
+        gonghao = bundle.getString(GONGHAO);
     }
 
     public void show(FragmentManager fragmentManager, View.OnClickListener positiveCallback) {
@@ -61,19 +70,20 @@ public class VersionDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        final View view = inflater.inflate(R.layout.dialog, null);
+        final View view = inflater.inflate(R.layout.update_people_dialog, null);
         tv_title =  view.findViewById(R.id.tv_title);
-        et_account =  view.findViewById(R.id.account);
-        et_secret =  view.findViewById(R.id.secret);
-
+        et_name =  view.findViewById(R.id.et_name);
+        et_gonghao =  view.findViewById(R.id.et_gonghao);
+        et_name.setText(name);
+        et_gonghao.setText(gonghao);
         Button btn_sure = view.findViewById(R.id.btn_sure);
         btn_sure.setOnClickListener(positiveCallback);
         builder.setView(view);
         return builder.create();
     }
-
 
 
 }

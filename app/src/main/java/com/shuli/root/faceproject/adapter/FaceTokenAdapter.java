@@ -81,7 +81,24 @@ public class FaceTokenAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        holder.deleteFaceTokenIv.setOnClickListener(new View.OnClickListener() {
+
+        holder.faceTokenNameTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mItemButtonClickListener != null) {
+                    mItemButtonClickListener.onItemDeleteButtonClickListener(position);
+                }
+            }
+        });
+        holder.name.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mItemButtonClickListener != null) {
+                    mItemButtonClickListener.onItemDeleteButtonClickListener(position);
+                }
+            }
+        });
+        holder.gonghao.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mItemButtonClickListener != null) {
