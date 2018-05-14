@@ -9,14 +9,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.shuli.faceproject.greendaodemo.greendao.GreenDaoManager;
-import com.shuli.faceproject.greendaodemo.greendao.gen.AccountDao;
-import com.shuli.faceproject.greendaodemo.greendao.gen.PeopleDao;
 import com.shuli.root.faceproject.R;
-import com.shuli.root.faceproject.bean.Account;
 import com.shuli.root.faceproject.bean.People;
-
 import java.util.List;
 
 
@@ -127,12 +121,10 @@ public class FaceTokenAdapter extends BaseAdapter {
         });
         String token = mFaceTokens.get(position);
         holder.faceTokenNameTv.setText(token);
-        People people = GreenDaoManager.getInstance().getSession().getPeopleDao().queryBuilder()
-                .where(PeopleDao.Properties.Face_token.eq(token)).build().unique();
-        if(people!=null){
-            holder.name.setText(people.getName());
-            holder.gonghao.setText(people.getGonghao());
-        }
+
+            holder.name.setText("");
+            holder.gonghao.setText("");
+
         return convertView;
     }
 

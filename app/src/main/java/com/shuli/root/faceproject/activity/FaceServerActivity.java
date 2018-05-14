@@ -167,19 +167,7 @@ public class FaceServerActivity extends Activity implements CameraManager.Camera
 
     /* 相机是否使用前置摄像头 */
     private static boolean cameraFacingFront = false;
-    /* 相机图片旋转角度，请根据实际情况来设置
-     * 对于标准设备，可以如下计算旋转角度rotation
-     * int windowRotation = ((WindowManager)(getApplicationContext().getSystemService(Context.WINDOW_SERVICE))).getDefaultDisplay().getRotation() * 90;
-     * Camera.CameraInfo info = new Camera.CameraInfo();
-     * Camera.getCameraInfo(cameraFacingFront ? Camera.CameraInfo.CAMERA_FACING_FRONT : Camera.CameraInfo.CAMERA_FACING_BACK, info);
-     * int cameraOrientation = info.orientation;
-     * int rotation;
-     * if (cameraFacingFront) {
-     *     rotation = (720 - cameraOrientation - windowRotation) % 360;
-     * } else {
-     *     rotation = (windowRotation - cameraOrientation + 360) % 360;
-     * }
-     */
+
     private int cameraRotation;
 
     private static final int cameraWidth = 1920;
@@ -217,19 +205,11 @@ public class FaceServerActivity extends Activity implements CameraManager.Camera
     /*DetectResult queue*/
     ArrayBlockingQueue<byte[]> mDetectResultQueue;
 
-    /*底库同步*/
-    private ImageView mSyncGroupBtn;
-    private AlertDialog mSyncGroupDialog;
-
-    private ImageView mFaceOperationBtn;
     /*图片缓存*/
     private FaceImageCache mImageCache;
 
     private Handler mAndroidHandler;
 
-
-    /*recognize thread*/
-    RecognizeThread mRecognizeThread;
 
 
     @Override
@@ -256,8 +236,6 @@ public class FaceServerActivity extends Activity implements CameraManager.Camera
         /* 初始化网络请求库 */
         requestQueue = Volley.newRequestQueue(getApplicationContext());
 
-        mRecognizeThread = new RecognizeThread();
-        mRecognizeThread.start();
     }
 
     private void initAndroidHandler() {
@@ -368,14 +346,6 @@ public class FaceServerActivity extends Activity implements CameraManager.Camera
         String[] localGroups = mFacePassHandler.getLocalGroups();
         isLocalGroupExist = false;
         if (localGroups == null || localGroups.length == 0) {
-//            faceView.post(new Runnable() {
-////                @Override
-////                public void run() {
-////                    toast("请创建" + group_name + "底库");
-////                }
-////            });
-////            return;
-
             boolean isSuccess = false;
             try {
                 isSuccess = mFacePassHandler.createLocalGroup("face-pass-test-x");
@@ -489,46 +459,6 @@ public class FaceServerActivity extends Activity implements CameraManager.Camera
         }
     }
 
-
-    private class RecognizeThread extends Thread {
-
-        boolean isInterrupt;
-
-        @Override
-        public void run() {
-            while (!isInterrupt) {
-                try {
-                    Log.d(DEBUG_TAG, "2 mDetectResultQueue.size = " + mDetectResultQueue.size());
-                    byte[] detectionResult = mDetectResultQueue.take();
-
-                    Log.d(DEBUG_TAG, "mDetectResultQueue.isLocalGroupExist");
-                    if (isLocalGroupExist) {
-                        Log.d(DEBUG_TAG, "mDetectResultQueue.recognize");
-                        FacePassRecognitionResult[] recognizeResult = mFacePassHandler.recognize(group_name, detectionResult);
-                        if (recognizeResult != null && recognizeResult.length > 0) {
-                            for (FacePassRecognitionResult result : recognizeResult) {
-                                String faceToken = new String(result.faceToken);
-                                if (FacePassRecognitionResultType.RECOG_OK == result.facePassRecognitionResultType) {
-                                    getFaceImageByFaceToken(result.trackId, faceToken);
-                                }
-                                showRecognizeResult(result.trackId, result.detail.searchScore, result.detail.livenessScore, !TextUtils.isEmpty(faceToken));
-                            }
-                        }
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (FacePassException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        @Override
-        public void interrupt() {
-            isInterrupt = true;
-            super.interrupt();
-        }
-    }
 
         private void showRecognizeResult(final long trackId, final float searchScore, final float livenessScore, final boolean isRecognizeOK) {
         mAndroidHandler.post(new Runnable() {
@@ -774,9 +704,6 @@ public class FaceServerActivity extends Activity implements CameraManager.Camera
 
         }
     }
-
-
-
 
     private void getFaceImageByFaceToken(final long trackId, String faceToken) {
         if (TextUtils.isEmpty(faceToken)) {

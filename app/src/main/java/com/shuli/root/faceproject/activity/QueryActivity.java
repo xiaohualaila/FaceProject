@@ -5,22 +5,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
-
 import com.shuli.root.faceproject.R;
 import com.shuli.root.faceproject.adapter.FaceTokenAdapter;
 import com.shuli.root.faceproject.utils.FaceApi;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;

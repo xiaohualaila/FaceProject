@@ -30,4 +30,11 @@ public class Api {
         return baseApi;
     }
 
+    //获取JSON转对象
+    public static BaseApi getBaseApiWithGson(String url) {
+        baseApi = RetrofitClient.createApi(BaseApi.class,
+                RetrofitClient.getGsonRetrofit(url));
+        return baseApi;
+    }
+
 }
