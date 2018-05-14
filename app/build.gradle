@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'org.greenrobot.greendao'
 android {
     compileSdkVersion 27
     defaultConfig {
@@ -30,16 +29,9 @@ buildscript {
     repositories {
         mavenCentral()
     }
-    dependencies {
-        classpath 'org.greenrobot:greendao-gradle-plugin:3.2.1'
-    }
 }
 
-greendao {
-    schemaVersion 3
-    daoPackage 'com.shuli.faceproject.greendaodemo.greendao.gen'//设置DaoMaster、DaoSession、Dao包名
-    targetGenDir 'src/main/java'//设置DaoMaster、DaoSession、Dao目录
-}
+
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
@@ -59,6 +51,5 @@ dependencies {
     implementation 'com.jakewharton:butterknife:8.5.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
     implementation 'org.apache.httpcomponents:httpcore:4.3.3'
-    implementation 'org.greenrobot:greendao:3.2.0'
     implementation 'com.android.support:design:27.0.2'
 }
