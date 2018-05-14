@@ -3,18 +3,22 @@ package com.shuli.root.faceproject.fragment;
 
 import android.content.Intent;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import com.shuli.faceproject.greendaodemo.greendao.GreenDaoManager;
-import com.shuli.faceproject.greendaodemo.greendao.gen.AccountDao;
 import com.shuli.root.faceproject.R;
-import com.shuli.root.faceproject.activity.FaceLocalActivity;
+import com.shuli.root.faceproject.activity.FaceServerActivity;
 import com.shuli.root.faceproject.base.BaseFragment;
-import com.shuli.root.faceproject.bean.Account;
+import com.shuli.root.faceproject.retrofit.Api;
+import com.shuli.root.faceproject.retrofit.ConnectUrl;
 import com.shuli.root.faceproject.utils.ClearEditTextWhite;
 import com.shuli.root.faceproject.utils.SharedPreferencesUtil;
+import org.json.JSONObject;
 import butterknife.BindView;
 import butterknife.OnClick;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 public class LoginFragment extends BaseFragment {
     @BindView(R.id.ct_username)
@@ -71,31 +75,8 @@ public class LoginFragment extends BaseFragment {
                     showToastLong("管理员密码不能为空！");
                        return;
                 }
-                Account account = GreenDaoManager.getInstance().getSession().getAccountDao().queryBuilder()
-                        .where(AccountDao.Properties.Account_name.eq(username)).build().unique();
-                if(account == null){
-                    showToastLong("用户名不存在！");
-                    return;
-                }else {
-                    if(!account.getAccount_secret().equals(password)){
-                        showToastLong("密码错误！");
-                        return;
-                    }else {
-                        String flag = checkbox.getTag().toString();
-                        SharedPreferencesUtil.save("checkbox_tag", flag, getActivity());
-                        if (flag.equals("true")) {
-                            SharedPreferencesUtil.save("username", ct_username.getText().toString(), getActivity());
-                            SharedPreferencesUtil.save("pwd", ct_secret.getText().toString(), getActivity());
-                            SharedPreferencesUtil.save("tag", "true", getActivity());
-                        } else {
-                            SharedPreferencesUtil.removeKey(getActivity(), "username");
-                            SharedPreferencesUtil.removeKey(getActivity(), "pwd");
-                            SharedPreferencesUtil.removeKey(getActivity(), "tag");
-                        }
-                        startActivity(new Intent(getActivity(),FaceLocalActivity.class));
-                        getActivity().finish();
-                    }
-                }
+                upload(username,password);
+
                 break;
             case R.id.checkbox:
                 if (v.getTag().toString().equals("true")) {
@@ -106,7 +87,45 @@ public class LoginFragment extends BaseFragment {
                     checkbox.setImageResource(R.drawable.login_beixuan);
                 }
                 break;
-
         }
+    }
+
+    private void upload(String username,String password){
+
+        Api.getBaseApiWithOutFormat(ConnectUrl.URL)
+                .login(username, password)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<JSONObject>() {
+                               @Override
+                               public void call(JSONObject jsonObject) {
+                           Log.i("sss",jsonObject.toString());
+
+                           // TODO: 2018/5/14 登录成功
+                           String flag = checkbox.getTag().toString();
+                           SharedPreferencesUtil.save("checkbox_tag", flag, getActivity());
+                           if (flag.equals("true")) {
+                               SharedPreferencesUtil.save("username", ct_username.getText().toString(), getActivity());
+                               SharedPreferencesUtil.save("pwd", ct_secret.getText().toString(), getActivity());
+                               SharedPreferencesUtil.save("tag", "true", getActivity());
+                           } else {
+                               SharedPreferencesUtil.removeKey(getActivity(), "username");
+                               SharedPreferencesUtil.removeKey(getActivity(), "pwd");
+                               SharedPreferencesUtil.removeKey(getActivity(), "tag");
+                           }
+                           startActivity(new Intent(getActivity(),FaceServerActivity.class));
+                           getActivity().finish();
+                           //todo:登录失败
+
+
+                               }
+                           }, new Action1<Throwable>() {
+                               @Override
+                               public void call(Throwable throwable) {
+                                   Log.i("sss",throwable.toString());
+
+                               }
+                           }
+                );
     }
 }

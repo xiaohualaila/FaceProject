@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 
 import com.shuli.root.faceproject.R;
-import com.shuli.root.faceproject.activity.FaceLocalActivity;
+import com.shuli.root.faceproject.activity.FaceServerActivity;
 import com.shuli.root.faceproject.base.BaseFragment;
 import com.shuli.root.faceproject.utils.ClearEditTextWhite;
 import com.shuli.root.faceproject.utils.FileUtil;
@@ -84,7 +84,7 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
                     deleteFace();
                 }
                 closeCamera();
-                startActivity(new Intent(getActivity(),FaceLocalActivity.class));
+                startActivity(new Intent(getActivity(),FaceServerActivity.class));
                 getActivity().finish();
                 break;
             case R.id.toQuery:

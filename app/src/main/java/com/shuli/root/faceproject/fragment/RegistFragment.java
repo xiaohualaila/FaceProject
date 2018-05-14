@@ -4,12 +4,9 @@ import android.content.Intent;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
-import com.shuli.faceproject.greendaodemo.greendao.GreenDaoManager;
-import com.shuli.faceproject.greendaodemo.greendao.gen.AccountDao;
 import com.shuli.root.faceproject.R;
-import com.shuli.root.faceproject.activity.FaceLocalActivity;
+import com.shuli.root.faceproject.activity.FaceServerActivity;
 import com.shuli.root.faceproject.base.BaseFragment;
-import com.shuli.root.faceproject.bean.Account;
 import com.shuli.root.faceproject.utils.ClearEditTextWhite;
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -71,17 +68,17 @@ public class RegistFragment extends BaseFragment {
                     return;
                 }
 
-                Account account = GreenDaoManager.getInstance().getSession().getAccountDao().queryBuilder()
-                        .where(AccountDao.Properties.Account_name.eq(username)).build().unique();
-                if (account != null) {
-                    showToastLong("账号重复！");
-                    return;
-                } else {
-                    AccountDao accountDao = GreenDaoManager.getInstance().getSession().getAccountDao();
-                    accountDao.insert(new Account(username, secret_again));
-                    showToastLong("注册成功！");
-                }
-                startActivity(new Intent(getActivity(), FaceLocalActivity.class));
+//                Account account = GreenDaoManager.getInstance().getSession().getAccountDao().queryBuilder()
+//                        .where(AccountDao.Properties.Account_name.eq(username)).build().unique();
+//                if (account != null) {
+//                    showToastLong("账号重复！");
+//                    return;
+//                } else {
+//                    AccountDao accountDao = GreenDaoManager.getInstance().getSession().getAccountDao();
+//                    accountDao.insert(new Account(username, secret_again));
+//                    showToastLong("注册成功！");
+//                }
+                startActivity(new Intent(getActivity(), FaceServerActivity.class));
                 getActivity().finish();
                 break;
         }

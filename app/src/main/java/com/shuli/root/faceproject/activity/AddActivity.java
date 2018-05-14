@@ -8,7 +8,6 @@ import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.os.Bundle;
-
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -20,9 +19,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.shuli.faceproject.greendaodemo.greendao.GreenDaoManager;
-import com.shuli.faceproject.greendaodemo.greendao.gen.PeopleDao;
 import com.shuli.root.faceproject.R;
 import com.shuli.root.faceproject.bean.People;
 import com.shuli.root.faceproject.utils.ClearEditTextWhite;
@@ -194,7 +190,7 @@ public class AddActivity extends AppCompatActivity implements SurfaceHolder.Call
             case R.id.toActivity:
 
                 closeCamera();
-                startActivity(new Intent(AddActivity.this,FaceLocalActivity.class));
+                startActivity(new Intent(AddActivity.this,FaceServerActivity.class));
                 finish();
                 break;
             case R.id.toQuery:
@@ -518,8 +514,8 @@ public class AddActivity extends AppCompatActivity implements SurfaceHolder.Call
             try {
                 boolean b = mFacePassHandler.bindGroup(group_name, faceToken);
                 if(b){
-                    PeopleDao peopleDao = GreenDaoManager.getInstance().getSession().getPeopleDao();
-                    peopleDao.insert(new People(name,"",faceTokenEt.getText().toString()));
+//                    PeopleDao peopleDao = GreenDaoManager.getInstance().getSession().getPeopleDao();
+//                    peopleDao.insert(new People(name,"",faceTokenEt.getText().toString()));
                 }
                 String result = b ? "success " : "failed";
                 toast("绑定  " + result);

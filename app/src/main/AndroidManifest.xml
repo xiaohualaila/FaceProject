@@ -20,9 +20,6 @@
         <activity android:name=".activity.FaceServerActivity" android:theme="@style/AppTheme.NoBar">
 
         </activity>
-        <activity android:name=".activity.FaceLocalActivity" android:theme="@style/AppTheme.NoBar">
-
-        </activity>
         <activity android:name=".activity.QueryActivity" android:theme="@style/AppTheme.NoBar">
 
         </activity>
