@@ -25,8 +25,6 @@ public class RegistFragment extends BaseFragment {
     ClearEditTextWhite ct_secret_again;
     @BindView(R.id.btn_login)
     Button btn_login;
-    public RegistFragment() {
-    }
 
     @Override
     protected int getLayoutId() {

@@ -24,10 +24,6 @@ public class LoginFragment extends BaseFragment {
     @BindView(R.id.checkbox)
     ImageView checkbox;
 
-    public LoginFragment() {
-
-    }
-
     @Override
     protected int getLayoutId() {
         return R.layout.layout_login;
