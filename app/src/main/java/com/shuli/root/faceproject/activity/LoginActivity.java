@@ -12,6 +12,8 @@ import android.widget.LinearLayout;
 import com.shuli.root.faceproject.R;
 import com.shuli.root.faceproject.fragment.LoginFragment;
 import com.shuli.root.faceproject.fragment.RegistFragment;
+import com.shuli.root.faceproject.utils.DataCache;
+
 import java.util.ArrayList;
 import java.util.List;
 import butterknife.BindView;
@@ -25,6 +27,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private List<Fragment> fragments = new ArrayList<>();
     private List<String> tabs = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +47,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void initView() {
+
         //设置TabLayout的模式
         tabLayout.setTabMode(TabLayout.MODE_FIXED);
         viewPager.setAdapter(new TabAdapter(getSupportFragmentManager()));
@@ -54,6 +58,7 @@ public class LoginActivity extends AppCompatActivity {
         linearLayout.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
         linearLayout.setDividerDrawable(ContextCompat.getDrawable(this,
                 R.drawable.divider)); //设置分割线的样式
+
     }
 
     class TabAdapter extends FragmentPagerAdapter {

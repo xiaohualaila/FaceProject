@@ -36,6 +36,7 @@ public class BaseApplication extends Application {
         super.onCreate();
         mContext = getApplicationContext();
         SoundPoolUtil.getInstance(this);
+
     }
     public static Context getContext() {
         return mContext;

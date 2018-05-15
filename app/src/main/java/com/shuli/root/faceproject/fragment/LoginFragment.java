@@ -99,6 +99,7 @@ public class LoginFragment extends BaseFragment {
                 .subscribe(new Action1<JSONObject>() {
                                @Override
                                public void call(JSONObject jsonObject) {
+
                            Log.i("sss",jsonObject.toString());
 
                            // TODO: 2018/5/14 登录成功

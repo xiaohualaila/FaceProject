@@ -11,10 +11,13 @@ import com.shuli.root.faceproject.base.BaseFragment;
 import com.shuli.root.faceproject.retrofit.Api;
 import com.shuli.root.faceproject.retrofit.ConnectUrl;
 import com.shuli.root.faceproject.utils.ClearEditTextWhite;
+import com.shuli.root.faceproject.utils.DataCache;
 import com.shuli.root.faceproject.utils.SharedPreferencesUtil;
+
+import org.json.JSONObject;
+
 import butterknife.BindView;
 import butterknife.OnClick;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -28,6 +31,7 @@ public class RegistFragment extends BaseFragment {
     ClearEditTextWhite ct_secret_again;
     @BindView(R.id.btn_login)
     Button btn_login;
+    private DataCache mCache;
     public RegistFragment() {
     }
 
@@ -38,7 +42,7 @@ public class RegistFragment extends BaseFragment {
 
     @Override
     protected void init() {
-
+        mCache = new DataCache(getActivity());
     }
 
     @OnClick({R.id.btn_login})
@@ -69,10 +73,12 @@ public class RegistFragment extends BaseFragment {
         }
     }
     private void upload(String username,String password){
-        Api.getBaseApiWithGson(ConnectUrl.URL).regist(username, password).enqueue(new Callback<ResponseBody>() {
+        Api.getBaseApiWithGson(ConnectUrl.URL).regist(username, password).enqueue(new Callback<JSONObject>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-
+            public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
+//                User user = new User();
+//                mCache.saveUser(user);
+                    System.out.println(response.toString());
 
                 // TODO: 2018/5/14 注册成功
                 System.out.println(response.body().toString());
@@ -84,8 +90,9 @@ public class RegistFragment extends BaseFragment {
             }
 
             @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                t.printStackTrace();
+            public void onFailure(Call<JSONObject> call, Throwable t) {
+
+                Log.i("sss",t.toString());
             }
         });
     }

@@ -1,163 +1,158 @@
-package com.shuli.root.faceproject.utils;
-
-import android.content.ContentUris;
-import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Environment;
-import android.provider.DocumentsContract;
-import android.provider.MediaStore;
-
-import java.io.File;
-import java.util.Calendar;
-
-/**
- * Created by xingchaolei on 2018/1/26.
+/*
+ * Copyright 2017 GcsSloop
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Last modified 2017-03-08 01:01:18
+ *
+ * GitHub:  https://github.com/GcsSloop
+ * Website: http://www.gcssloop.com
+ * Weibo:   http://weibo.com/GcsSloop
  */
 
-public class FileUtil {
+package com.shuli.root.faceproject.utils;
 
+import android.content.Context;
+import android.os.Environment;
+
+import java.io.File;
+
+public class FileUtil {
+    private FileUtil() {
+    }
+
+//****系统文件目录**********************************************************************************************
 
     /**
-     * 获取图片保存路径
+     * @return 程序系统文件目录
      */
-    public static String getPath(){
-        String path = FileUtil.getSDPath() + File.separator + "door";
-        File pathFile = new File(path);
-        if(!pathFile.exists() || !pathFile.isDirectory()){
-            pathFile.mkdir();
+    public static String getFileDir(Context context) {
+        return String.valueOf(context.getFilesDir());
+    }
+
+    /**
+     * @param context    上下文
+     * @param customPath 自定义路径
+     * @return 程序系统文件目录绝对路径
+     */
+    public static String getFileDir(Context context, String customPath) {
+        String path = context.getFilesDir() + formatPath(customPath);
+        mkdir(path);
+        return path;
+    }
+
+//****系统缓存目录**********************************************************************************************
+
+    /**
+     * @return 程序系统缓存目录
+     */
+    public static String getCacheDir(Context context) {
+        return String.valueOf(context.getCacheDir());
+    }
+
+    /**
+     * @param context    上下文
+     * @param customPath 自定义路径
+     * @return 程序系统缓存目录
+     */
+    public static String getCacheDir(Context context, String customPath) {
+        String path = context.getCacheDir() + formatPath(customPath);
+        mkdir(path);
+        return path;
+    }
+
+//****Sdcard文件目录**********************************************************************************************
+
+    /**
+     * @return 内存卡文件目录
+     */
+    public static String getExternalFileDir(Context context) {
+        return String.valueOf(context.getExternalFilesDir(""));
+    }
+
+    /**
+     * @param context    上下文
+     * @param customPath 自定义路径
+     * @return 内存卡文件目录
+     */
+    public static String getExternalFileDir(Context context, String customPath) {
+        String path = context.getExternalFilesDir("") + formatPath(customPath);
+        mkdir(path);
+        return path;
+    }
+
+//****Sdcard缓存目录**********************************************************************************************
+
+    /**
+     * @return 内存卡缓存目录
+     */
+    public static String getExternalCacheDir(Context context) {
+        return String.valueOf(context.getExternalCacheDir());
+    }
+
+    /**
+     * @param context    上下文
+     * @param customPath 自定义路径
+     * @return 内存卡缓存目录
+     */
+    public static String getExternalCacheDir(Context context, String customPath) {
+        String path = context.getExternalCacheDir() + formatPath(customPath);
+        mkdir(path);
+        return path;
+    }
+
+//****公共文件夹**********************************************************************************************
+
+    /**
+     * @return 公共下载文件夹
+     */
+    public static String getPublicDownloadDir() {
+        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
+    }
+
+//****相关工具**********************************************************************************************
+
+    /**
+     * 创建文件夹
+     *
+     * @param DirPath 文件夹路径
+     */
+    public static void mkdir(String DirPath) {
+        File file = new File(DirPath);
+        if (!(file.exists() && file.isDirectory())) {
+            file.mkdirs();
         }
+    }
+
+    /**
+     * 格式化文件路径
+     * 示例：  传入 "sloop" "/sloop" "sloop/" "/sloop/"
+     * 返回 "/sloop"
+     */
+    private static String formatPath(String path) {
+        if (!path.startsWith("/"))
+            path = "/" + path;
+        while (path.endsWith("/"))
+            path = new String(path.toCharArray(), 0, path.length() - 1);
         return path;
     }
 
     /**
-     * 获取路径
-     * @return
+     * @return 存储卡是否挂载(存在)
      */
-    public static String getSDPath() {
-        boolean sdCardExist = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
-        if (sdCardExist) {
-            return Environment.getExternalStorageDirectory().getAbsolutePath();
-        }
-        return null;
-    }
-    public static long getTime() {
-        return Calendar.getInstance().getTimeInMillis();
+    public static boolean isMountSdcard() {
+        String status = Environment.getExternalStorageState();
+        return status.equals(Environment.MEDIA_MOUNTED);
     }
 
-    //兼容 sdk>=19 版本 图片选择获取路径问题
-    public static String getPath(final Context context, final Uri uri) {
-        // DocumentProvider
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && DocumentsContract.isDocumentUri(context, uri)) {
-            // ExternalStorageProvider
-            if (isExternalStorageDocument(uri)) {
-                final String docId = DocumentsContract.getDocumentId(uri);
-                final String[] split = docId.split(":");
-                final String type = split[0];
-
-                //   if ("primary".equalsIgnoreCase(type)) {
-                return Environment.getExternalStorageDirectory() + "/" + split[1];
-                //     }
-
-            }
-            // DownloadsProvider
-            else if (isDownloadsDocument(uri)) {
-
-                final String id = DocumentsContract.getDocumentId(uri);
-                final Uri contentUri = ContentUris.withAppendedId(
-                        Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
-
-                return getDataColumn(context, contentUri, null, null);
-            }
-            // MediaProvider
-            else if (isMediaDocument(uri)) {
-                final String docId = DocumentsContract.getDocumentId(uri);
-                final String[] split = docId.split(":");
-                final String type = split[0];
-
-                Uri contentUri = null;
-                if ("image".equals(type)) {
-                    contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-                } else if ("video".equals(type)) {
-                    contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-                } else if ("audio".equals(type)) {
-                    contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-                }
-
-                final String selection = "_id=?";
-                final String[] selectionArgs = new String[]{split[1]};
-
-                return getDataColumn(context, contentUri, selection, selectionArgs);
-            }
-        }
-        // MediaStore (and general)
-        else if ("content".equalsIgnoreCase(uri.getScheme())) {
-
-            // Return the remote address
-            if (isGooglePhotosUri(uri))
-                return uri.getLastPathSegment();
-
-            return getDataColumn(context, uri, null, null);
-        }
-        // File
-        else if ("file".equalsIgnoreCase(uri.getScheme())) {
-            return uri.getPath();
-        }
-
-        return null;
-    }
-
-    public static String getDataColumn(Context context, Uri uri, String selection,
-                                       String[] selectionArgs) {
-
-        Cursor cursor = null;
-        final String column = MediaStore.Images.Media.DATA;
-        final String[] projection = {column};
-
-        try {
-            cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs,
-                    null);
-            if (cursor != null && cursor.moveToFirst()) {
-                final int index = cursor.getColumnIndexOrThrow(column);
-                return cursor.getString(index);
-            }
-        } finally {
-            if (cursor != null)
-                cursor.close();
-        }
-        return null;
-    }
-
-    /**
-     * @param uri The Uri to check.
-     * @return Whether the Uri authority is ExternalStorageProvider.
-     */
-    public static boolean isExternalStorageDocument(Uri uri) {
-        return "com.android.externalstorage.documents".equals(uri.getAuthority());
-    }
-
-    /**
-     * @param uri The Uri to check.
-     * @return Whether the Uri authority is DownloadsProvider.
-     */
-    public static boolean isDownloadsDocument(Uri uri) {
-        return "com.android.providers.downloads.documents".equals(uri.getAuthority());
-    }
-
-    /**
-     * @param uri The Uri to check.
-     * @return Whether the Uri authority is MediaProvider.
-     */
-    public static boolean isMediaDocument(Uri uri) {
-        return "com.android.providers.media.documents".equals(uri.getAuthority());
-    }
-
-    /**
-     * @param uri The Uri to check.
-     * @return Whether the Uri authority is Google Photos.
-     */
-    public static boolean isGooglePhotosUri(Uri uri) {
-        return "com.google.android.apps.photos.content".equals(uri.getAuthority());
-    }
 }
