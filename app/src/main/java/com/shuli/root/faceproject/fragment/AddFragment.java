@@ -1,5 +1,6 @@
 package com.shuli.root.faceproject.fragment;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -8,6 +9,7 @@ import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -48,16 +50,24 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
     private Camera camera;
     private String filePath;
     private SurfaceHolder holder;
-    private boolean isFrontCamera = true;
+    private boolean isFrontCamera = true;//1是前置0是后置
     private int width = 1280;
-    private int height = 960;
-
+    private int height = 720;
+    private int CammeraIndex;
     private OnFragmentInteractionListener mListener;
     @Override
     protected int getLayoutId() {
         return R.layout.activity_add;
     }
 
+
+//    SupportedPictureSizes : 1280x720
+//    SupportedPictureSizes : 320x240
+//    SupportedPictureSizes : 800x600
+//    SupportedPreviewSizes : 640x480
+//    SupportedPreviewSizes : 1280x720
+//    SupportedPreviewSizes : 320x240
+//    SupportedPreviewSizes : 800x600
     @Override
     protected void init() {
         holder = camera_sf.getHolder();
@@ -216,15 +226,6 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
         closeCamera();
     }
 
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-//        if (hidden) {
-//            isReading = true;
-//        } else {
-//            isReading = false;
-//        }
-    }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
@@ -248,7 +249,12 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
     private Camera openCamera() {
         if (camera == null) {
             try {
-                camera = Camera.open();
+                 CammeraIndex=FindFrontCamera();
+                if(CammeraIndex==-1){
+                    CammeraIndex=FindBackCamera();
+                    isFrontCamera = false;
+                }
+                camera = Camera.open(CammeraIndex);
             } catch (Exception e) {
                 camera = null;
                 e.printStackTrace();
@@ -256,17 +262,62 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
         }
         return camera;
     }
+
+    //寻找前置摄像头
+    @TargetApi(9)
+    private int FindFrontCamera(){
+        int cameraCount = 0;
+        Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
+        cameraCount = Camera.getNumberOfCameras(); // get cameras number
+
+        for ( int camIdx = 0; camIdx < cameraCount;camIdx++ ) {
+            Camera.getCameraInfo( camIdx, cameraInfo ); // get camerainfo
+            if ( cameraInfo.facing ==Camera.CameraInfo.CAMERA_FACING_FRONT ) {
+                // 代表摄像头的方位，目前有定义值两个分别为CAMERA_FACING_FRONT前置和CAMERA_FACING_BACK后置
+                return camIdx;
+            }
+        }
+        return -1;
+    }
+    //寻找后置摄像头
+    @TargetApi(9)
+    private int FindBackCamera(){
+        int cameraCount = 0;
+        Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
+        cameraCount = Camera.getNumberOfCameras(); // get cameras number
+
+        for ( int camIdx = 0; camIdx < cameraCount;camIdx++ ) {
+            Camera.getCameraInfo( camIdx, cameraInfo ); // get camerainfo
+            if ( cameraInfo.facing ==Camera.CameraInfo.CAMERA_FACING_BACK ) {
+                // 代表摄像头的方位，目前有定义值两个分别为CAMERA_FACING_FRONT前置和CAMERA_FACING_BACK后置
+                return camIdx;
+            }
+        }
+        return -1;
+    }
+
     private void startPreview() {
         Camera.Parameters para;
         if (null != camera) {
             para = camera.getParameters();
+//            List<Camera.Size> pictureSizes = para.getSupportedPictureSizes();
+//            int length = pictureSizes.size();
+//            for (int i = 0; i < length; i++) {
+//                Log.e("sss","SupportedPictureSizes : " + pictureSizes.get(i).width + "x" + pictureSizes.get(i).height);
+//            }
+//
+//            List<Camera.Size> previewSizes = para.getSupportedPreviewSizes();
+//            length = previewSizes.size();
+//            for (int i = 0; i < length; i++) {
+//                Log.e("sss","SupportedPreviewSizes : " + previewSizes.get(i).width + "x" + previewSizes.get(i).height);
+//            }
         } else {
             return;
         }
         para.setPreviewSize(width, height);
-        setPictureSize(para,640 , 480);
+        setPictureSize(para,1280 , 720);
         para.setPictureFormat(ImageFormat.JPEG);//设置图片格式
-        setCameraDisplayOrientation(isFrontCamera ? 0 : 1, camera);
+        setCameraDisplayOrientation(CammeraIndex, camera);
         camera.setParameters(para);
         camera.startPreview();
     }
@@ -286,7 +337,7 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
         Camera.CameraInfo info = new Camera.CameraInfo();
         Camera.getCameraInfo(cameraId, info);
         int rotation = getActivity().getWindowManager().getDefaultDisplay().getRotation();
-        rotation = 0;
+     //   rotation = 0;
         int degrees = 0;
         switch (rotation) {
             case Surface.ROTATION_0:

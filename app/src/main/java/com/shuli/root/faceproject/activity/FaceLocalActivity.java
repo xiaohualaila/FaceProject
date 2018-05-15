@@ -486,18 +486,18 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         }
         Log.i(DEBUG_TAG, "cameraRation: " + cameraRotation);
         cameraFacingFront = true;
-        SharedPreferences preferences = getSharedPreferences(SettingVar.SharedPrefrence, Context.MODE_PRIVATE);
-        SettingVar.isSettingAvailable = preferences.getBoolean("isSettingAvailable", SettingVar.isSettingAvailable);
-        SettingVar.isCross = preferences.getBoolean("isCross", SettingVar.isCross);
-        SettingVar.faceRotation = preferences.getInt("faceRotation", SettingVar.faceRotation);
-        SettingVar.cameraPreviewRotation = preferences.getInt("cameraPreviewRotation", SettingVar.cameraPreviewRotation);
-        SettingVar.cameraFacingFront = preferences.getBoolean("cameraFacingFront", SettingVar.cameraFacingFront);
+//        SharedPreferences preferences = getSharedPreferences(SettingVar.SharedPrefrence, Context.MODE_PRIVATE);
+//        SettingVar.isSettingAvailable = preferences.getBoolean("isSettingAvailable", SettingVar.isSettingAvailable);
+//        SettingVar.isCross = preferences.getBoolean("isCross", SettingVar.isCross);
+//        SettingVar.faceRotation = preferences.getInt("faceRotation", SettingVar.faceRotation);
+//        SettingVar.cameraPreviewRotation = preferences.getInt("cameraPreviewRotation", SettingVar.cameraPreviewRotation);
+//        SettingVar.cameraFacingFront = preferences.getBoolean("cameraFacingFront", SettingVar.cameraFacingFront);
 
         SettingVar.isSettingAvailable = true;
         SettingVar.isCross = false;
         SettingVar.faceRotation = 0;
         SettingVar.cameraPreviewRotation = 0;
-        SettingVar.cameraFacingFront = false;
+        SettingVar.cameraFacingFront = true;
 
         if (SettingVar.isSettingAvailable) {
             cameraRotation = SettingVar.faceRotation;
