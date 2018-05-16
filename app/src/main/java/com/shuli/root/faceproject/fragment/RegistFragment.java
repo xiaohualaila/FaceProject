@@ -82,8 +82,8 @@ public class RegistFragment extends BaseFragment {
 
                 // TODO: 2018/5/14 注册成功
                 System.out.println(response.body().toString());
-                SharedPreferencesUtil.save("username", ct_username.getText().toString(), getActivity());
-                SharedPreferencesUtil.save("pwd", ct_secret.getText().toString(), getActivity());
+//                SharedPreferencesUtil.save("username", ct_username.getText().toString(), getActivity());
+//                SharedPreferencesUtil.save("pwd", ct_secret.getText().toString(), getActivity());
                 startActivity(new Intent(getActivity(),FaceServerActivity.class));
                 getActivity().finish();
                 // TODO: 2018/5/14 注册失败

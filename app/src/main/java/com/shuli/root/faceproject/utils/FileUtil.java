@@ -26,6 +26,7 @@ import android.content.Context;
 import android.os.Environment;
 
 import java.io.File;
+import java.util.Calendar;
 
 public class FileUtil {
     private FileUtil() {
@@ -155,4 +156,7 @@ public class FileUtil {
         return status.equals(Environment.MEDIA_MOUNTED);
     }
 
+    public static long getTime() {
+        return Calendar.getInstance().getTimeInMillis();
+    }
 }

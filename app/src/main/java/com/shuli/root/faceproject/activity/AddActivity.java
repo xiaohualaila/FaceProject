@@ -231,7 +231,7 @@ public class AddActivity extends AppCompatActivity implements SurfaceHolder.Call
     private Camera.PictureCallback jpeg = new Camera.PictureCallback() {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
-            filePath = FileUtil.getPath() + File.separator + FileUtil.getTime() + ".jpeg";
+            filePath = FileUtil.getExternalFileDir(AddActivity.this) + File.separator + FileUtil.getTime() + ".jpeg";
             Matrix matrix = new Matrix();
             matrix.reset();
             matrix.postRotate(0);
