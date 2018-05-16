@@ -78,12 +78,10 @@ public class RegistFragment extends BaseFragment {
             public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
 //                User user = new User();
 //                mCache.saveUser(user);
-                    System.out.println(response.toString());
-
+                    Log.i("sss","response.toString() "+ response.toString());
                 // TODO: 2018/5/14 注册成功
-                System.out.println(response.body().toString());
-//                SharedPreferencesUtil.save("username", ct_username.getText().toString(), getActivity());
-//                SharedPreferencesUtil.save("pwd", ct_secret.getText().toString(), getActivity());
+
+                Log.i("sss","response.body().toString() "+ response.body().toString());
                 startActivity(new Intent(getActivity(),FaceServerActivity.class));
                 getActivity().finish();
                 // TODO: 2018/5/14 注册失败

@@ -62,31 +62,7 @@ public class QueryFragment  extends BaseFragment {
         faceTokenAdapter.setOnItemButtonClickListener(new FaceTokenAdapter.ItemButtonClickListener() {
             @Override
             public void onItemDeleteButtonClickListener(int position) {
-//                final String token = faceTokenAdapter.getData().get(position);
-//                final People people = GreenDaoManager.getInstance().getSession().getPeopleDao().queryBuilder()
-//                        .where(PeopleDao.Properties.Face_token.eq(token)).build().unique();
-//                final UpdatePeopleDialogFragment dialog =  UpdatePeopleDialogFragment.getInstance(people.getName(),people.getGonghao());
-//                dialog.show(getFragmentManager(), new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        String name =dialog.et_name.getText().toString();
-//                        String gonghao =dialog.et_gonghao.getText().toString();
-//                        if(TextUtils.isEmpty(name)&&TextUtils.isEmpty(gonghao)){
-//                            dialog.tv_title.setText("姓名工号不能为空！");
-//                        }else {
-//                            people.setName(name);
-//                            people.setGonghao(gonghao);
-//                            GreenDaoManager.getInstance().getSession().getPeopleDao().save(people);
-//                            ArrayList<String> list = mListener.QueryData();
-//                            if(list != null &&list.size()>0) {
-//                                faceTokenAdapter.setData(list);
-//                                lv_info.setAdapter(faceTokenAdapter);
-//                            }
-//                            showToastLong("更新成功！");
-//                            dialog.dismiss();
-//                        }
-//                    }
-//                });
+
             }
 
             @Override
