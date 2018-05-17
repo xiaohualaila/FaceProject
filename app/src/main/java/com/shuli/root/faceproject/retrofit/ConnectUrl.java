@@ -5,6 +5,6 @@ package com.shuli.root.faceproject.retrofit;
  */
 public class ConnectUrl {
 
-    public static final String URL = "http://192.168.2.105:8080/gateEntranceGuard/adminManage/";
+    public static final String URL = "http://192.168.2.107:8080/gateEntranceGuard/adminManage/";
 
 }

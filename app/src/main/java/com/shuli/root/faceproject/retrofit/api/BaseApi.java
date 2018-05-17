@@ -14,15 +14,15 @@ import rx.Observable;
  */
 public interface BaseApi {
 
-    @POST("face.php")
+    @POST("adminLogin")
     Observable<JSONObject> login(
-            @Query("username") String name,
+            @Query("account") String name,
             @Query("password") String secret
     );
 
 
     @POST("adminRegister")
-    Call<JSONObject> regist(@Query("account") String name,
+    Observable<JSONObject> regist(@Query("account") String name,
                               @Query("password") String secret);
 
 

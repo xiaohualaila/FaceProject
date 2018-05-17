@@ -28,16 +28,16 @@ import java.io.Serializable;
  * 用户信息
  */
 public class User implements Serializable {
-    private int id;             // 唯一 id
+    private String id;             // 唯一 id
     private String login;       // 登录用户名
     private String name;        // 昵称
     private String Token;  // 令牌
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public int getId() {
+    public String getId() {
         return this.id;
     }
 

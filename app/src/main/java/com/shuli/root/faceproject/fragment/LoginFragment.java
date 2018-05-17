@@ -8,10 +8,13 @@ import android.view.View;
 import android.widget.ImageView;
 import com.shuli.root.faceproject.R;
 import com.shuli.root.faceproject.activity.FaceServerActivity;
+import com.shuli.root.faceproject.activity.MainFragmentActivity;
 import com.shuli.root.faceproject.base.BaseFragment;
+import com.shuli.root.faceproject.bean.User;
 import com.shuli.root.faceproject.retrofit.Api;
 import com.shuli.root.faceproject.retrofit.ConnectUrl;
 import com.shuli.root.faceproject.utils.ClearEditTextWhite;
+import com.shuli.root.faceproject.utils.DataCache;
 import com.shuli.root.faceproject.utils.SharedPreferencesUtil;
 import org.json.JSONObject;
 import butterknife.BindView;
@@ -27,7 +30,7 @@ public class LoginFragment extends BaseFragment {
     ClearEditTextWhite ct_secret;
     @BindView(R.id.checkbox)
     ImageView checkbox;
-
+    private DataCache mCache;
     public LoginFragment() {
 
     }
@@ -39,6 +42,7 @@ public class LoginFragment extends BaseFragment {
 
     @Override
     protected void init() {
+        mCache = new DataCache(getActivity());
         String tag = SharedPreferencesUtil.getStringByKey("tag", getActivity());
         initLoginContent(tag);
     }
@@ -97,28 +101,33 @@ public class LoginFragment extends BaseFragment {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<JSONObject>() {
-                               @Override
-                               public void call(JSONObject jsonObject) {
-
+                       @Override
+                       public void call(JSONObject jsonObject) {
                            Log.i("sss",jsonObject.toString());
-
-                           // TODO: 2018/5/14 登录成功
-                           String flag = checkbox.getTag().toString();
-                           SharedPreferencesUtil.save("checkbox_tag", flag, getActivity());
-                           if (flag.equals("true")) {
-                               SharedPreferencesUtil.save("username", ct_username.getText().toString(), getActivity());
-                               SharedPreferencesUtil.save("pwd", ct_secret.getText().toString(), getActivity());
-                               SharedPreferencesUtil.save("tag", "true", getActivity());
+                           if (jsonObject.optBoolean("result")) {
+                               JSONObject obj = jsonObject.optJSONObject("admin");
+                               User user = new User();
+                               user.setId(obj.optString("adminId"));
+                               user.setLogin(obj.optString("account"));
+                               user.setName(obj.optString("adminName"));
+                               user.setToken(obj.optString("token"));
+                               mCache.saveUser(user);
+                               String flag = checkbox.getTag().toString();
+                               SharedPreferencesUtil.save("checkbox_tag", flag, getActivity());
+                               if (flag.equals("true")) {
+                                   SharedPreferencesUtil.save("username", ct_username.getText().toString(), getActivity());
+                                   SharedPreferencesUtil.save("pwd", ct_secret.getText().toString(), getActivity());
+                                   SharedPreferencesUtil.save("tag", "true", getActivity());
+                               } else {
+                                   SharedPreferencesUtil.removeKey(getActivity(), "username");
+                                   SharedPreferencesUtil.removeKey(getActivity(), "pwd");
+                                   SharedPreferencesUtil.removeKey(getActivity(), "tag");
+                               }
+                               startActivity(new Intent(getActivity(),MainFragmentActivity.class));
+                               getActivity().finish();
                            } else {
-                               SharedPreferencesUtil.removeKey(getActivity(), "username");
-                               SharedPreferencesUtil.removeKey(getActivity(), "pwd");
-                               SharedPreferencesUtil.removeKey(getActivity(), "tag");
+                               showToastLong(jsonObject.optString("errMsg"));
                            }
-                           startActivity(new Intent(getActivity(),FaceServerActivity.class));
-                           getActivity().finish();
-                           //todo:登录失败
-
-
                                }
                            }, new Action1<Throwable>() {
                                @Override
