@@ -1,7 +1,9 @@
 package com.shuli.root.faceproject.fragment;
 
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -111,7 +113,26 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
                 upload(faceToken,name,gong_num,token);
                 break;
             case R.id.iv_back:
-
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setMessage("是否要退出?");
+                //点击对话框以外的区域是否让对话框消失
+                builder.setCancelable(true);
+                //设置正面按钮
+                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        getActivity().finish();
+                    }
+                });
+                //设置反面按钮
+                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                builder.create().show();
 
                 break;
 //            case R.id.toActivity:
