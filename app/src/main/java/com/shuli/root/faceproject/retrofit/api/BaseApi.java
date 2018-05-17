@@ -31,5 +31,7 @@ public interface BaseApi {
             @Query("") String gong_num,
             @Query("") String token);
 
+    @POST("f")
+    Observable<JSONObject> getFaceToken();
 }
 
