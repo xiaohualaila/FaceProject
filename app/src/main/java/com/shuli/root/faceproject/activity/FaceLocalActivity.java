@@ -735,8 +735,8 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                 builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        finish();
                         dialog.dismiss();
+                        finish();
                     }
                 });
                 //设置反面按钮
