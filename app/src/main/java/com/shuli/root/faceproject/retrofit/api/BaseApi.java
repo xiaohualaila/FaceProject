@@ -24,7 +24,12 @@ public interface BaseApi {
     @POST("adminRegister")
     Observable<JSONObject> regist(@Query("account") String name,
                               @Query("password") String secret);
-
+    @POST("f")
+    Observable<JSONObject> uploadFaceToken(
+            @Query("") String faceToken,
+            @Query("") String name,
+            @Query("") String gong_num,
+            @Query("") String token);
 
 }
 

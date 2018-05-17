@@ -7,6 +7,11 @@
     android:focusableInTouchMode="true"
     android:background="@drawable/add_face_bkg"
    >
+    <ImageView
+        android:id="@+id/iv_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/back_row"/>
 <LinearLayout
     android:layout_centerVertical="true"
     android:layout_alignParentLeft="true"
@@ -93,39 +98,39 @@
             android:layout_margin="10dp"
             android:textSize="24px"
             android:textColor="@color/white" />
-        <LinearLayout
-            android:layout_width="400dp"
-            android:layout_height="90dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                />
-            <TextView
-                android:id="@+id/deleteFace"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:textColor="@color/white"
-                android:textSize="24px"
-                android:text="删除"/>
-            <TextView
-                android:id="@+id/bindFace"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:textColor="@color/white"
-                android:textSize="24px"
-                android:text="绑定"/>
-        </LinearLayout>
+        <!--<LinearLayout-->
+            <!--android:layout_width="400dp"-->
+            <!--android:layout_height="90dp"-->
+            <!--android:gravity="center_vertical"-->
+            <!--android:orientation="horizontal">-->
+            <!--<TextView-->
+                <!--android:layout_width="0dp"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_weight="1"-->
+                <!--/>-->
+            <!--<TextView-->
+                <!--android:id="@+id/deletedFace"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_margin="10dp"-->
+                <!--android:textColor="@color/white"-->
+                <!--android:textSize="24px"-->
+                <!--android:text="删除"/>-->
+            <!--<TextView-->
+                <!--android:id="@+id/bindFace"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_margin="10dp"-->
+                <!--android:textColor="@color/white"-->
+                <!--android:textSize="24px"-->
+                <!--android:text="绑定"/>-->
+        <!--</LinearLayout>-->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
             <TextView
-                android:id="@+id/toActivity"
+                android:id="@+id/deleteFace"
                 android:layout_width="0dp"
                 android:layout_height="64dp"
                 android:layout_weight="1"
@@ -134,9 +139,9 @@
                 android:textSize="30px"
                 android:gravity="center"
                 android:textColor="@color/white"
-                android:text="人脸识别"/>
+                android:text="删       除"/>
             <TextView
-                android:id="@+id/toQuery"
+                android:id="@+id/bindFace"
                 android:layout_width="0dp"
                 android:layout_height="64dp"
                 android:layout_weight="1"
@@ -145,7 +150,7 @@
                 android:textSize="30px"
                 android:gravity="center"
                 android:textColor="@color/white"
-                android:text="查       询"/>
+                android:text="绑       定"/>
         </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

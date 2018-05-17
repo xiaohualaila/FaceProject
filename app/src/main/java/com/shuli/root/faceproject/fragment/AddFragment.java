@@ -1,5 +1,6 @@
 package com.shuli.root.faceproject.fragment;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -8,18 +9,27 @@ import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
 import com.shuli.root.faceproject.R;
 import com.shuli.root.faceproject.activity.FaceServerActivity;
+import com.shuli.root.faceproject.activity.MainFragmentActivity;
 import com.shuli.root.faceproject.base.BaseFragment;
+import com.shuli.root.faceproject.bean.User;
+import com.shuli.root.faceproject.retrofit.Api;
+import com.shuli.root.faceproject.retrofit.ConnectUrl;
 import com.shuli.root.faceproject.utils.ClearEditTextWhite;
+import com.shuli.root.faceproject.utils.DataCache;
 import com.shuli.root.faceproject.utils.FileUtil;
+
+import org.json.JSONObject;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -30,6 +40,9 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 
 /**
@@ -48,11 +61,12 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
     private Camera camera;
     private String filePath;
     private SurfaceHolder holder;
-    private boolean isFrontCamera = true;
+    private boolean isFrontCamera = true;//1是前置0是后置
     private int width = 1280;
-    private int height = 960;
-
+    private int height = 720;
+    private int CammeraIndex;
     private OnFragmentInteractionListener mListener;
+    private DataCache mCache;
     @Override
     protected int getLayoutId() {
         return R.layout.activity_add;
@@ -60,13 +74,14 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
 
     @Override
     protected void init() {
+        mCache = new DataCache(getActivity());
         holder = camera_sf.getHolder();
         holder.addCallback(this);
         holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
     }
 
-    @OnClick({R.id.takePhoto,R.id.deleteFace,R.id.bindFace,R.id.toActivity,R.id.toQuery})
+    @OnClick({R.id.takePhoto,R.id.deleteFace,R.id.bindFace,R.id.iv_back})
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.takePhoto:
@@ -76,37 +91,57 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
                 deleteFace();
                 break;
             case R.id.bindFace:
-                bindGroupFaceToken();
-                break;
-            case R.id.toActivity:
-                String token = faceTokenEt.getText().toString();
-                if(!TextUtils.isEmpty(token)){
-                    deleteFace();
+                String faceToken = faceTokenEt.getText().toString();
+                String name = ce_name.getText().toString();
+                String gong_num = ce_gong_num.getText().toString();
+                String token = mCache.getUser().getToken();
+                if(TextUtils.isEmpty(faceToken)){
+                    showToastLong("请拍照，没有获取到人脸标识！");
+                    return;
+                }else if(TextUtils.isEmpty(name)){
+                    showToastLong("姓名不能为空！");
+                    return;
+                }else if(TextUtils.isEmpty(gong_num)){
+                    showToastLong("工号不能为空！");
+                    return;
+                }else if(TextUtils.isEmpty(token)){
+                    showToastLong("令牌不能为空，请重新登录！");
+                    return;
                 }
-                closeCamera();
-                startActivity(new Intent(getActivity(),FaceServerActivity.class));
-                getActivity().finish();
+                upload(faceToken,name,gong_num,token);
                 break;
-            case R.id.toQuery:
-             mListener.toQueryActivity();
+            case R.id.iv_back:
+
+
                 break;
+//            case R.id.toActivity:
+//                String token = faceTokenEt.getText().toString();
+//                if(!TextUtils.isEmpty(token)){
+//                    deleteFace();
+//                }
+//                closeCamera();
+//                startActivity(new Intent(getActivity(),FaceServerActivity.class));
+//                getActivity().finish();
+
+
+//                break;
+//            case R.id.toQuery:
+//             mListener.toQueryActivity();
+//                break;
         }
 
     }
 
 
-    private void bindGroupFaceToken() {
-        String token = faceTokenEt.getText().toString();
-        String name = ce_name.getText().toString();
-        String gong_num = ce_gong_num.getText().toString();
+  //  private void bindGroupFaceToken() {
 
-        if(!TextUtils.isEmpty(token)){
-            boolean b= mListener.bindGroupFaceToken(token,name,gong_num);
-            if(b){
-                uploadFinish();
-            }
-        }
-    }
+//        if(!TextUtils.isEmpty(token)){
+//            boolean b= mListener.bindGroupFaceToken(token,name,gong_num);
+//            if(b){
+//                uploadFinish();
+//            }
+//        }
+  //  }
 
     private void deleteFace() {
        String token = faceTokenEt.getText().toString();
@@ -116,6 +151,33 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
                 uploadFinish();
             }
         }
+    }
+
+    private void upload(String faceToken,String name,String gong_num,String token){
+        Api.getBaseApiWithOutFormat(ConnectUrl.URL)
+                .uploadFaceToken(faceToken, name,gong_num,token)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<JSONObject>() {
+                               @Override
+                               public void call(JSONObject jsonObject) {
+                                   Log.i("sss", jsonObject.toString());
+                                   if (jsonObject != null) {
+                                       if (jsonObject.optBoolean("result")) {
+                                           showToastLong("绑定成功！");
+                                           uploadFinish();
+                                       } else {
+                                           showToastLong(jsonObject.optString("errMsg"));
+                                       }
+                                   }
+                               }
+                           }, new Action1<Throwable>() {
+                               @Override
+                               public void call(Throwable throwable) {
+                                   showToastLong(throwable.toString());
+                               }
+                           }
+                );
     }
 
     /**
@@ -248,13 +310,51 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
     private Camera openCamera() {
         if (camera == null) {
             try {
-                camera = Camera.open();
+                CammeraIndex=FindFrontCamera();
+                if(CammeraIndex==-1){
+                    CammeraIndex=FindBackCamera();
+                    isFrontCamera = false;
+                }
+                camera = Camera.open(CammeraIndex);
             } catch (Exception e) {
                 camera = null;
                 e.printStackTrace();
             }
         }
         return camera;
+    }
+
+    //寻找前置摄像头
+    @TargetApi(9)
+    private int FindFrontCamera(){
+        int cameraCount = 0;
+        Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
+        cameraCount = Camera.getNumberOfCameras(); // get cameras number
+
+        for ( int camIdx = 0; camIdx < cameraCount;camIdx++ ) {
+            Camera.getCameraInfo( camIdx, cameraInfo ); // get camerainfo
+            if ( cameraInfo.facing ==Camera.CameraInfo.CAMERA_FACING_FRONT ) {
+                // 代表摄像头的方位，目前有定义值两个分别为CAMERA_FACING_FRONT前置和CAMERA_FACING_BACK后置
+                return camIdx;
+            }
+        }
+        return -1;
+    }
+    //寻找后置摄像头
+    @TargetApi(9)
+    private int FindBackCamera(){
+        int cameraCount = 0;
+        Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
+        cameraCount = Camera.getNumberOfCameras(); // get cameras number
+
+        for ( int camIdx = 0; camIdx < cameraCount;camIdx++ ) {
+            Camera.getCameraInfo( camIdx, cameraInfo ); // get camerainfo
+            if ( cameraInfo.facing ==Camera.CameraInfo.CAMERA_FACING_BACK ) {
+                // 代表摄像头的方位，目前有定义值两个分别为CAMERA_FACING_FRONT前置和CAMERA_FACING_BACK后置
+                return camIdx;
+            }
+        }
+        return -1;
     }
     private void startPreview() {
         Camera.Parameters para;
@@ -264,9 +364,9 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
             return;
         }
         para.setPreviewSize(width, height);
-        setPictureSize(para,640 , 480);
+        setPictureSize(para,1280 , 720);
         para.setPictureFormat(ImageFormat.JPEG);//设置图片格式
-        setCameraDisplayOrientation(isFrontCamera ? 0 : 1, camera);
+        setCameraDisplayOrientation(CammeraIndex, camera);
         camera.setParameters(para);
         camera.startPreview();
     }

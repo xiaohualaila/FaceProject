@@ -175,7 +175,7 @@ public class AddActivity extends AppCompatActivity implements SurfaceHolder.Call
         }.start();
     }
 
-    @OnClick({R.id.takePhoto,R.id.deleteFace,R.id.bindFace,R.id.toActivity,R.id.toQuery})
+    @OnClick({R.id.takePhoto,R.id.deleteFace,R.id.bindFace})
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.takePhoto:
@@ -187,15 +187,15 @@ public class AddActivity extends AppCompatActivity implements SurfaceHolder.Call
             case R.id.bindFace:
                   bindGroupFaceToken();
                 break;
-            case R.id.toActivity:
-
-                closeCamera();
-                startActivity(new Intent(AddActivity.this,FaceServerActivity.class));
-                finish();
-                break;
-            case R.id.toQuery:
-                toQueryActivity();
-                break;
+//            case R.id.toActivity:
+//
+//                closeCamera();
+//                startActivity(new Intent(AddActivity.this,FaceServerActivity.class));
+//                finish();
+//                break;
+//            case R.id.toQuery:
+//                toQueryActivity();
+//                break;
         }
 
     }

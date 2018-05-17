@@ -78,26 +78,6 @@ public class RegistFragment extends BaseFragment {
         }
     }
     private void upload(String username,String password){
-//        Api.getBaseApiWithOutFormat(ConnectUrl.URL)
-//                .regist(username, password).enqueue(new Callback<JSONObject>() {
-//            @Override
-//            public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
-////                User user = new User();
-////                mCache.saveUser(user);
-//                // TODO: 2018/5/14 注册成功
-//
-//                Log.i("sss","response.body().toString() "+ response.body().toString());
-//                startActivity(new Intent(getActivity(),FaceServerActivity.class));
-//                getActivity().finish();
-//                // TODO: 2018/5/14 注册失败
-//            }
-//
-//            @Override
-//            public void onFailure(Call<JSONObject> call, Throwable t) {
-//
-//                Log.i("sss",t.toString());
-//            }
-//        });
         Api.getBaseApiWithOutFormat(ConnectUrl.URL)
             .regist(username, password)
             .subscribeOn(Schedulers.io())
