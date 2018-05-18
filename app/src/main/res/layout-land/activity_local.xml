@@ -124,11 +124,11 @@
         android:layout_toRightOf="@+id/row_layout"
         android:visibility="gone"
         android:text="验证失败 !"/>
-    <TextView
-        android:id="@+id/ceshi_test"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:background="@color/colorAccent"/>
+    <!--<TextView-->
+        <!--android:id="@+id/ceshi_test"-->
+        <!--android:layout_width="300dp"-->
+        <!--android:layout_height="300dp"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_alignParentLeft="true"-->
+        <!--android:background="@color/colorAccent"/>-->
 </RelativeLayout>

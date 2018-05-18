@@ -108,8 +108,6 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
     /* 相机预览界面 */
     private CameraPreview cameraView;
 
-    private TextView ceshi_test;
-
     private boolean isLocalGroupExist = false;
 
     /* 在预览界面圈出人脸 */
@@ -182,8 +180,6 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
             serverIP = serverIP_offline;
         }
 
-
-        ceshi_test = findViewById(R.id.ceshi_test);
         /* 初始化界面 */
         initView();
 
