@@ -195,6 +195,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
 
     private void initAndroidHandler() {
 
+
         mAndroidHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
