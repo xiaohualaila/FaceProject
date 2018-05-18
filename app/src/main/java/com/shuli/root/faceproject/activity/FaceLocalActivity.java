@@ -68,6 +68,7 @@ import megvii.facepass.types.FacePassImageType;
 import megvii.facepass.types.FacePassModel;
 import megvii.facepass.types.FacePassPose;
 import megvii.facepass.types.FacePassRecognitionResult;
+import megvii.facepass.types.FacePassRecognitionResultType;
 
 
 public class FaceLocalActivity extends AppCompatActivity implements CameraManager.CameraListener, View.OnClickListener {
@@ -104,9 +105,10 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
     /* 相机实例 */
     private CameraManager manager;
 
-
     /* 相机预览界面 */
     private CameraPreview cameraView;
+
+    private TextView ceshi_test;
 
     private boolean isLocalGroupExist = false;
 
@@ -165,6 +167,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
     private AnimationDrawable frameAnimation1;
     private AnimationDrawable frameAnimation2;
     private AnimationDrawable frameAnimation3;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -179,6 +182,8 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
             serverIP = serverIP_offline;
         }
 
+
+        ceshi_test = findViewById(R.id.ceshi_test);
         /* 初始化界面 */
         initView();
 
@@ -385,9 +390,9 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                         if (recognizeResult != null && recognizeResult.length > 0) {
                             for (FacePassRecognitionResult result : recognizeResult) {
                                 String faceToken = new String(result.faceToken);
-//                                if (FacePassRecognitionResultType.RECOG_OK == result.facePassRecognitionResultType) {//成功显示对比的人脸图片
-//                                    getFaceImageByFaceToken(result.trackId, faceToken);
-//                                }
+                                if (FacePassRecognitionResultType.RECOG_OK == result.facePassRecognitionResultType) {//成功显示对比的人脸图片
+                                    getFaceImageByFaceToken(result.trackId, faceToken);
+                                }
 
                                 showRecognizeResult(result.trackId, result.detail.searchScore, result.detail.livenessScore, !TextUtils.isEmpty(faceToken),faceToken);
                             }
