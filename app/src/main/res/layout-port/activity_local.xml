@@ -29,22 +29,24 @@
             android:textSize="25sp"
             android:text="人脸识别系统"/>
 
-        <ImageView
-            android:id="@+id/btn_face_operation"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginRight="80dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/face_setup"
-            android:layout_alignParentRight="true"
-            android:clickable="true" />
+        <!--<ImageView-->
+            <!--android:id="@+id/btn_face_operation"-->
+            <!--android:layout_width="50dp"-->
+            <!--android:layout_height="50dp"-->
+            <!--android:layout_marginRight="80dp"-->
+            <!--android:layout_marginTop="10dp"-->
+            <!--android:background="@drawable/face_setup"-->
+            <!--android:layout_alignParentRight="true"-->
+            <!--android:clickable="true" />-->
     </RelativeLayout>
-
-
+<FrameLayout
+    android:layout_below="@+id/ll"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
     <FrameLayout
         android:id="@+id/frame"
-        android:layout_width="640dp"
-        android:layout_height="480dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_alignParentBottom="true"
         android:layout_below="@+id/ll">
         <com.shuli.root.faceproject.camera.CameraPreview
@@ -58,39 +60,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </FrameLayout>
-
-
-    <LinearLayout
-        android:id="@+id/row_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/frame"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="20dp"
-        android:orientation="horizontal">
-        <ImageView
-            android:id="@+id/row_1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <ImageView
-            android:id="@+id/row_2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <ImageView
-            android:id="@+id/row_3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
     <LinearLayout
         android:id="@+id/ll_face_success"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/blue1"
         android:orientation="vertical"
         android:visibility="gone"
-        android:layout_toRightOf="@+id/row_layout"
-        >
+        android:gravity="center_horizontal">
+        <ImageView
+            android:id="@+id/face_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
         <TextView
             android:id="@+id/tv_name"
             android:layout_width="wrap_content"
@@ -113,15 +94,23 @@
             android:textColor="@color/white"
             android:text="验证成功！"/>
     </LinearLayout>
+
     <TextView
         android:id="@+id/face_fail_tv_result"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="40sp"
         android:textColor="@color/white"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="36sp"
-        android:layout_toRightOf="@+id/row_layout"
+        android:layout_gravity="center"
         android:visibility="gone"
+        android:gravity="center"
         android:text="验证失败 !"/>
+
+</FrameLayout>
+
+
+
+
+
+
 </RelativeLayout>

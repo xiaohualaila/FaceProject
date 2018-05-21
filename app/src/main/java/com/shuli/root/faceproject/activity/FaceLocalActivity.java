@@ -107,6 +107,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
 
     /* 相机预览界面 */
     private CameraPreview cameraView;
+    private ImageView face_img;
 
     private boolean isLocalGroupExist = false;
 
@@ -147,24 +148,17 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
     /*recognize thread*/
     RecognizeThread mRecognizeThread;
 
-    private ImageView mFaceOperationBtn;
+//    private ImageView mFaceOperationBtn;
     private ImageView quit;
     /*图片缓存*/
     private FaceImageCache mImageCache;
-
     private Handler mAndroidHandler;
-
     private LinearLayout ll_face_success;
     private TextView face_fail_tv_result;
     private TextView tv_name;
     private TextView tv_num;
-    private ImageView row_1;
-    private ImageView row_2;
-    private ImageView row_3;
     private Handler handler = new Handler();
-    private AnimationDrawable frameAnimation1;
-    private AnimationDrawable frameAnimation2;
-    private AnimationDrawable frameAnimation3;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -386,9 +380,12 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                         if (recognizeResult != null && recognizeResult.length > 0) {
                             for (FacePassRecognitionResult result : recognizeResult) {
                                 String faceToken = new String(result.faceToken);
-                                if (FacePassRecognitionResultType.RECOG_OK == result.facePassRecognitionResultType) {//成功显示对比的人脸图片
-                                    getFaceImageByFaceToken(result.trackId, faceToken);
-                                }
+                                /**
+                                 *  显示图片处
+                                 */
+//                                if (FacePassRecognitionResultType.RECOG_OK == result.facePassRecognitionResultType) {//成功显示对比的人脸图片
+//                                    getFaceImageByFaceToken(result.trackId, faceToken);
+//                                }
 
                                 showRecognizeResult(result.trackId, result.detail.searchScore, result.detail.livenessScore, !TextUtils.isEmpty(faceToken),faceToken);
                             }
@@ -416,10 +413,16 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                 Log.i("sss","ID = " + trackId + (isRecognizeOK ? "识别成功" : "识别失败") + "\n");
                 Log.i("sss","识别分 = " + searchScore + "\n");
                 Log.i("sss","活体分 = " + livenessScore + "\n");
-                frameAnimation1.start();
-                frameAnimation2.start();
-                frameAnimation3.start();
+
                 if(isRecognizeOK){
+                    try {
+                        final Bitmap bitmap = mFacePassHandler.getFaceImage(token.getBytes());
+                        if(bitmap != null){
+                            face_img.setImageBitmap(bitmap);
+                        }
+                    } catch (FacePassException e) {
+                        e.printStackTrace();
+                    }
                     People people = GreenDaoManager.getInstance().getSession().getPeopleDao().queryBuilder()
                             .where(PeopleDao.Properties.Face_token.eq(token)).build().unique();
                     ll_face_success.setVisibility(View.VISIBLE);
@@ -431,11 +434,11 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                         tv_name.setText(people.getName());
                         tv_num.setText(people.getGonghao());
                     }
+
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             ll_face_success.setVisibility(View.GONE);
-                            stopAnimation();
                             // TODO: 2018/5/9 关门
                             //IOUtil.input_num_0("");
 
@@ -450,7 +453,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                         @Override
                         public void run() {
                             face_fail_tv_result.setVisibility(View.GONE);
-                            stopAnimation();
+
                         }
                     },2000);
                 }
@@ -458,11 +461,6 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         });
     }
 
-    private void stopAnimation(){
-        frameAnimation1.stop();
-        frameAnimation2.stop();
-        frameAnimation3.stop();
-    }
 
     private void adaptFrameLayout() {
         SettingVar.isButtonInvisible = false;
@@ -487,12 +485,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         }
         Log.i(DEBUG_TAG, "cameraRation: " + cameraRotation);
         cameraFacingFront = true;
-//        SharedPreferences preferences = getSharedPreferences(SettingVar.SharedPrefrence, Context.MODE_PRIVATE);
-//        SettingVar.isSettingAvailable = preferences.getBoolean("isSettingAvailable", SettingVar.isSettingAvailable);
-//        SettingVar.isCross = preferences.getBoolean("isCross", SettingVar.isCross);
-//        SettingVar.faceRotation = preferences.getInt("faceRotation", SettingVar.faceRotation);
-//        SettingVar.cameraPreviewRotation = preferences.getInt("cameraPreviewRotation", SettingVar.cameraPreviewRotation);
-//        SettingVar.cameraFacingFront = preferences.getBoolean("cameraFacingFront", SettingVar.cameraFacingFront);
+
 
         SettingVar.isSettingAvailable = true;
         SettingVar.isCross = false;
@@ -520,20 +513,10 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         tv_name = findViewById(R.id.tv_name);
         tv_num = findViewById(R.id.tv_num);
 
-        mFaceOperationBtn = findViewById(R.id.btn_face_operation);
-        mFaceOperationBtn.setOnClickListener(this);
+//        mFaceOperationBtn = findViewById(R.id.btn_face_operation);
+//        mFaceOperationBtn.setOnClickListener(this);
         quit = findViewById(R.id.quit);
         quit.setOnClickListener(this);
-        row_1 = findViewById(R.id.row_1);
-        row_2 = findViewById(R.id.row_2);
-        row_3 = findViewById(R.id.row_3);
-        row_1.setBackgroundResource(R.drawable.row1_animation);
-        row_2.setBackgroundResource(R.drawable.row2_animation);
-        row_3.setBackgroundResource(R.drawable.row3_animation);
-
-        frameAnimation1 = (AnimationDrawable) row_1.getBackground();
-        frameAnimation2 = (AnimationDrawable) row_2.getBackground();
-        frameAnimation3 = (AnimationDrawable) row_3.getBackground();
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         heightPixels = displayMetrics.heightPixels;
@@ -549,6 +532,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         cameraView = findViewById(R.id.preview);
         manager.setPreviewDisplay(cameraView);
         frameLayout =  findViewById(R.id.frame);
+        face_img = findViewById(R.id.face_img);
         /* 注册相机回调函数 */
         manager.setListener(this);
     }
@@ -704,29 +688,29 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_face_operation:
-               // 进入查询列表页面
-                final VersionDialogFragment dialogFragment = VersionDialogFragment.getInstance();
-                dialogFragment.show(getSupportFragmentManager(), new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        String account = dialogFragment.et_account.getText().toString();
-                        String secret = dialogFragment.et_secret.getText().toString();
-                        Account a = GreenDaoManager.getInstance().getSession().getAccountDao().queryBuilder()
-                                .where(AccountDao.Properties.Account_name.eq(account)).build().unique();
-                        if(a!=null){
-                            if(a.getAccount_secret().equals(secret)){
-                                dialogFragment.dismiss();
-                                toOtherActivity();
-                            }else {
-                                dialogFragment.tv_title.setText("密码错误！");
-                            }
-                        }else {
-                            dialogFragment.tv_title.setText("用户名不存在！");
-                        }
-                    }
-                });
-                break;
+//            case R.id.btn_face_operation:
+//               // 进入查询列表页面
+//                final VersionDialogFragment dialogFragment = VersionDialogFragment.getInstance();
+//                dialogFragment.show(getSupportFragmentManager(), new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        String account = dialogFragment.et_account.getText().toString();
+//                        String secret = dialogFragment.et_secret.getText().toString();
+//                        Account a = GreenDaoManager.getInstance().getSession().getAccountDao().queryBuilder()
+//                                .where(AccountDao.Properties.Account_name.eq(account)).build().unique();
+//                        if(a!=null){
+//                            if(a.getAccount_secret().equals(secret)){
+//                                dialogFragment.dismiss();
+//                                toOtherActivity();
+//                            }else {
+//                                dialogFragment.tv_title.setText("密码错误！");
+//                            }
+//                        }else {
+//                            dialogFragment.tv_title.setText("用户名不存在！");
+//                        }
+//                    }
+//                });
+//                break;
             case R.id.quit:
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setMessage("是否要退出?");
@@ -760,33 +744,27 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         startActivity(new Intent(this,MainFragmentActivity.class));
     }
 
-    private void getFaceImageByFaceToken(final long trackId, String faceToken) {
+    private void getFaceImageByFaceToken(final long trackId, final String faceToken) {
         if (TextUtils.isEmpty(faceToken)) {
             return;
         }
 
-        final String faceUrl = "http://" + serverIP + ":8080/api/image/v1/query?face_token=" + faceToken;
-
-        final Bitmap cacheBmp = mImageCache.getBitmap(faceUrl);
-        if (cacheBmp != null) {
-            mAndroidHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    Log.i(DEBUG_TAG, "getFaceImageByFaceToken cache not null");
-                    showToast("ID = " + String.valueOf(trackId), Toast.LENGTH_SHORT, true, cacheBmp);
-                }
-            });
-            return;
-        } else {
+//        final String faceUrl = "http://" + serverIP + ":8080/api/image/v1/query?face_token=" + faceToken;
+//
+//        final Bitmap cacheBmp = mImageCache.getBitmap(faceUrl);
+//        if (cacheBmp != null) {
+//            mAndroidHandler.post(new Runnable() {
+//                @Override
+//                public void run() {
+//                    Log.i(DEBUG_TAG, "getFaceImageByFaceToken cache not null");
+//                    showToast("ID = " + String.valueOf(trackId), Toast.LENGTH_SHORT, true, cacheBmp);
+//                }
+//            });
+//            return;
+     //   } else {
             try {
                 final Bitmap bitmap = mFacePassHandler.getFaceImage(faceToken.getBytes());
-                mAndroidHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.i(DEBUG_TAG, "getFaceImageByFaceToken cache is null");
-                        showToast("ID = " + String.valueOf(trackId), Toast.LENGTH_SHORT, true, bitmap);
-                    }
-                });
+                showToast("ID = " + String.valueOf(trackId), Toast.LENGTH_SHORT, true, bitmap);
                 if (bitmap != null) {
                     return;
                 }
@@ -794,26 +772,26 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                 e.printStackTrace();
             }
 
-        }
-        ByteRequest request = new ByteRequest(Request.Method.GET, faceUrl, new Response.Listener<byte[]>() {
-            @Override
-            public void onResponse(byte[] response) {
-
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inJustDecodeBounds = false;
-                Bitmap bitmap = BitmapFactory.decodeByteArray(response, 0, response.length, options);
-                mImageCache.putBitmap(faceUrl, bitmap);
-                showToast("ID = " + String.valueOf(trackId), Toast.LENGTH_SHORT, true, bitmap);
-                Log.i(DEBUG_TAG, "getFaceImageByFaceToken response ");
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.i(DEBUG_TAG, "image load failed ! ");
-            }
-        });
-        request.setTag("load_image_request_tag");
-        requestQueue.add(request);
+      //  }
+//        ByteRequest request = new ByteRequest(Request.Method.GET, faceUrl, new Response.Listener<byte[]>() {
+//            @Override
+//            public void onResponse(byte[] response) {
+//
+//                BitmapFactory.Options options = new BitmapFactory.Options();
+//                options.inJustDecodeBounds = false;
+//                Bitmap bitmap = BitmapFactory.decodeByteArray(response, 0, response.length, options);
+//                mImageCache.putBitmap(faceUrl, bitmap);
+//                showToast("ID = " + String.valueOf(trackId), Toast.LENGTH_SHORT, true, bitmap);
+//                Log.i(DEBUG_TAG, "getFaceImageByFaceToken response ");
+//            }
+//        }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                Log.i(DEBUG_TAG, "image load failed ! ");
+//            }
+//        });
+//        request.setTag("load_image_request_tag");
+//        requestQueue.add(request);
     }
 
     /**
