@@ -4,7 +4,7 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/face_layout"
+    android:background="@drawable/face_bg"
     android:orientation="vertical"
    >
     <RelativeLayout
@@ -39,16 +39,13 @@
             <!--android:layout_alignParentRight="true"-->
             <!--android:clickable="true" />-->
     </RelativeLayout>
-<FrameLayout
-    android:layout_below="@+id/ll"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+
     <FrameLayout
         android:id="@+id/frame"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_below="@+id/ll">
+        android:layout_width="380dp"
+        android:layout_height="445dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="200dp">
         <com.shuli.root.faceproject.camera.CameraPreview
             android:id="@+id/preview"
             android:layout_width="match_parent"
@@ -106,7 +103,7 @@
         android:gravity="center"
         android:text="验证失败 !"/>
 
-</FrameLayout>
+
 
 
 

@@ -67,7 +67,6 @@ public class VersionDialogFragment extends DialogFragment {
         tv_title =  view.findViewById(R.id.tv_title);
         et_account =  view.findViewById(R.id.account);
         et_secret =  view.findViewById(R.id.secret);
-
         Button btn_sure = view.findViewById(R.id.btn_sure);
         btn_sure.setOnClickListener(positiveCallback);
         builder.setView(view);

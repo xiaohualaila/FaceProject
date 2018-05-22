@@ -736,13 +736,13 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         }
     }
 
-    private void toOtherActivity() {
-        if (manager != null) {
-            manager.release();
-        }
-        finish();
-        startActivity(new Intent(this,MainFragmentActivity.class));
-    }
+//    private void toOtherActivity() {
+//        if (manager != null) {
+//            manager.release();
+//        }
+//        finish();
+//        startActivity(new Intent(this,MainFragmentActivity.class));
+//    }
 
     private void getFaceImageByFaceToken(final long trackId, final String faceToken) {
         if (TextUtils.isEmpty(faceToken)) {
