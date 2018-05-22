@@ -29,6 +29,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -157,8 +158,9 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
     private TextView face_fail_tv_result;
     private TextView tv_name;
     private TextView tv_num;
+    private RelativeLayout layout_root;
     private Handler handler = new Handler();
-
+    private AnimationDrawable frameAnimation1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -535,6 +537,10 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         face_img = findViewById(R.id.face_img);
         /* 注册相机回调函数 */
         manager.setListener(this);
+        //背景动画
+        layout_root = findViewById(R.id.activity_main);
+        frameAnimation1 = (AnimationDrawable) layout_root.getBackground();
+        frameAnimation1.start();
     }
 
 
@@ -558,6 +564,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
 
     @Override
     protected void onDestroy() {
+        frameAnimation1.stop();
         mRecognizeThread.isInterrupt = true;
 
         mRecognizeThread.interrupt();
