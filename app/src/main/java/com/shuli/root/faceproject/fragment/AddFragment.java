@@ -51,8 +51,8 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
     private String filePath;
     private SurfaceHolder holder;
     private boolean isFrontCamera = true;//1是前置0是后置
-    private int width = 1280;
-    private int height = 720;
+    private int width = 800;
+    private int height = 600;
     private int CammeraIndex;
     private OnFragmentInteractionListener mListener;
     @Override
@@ -300,6 +300,7 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
         Camera.Parameters para;
         if (null != camera) {
             para = camera.getParameters();
+            //获取相机支持的大小
 //            List<Camera.Size> pictureSizes = para.getSupportedPictureSizes();
 //            int length = pictureSizes.size();
 //            for (int i = 0; i < length; i++) {
@@ -315,7 +316,7 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
             return;
         }
         para.setPreviewSize(width, height);
-        setPictureSize(para,1280 , 720);
+        setPictureSize(para,800 , 600);
         para.setPictureFormat(ImageFormat.JPEG);//设置图片格式
         setCameraDisplayOrientation(CammeraIndex, camera);
         camera.setParameters(para);
@@ -337,7 +338,7 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
         Camera.CameraInfo info = new Camera.CameraInfo();
         Camera.getCameraInfo(cameraId, info);
         int rotation = getActivity().getWindowManager().getDefaultDisplay().getRotation();
-     //   rotation = 0;
+       rotation = 0;
         int degrees = 0;
         switch (rotation) {
             case Surface.ROTATION_0:

@@ -1,5 +1,6 @@
 package com.shuli.root.faceproject.fragment;
 
+import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 import android.view.View;
@@ -25,7 +26,7 @@ public class RegistFragment extends BaseFragment {
     ClearEditTextWhite ct_secret_again;
     @BindView(R.id.btn_login)
     Button btn_login;
-
+    private OnRegistFragmentInteractionListener mListener;
     @Override
     protected int getLayoutId() {
         return R.layout.layout_regist;
@@ -36,7 +37,7 @@ public class RegistFragment extends BaseFragment {
 
     }
 
-    @OnClick({R.id.btn_login})
+    @OnClick({R.id.btn_login,R.id.tv_login})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_login:
@@ -82,8 +83,33 @@ public class RegistFragment extends BaseFragment {
                 startActivity(new Intent(getActivity(), FaceLocalActivity.class));
                 getActivity().finish();
                 break;
+            case R.id.tv_login:
+                mListener.onRegistFragmentInteraction();
+                break;
         }
     }
-    
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnRegistFragmentInteractionListener) {
+            mListener = (OnRegistFragmentInteractionListener) context;
+        }
+        else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    public interface OnRegistFragmentInteractionListener {
+        // TODO: Update argument type and name
+        void onRegistFragmentInteraction();
+    }
 
 }

@@ -1,10 +1,13 @@
 package com.shuli.root.faceproject.fragment;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
+
 import com.shuli.faceproject.greendaodemo.greendao.GreenDaoManager;
 import com.shuli.faceproject.greendaodemo.greendao.gen.AccountDao;
 import com.shuli.root.faceproject.R;
@@ -23,7 +26,7 @@ public class LoginFragment extends BaseFragment {
     ClearEditTextWhite ct_secret;
     @BindView(R.id.checkbox)
     ImageView checkbox;
-
+    private OnFragmentInteractionListener mListener;
     @Override
     protected int getLayoutId() {
         return R.layout.layout_login;
@@ -53,7 +56,7 @@ public class LoginFragment extends BaseFragment {
     }
 
 
-    @OnClick({R.id.checkbox, R.id.btn_login})
+    @OnClick({R.id.checkbox, R.id.btn_login,R.id.tv_regist})
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_login:
@@ -102,7 +105,32 @@ public class LoginFragment extends BaseFragment {
                     checkbox.setImageResource(R.drawable.login_beixuan);
                 }
                 break;
-
+            case R.id.tv_regist:
+                mListener.onFragmentInteraction();
+                break;
         }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        }
+        else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        void onFragmentInteraction();
     }
 }

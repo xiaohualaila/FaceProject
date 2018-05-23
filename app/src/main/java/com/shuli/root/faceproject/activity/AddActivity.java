@@ -54,8 +54,7 @@ import megvii.facepass.types.FacePassPose;
 public class AddActivity extends AppCompatActivity implements SurfaceHolder.Callback {
     @BindView(R.id.camera_sf)
     SurfaceView camera_sf;
-    @BindView(R.id.takePhoto)
-    TextView takePhoto;
+
     @BindView(R.id.faceTokenEt)
     TextView faceTokenEt;
     @BindView(R.id.ce_name)

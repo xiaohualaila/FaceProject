@@ -4,18 +4,18 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.drawable.AnimationDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -26,6 +26,9 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.OvershootInterpolator;
+import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -33,12 +36,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.shuli.faceproject.greendaodemo.greendao.GreenDaoManager;
 import com.shuli.faceproject.greendaodemo.greendao.gen.AccountDao;
 import com.shuli.faceproject.greendaodemo.greendao.gen.PeopleDao;
@@ -50,7 +52,6 @@ import com.shuli.root.faceproject.camera.CameraPreview;
 import com.shuli.root.faceproject.camera.CameraPreviewData;
 import com.shuli.root.faceproject.face.FaceView;
 import com.shuli.root.faceproject.fragment.VersionDialogFragment;
-import com.shuli.root.faceproject.network.ByteRequest;
 import com.shuli.root.faceproject.utils.FaceApi;
 import com.shuli.root.faceproject.utils.SettingVar;
 import com.shuli.root.faceproject.utils.SoundPoolUtil;
@@ -69,7 +70,7 @@ import megvii.facepass.types.FacePassImageType;
 import megvii.facepass.types.FacePassModel;
 import megvii.facepass.types.FacePassPose;
 import megvii.facepass.types.FacePassRecognitionResult;
-import megvii.facepass.types.FacePassRecognitionResultType;
+
 
 
 public class FaceLocalActivity extends AppCompatActivity implements CameraManager.CameraListener, View.OnClickListener {
@@ -149,18 +150,23 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
     /*recognize thread*/
     RecognizeThread mRecognizeThread;
 
-//    private ImageView mFaceOperationBtn;
+    private ImageView mFaceOperationBtn;
     private ImageView quit;
     /*图片缓存*/
     private FaceImageCache mImageCache;
     private Handler mAndroidHandler;
-    private LinearLayout ll_face_success;
-    private TextView face_fail_tv_result;
+    private TextView face_success;
+//    private TextView face_fail_tv_result;
     private TextView tv_name;
     private TextView tv_num;
+
+    private ImageView iv_wangge;
     private RelativeLayout layout_root;
+    private LinearLayout ll_face_success;
     private Handler handler = new Handler();
     private AnimationDrawable frameAnimation1;
+    private ImageView mScanHorizontalLineImageView;
+//    private ImageView mScanVerticalLineImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -177,7 +183,9 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         }
 
         /* 初始化界面 */
-        initView();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            initView();
+        }
 
         initFacePassSDK();
 
@@ -427,8 +435,9 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                     }
                     People people = GreenDaoManager.getInstance().getSession().getPeopleDao().queryBuilder()
                             .where(PeopleDao.Properties.Face_token.eq(token)).build().unique();
+                    face_success.setVisibility(View.VISIBLE);
                     ll_face_success.setVisibility(View.VISIBLE);
-                    face_fail_tv_result.setVisibility(View.GONE);
+               //     face_fail_tv_result.setVisibility(View.GONE);
                     SoundPoolUtil.play(1);
                     // TODO: 2018/5/9 开门
                     //IOUtil.input_num_1("");
@@ -436,10 +445,12 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                         tv_name.setText(people.getName());
                         tv_num.setText(people.getGonghao());
                     }
-
+                    face_success.setVisibility(View.VISIBLE);
+                    face_success.setText("验证成功！");
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
+                            face_success.setVisibility(View.INVISIBLE);
                             ll_face_success.setVisibility(View.GONE);
                             // TODO: 2018/5/9 关门
                             //IOUtil.input_num_0("");
@@ -448,14 +459,13 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                     },2000);
 
                 }else {
-                    ll_face_success.setVisibility(View.GONE);
-                    face_fail_tv_result.setVisibility(View.VISIBLE);
+                    face_success.setText("验证失败！");
+                    face_success.setVisibility(View.VISIBLE);
                    // SoundPoolUtil.play(2);
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            face_fail_tv_result.setVisibility(View.GONE);
-
+                            face_success.setVisibility(View.INVISIBLE);
                         }
                     },2000);
                 }
@@ -473,6 +483,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         SettingVar.isButtonInvisible = false;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private void initView() {
 
         int windowRotation = ((WindowManager) (getApplicationContext().getSystemService(Context.WINDOW_SERVICE))).getDefaultDisplay().getRotation() * 90;
@@ -510,13 +521,11 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
             screenState = 0;
         }
         setContentView(R.layout.activity_local);
-        ll_face_success = findViewById(R.id.ll_face_success);
-        face_fail_tv_result = findViewById(R.id.face_fail_tv_result);
+        face_success = findViewById(R.id.tv_result);
         tv_name = findViewById(R.id.tv_name);
         tv_num = findViewById(R.id.tv_num);
-
-//        mFaceOperationBtn = findViewById(R.id.btn_face_operation);
-//        mFaceOperationBtn.setOnClickListener(this);
+        mFaceOperationBtn = findViewById(R.id.btn_face_operation);
+        mFaceOperationBtn.setOnClickListener(this);
         quit = findViewById(R.id.quit);
         quit.setOnClickListener(this);
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -535,14 +544,46 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         manager.setPreviewDisplay(cameraView);
         frameLayout =  findViewById(R.id.frame);
         face_img = findViewById(R.id.face_img);
+//        iv_wangge = findViewById(R.id.iv_wangge);
+        ll_face_success = findViewById(R.id.ll_face_success);
+        mScanHorizontalLineImageView = (ImageView) findViewById(R.id.scanHorizontalLineImageView);
+//        mScanVerticalLineImageView = (ImageView) findViewById(R.id.scanVerticalLineImageView);
+//
         /* 注册相机回调函数 */
         manager.setListener(this);
         //背景动画
         layout_root = findViewById(R.id.activity_main);
+        layout_root.setBackgroundResource(R.drawable.bg_animation);
         frameAnimation1 = (AnimationDrawable) layout_root.getBackground();
         frameAnimation1.start();
+//        Glide.with(this).load(R.drawable.bg).asGif().diskCacheStrategy(DiskCacheStrategy.NONE).into(iv_wangge);
     }
 
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+
+        int[] location = new int[2];
+
+        // getLocationInWindow方法要在onWindowFocusChanged方法里面调用
+        // 个人理解是onCreate时，View尚未被绘制，因此无法获得具体的坐标点
+        cameraView.getLocationInWindow(location);
+
+        // 模拟的mPreviewView的左右上下坐标坐标
+//        int left = cameraView.getLeft();
+//        int right = cameraView.getRight();
+//        int top = cameraView.getTop();
+        int bottom = cameraView.getBottom();
+        // 从上到下的平移动画
+        Animation verticalAnimation = new TranslateAnimation(0, 0, -bottom, bottom);
+        verticalAnimation.setDuration(4000); // 动画持续时间
+        verticalAnimation.setRepeatCount(Animation.INFINITE); // 无限循环
+
+        // 播放动画
+        mScanHorizontalLineImageView.setAnimation(verticalAnimation);
+        verticalAnimation.startNow();
+
+    }
 
     @Override
     protected void onStop() {
@@ -695,29 +736,29 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-//            case R.id.btn_face_operation:
-//               // 进入查询列表页面
-//                final VersionDialogFragment dialogFragment = VersionDialogFragment.getInstance();
-//                dialogFragment.show(getSupportFragmentManager(), new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        String account = dialogFragment.et_account.getText().toString();
-//                        String secret = dialogFragment.et_secret.getText().toString();
-//                        Account a = GreenDaoManager.getInstance().getSession().getAccountDao().queryBuilder()
-//                                .where(AccountDao.Properties.Account_name.eq(account)).build().unique();
-//                        if(a!=null){
-//                            if(a.getAccount_secret().equals(secret)){
-//                                dialogFragment.dismiss();
-//                                toOtherActivity();
-//                            }else {
-//                                dialogFragment.tv_title.setText("密码错误！");
-//                            }
-//                        }else {
-//                            dialogFragment.tv_title.setText("用户名不存在！");
-//                        }
-//                    }
-//                });
-//                break;
+            case R.id.btn_face_operation:
+               // 进入查询列表页面
+                final VersionDialogFragment dialogFragment = VersionDialogFragment.getInstance();
+                dialogFragment.show(getSupportFragmentManager(), new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String account = dialogFragment.et_account.getText().toString();
+                        String secret = dialogFragment.et_secret.getText().toString();
+                        Account a = GreenDaoManager.getInstance().getSession().getAccountDao().queryBuilder()
+                                .where(AccountDao.Properties.Account_name.eq(account)).build().unique();
+                        if(a!=null){
+                            if(a.getAccount_secret().equals(secret)){
+                                dialogFragment.dismiss();
+                                toOtherActivity();
+                            }else {
+                                dialogFragment.tv_title.setText("密码错误！");
+                            }
+                        }else {
+                            dialogFragment.tv_title.setText("用户名不存在！");
+                        }
+                    }
+                });
+                break;
             case R.id.quit:
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setMessage("是否要退出?");
@@ -743,13 +784,13 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         }
     }
 
-//    private void toOtherActivity() {
-//        if (manager != null) {
-//            manager.release();
-//        }
-//        finish();
-//        startActivity(new Intent(this,MainFragmentActivity.class));
-//    }
+    private void toOtherActivity() {
+        if (manager != null) {
+            manager.release();
+        }
+        finish();
+        startActivity(new Intent(this,MainFragmentActivity.class));
+    }
 
     private void getFaceImageByFaceToken(final long trackId, final String faceToken) {
         if (TextUtils.isEmpty(faceToken)) {

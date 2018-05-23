@@ -5,26 +5,25 @@
     android:orientation="vertical"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    android:background="@drawable/add_face_bkg"
+    android:background="@drawable/login_bg"
    >
 <LinearLayout
-    android:layout_centerVertical="true"
-    android:layout_alignParentLeft="true"
-    android:layout_marginLeft="35dp"
+    android:id="@+id/ll"
+    android:layout_marginTop="100dp"
+    android:layout_centerHorizontal="true"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical">
     <SurfaceView
         android:id="@+id/camera_sf"
-        android:layout_width="512dp"
-        android:layout_height="384dp"
+        android:layout_width="600dp"
+        android:layout_height="600dp"
         />
     <ImageView
         android:id="@+id/takePhoto"
         android:layout_below="@+id/camera_sf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
         android:layout_margin="20dp"
         android:textColor="@color/white"
         android:textSize="24px"
@@ -35,8 +34,9 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/ll"
         android:padding="30dp"
         android:orientation="vertical">
 
@@ -94,33 +94,6 @@
             android:textSize="24px"
             android:textColor="@color/white" />
         <LinearLayout
-            android:layout_width="400dp"
-            android:layout_height="90dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                />
-            <TextView
-                android:id="@+id/deleteFace"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:textColor="@color/white"
-                android:textSize="24px"
-                android:text="删除"/>
-            <TextView
-                android:id="@+id/bindFace"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:textColor="@color/white"
-                android:textSize="24px"
-                android:text="绑定"/>
-        </LinearLayout>
-        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
@@ -129,23 +102,46 @@
                 android:layout_width="0dp"
                 android:layout_height="64dp"
                 android:layout_weight="1"
-                android:layout_margin="10dp"
                 style="@style/blueButtonStyle"
                 android:textSize="30px"
                 android:gravity="center"
                 android:textColor="@color/white"
                 android:text="人脸识别"/>
             <TextView
-                android:id="@+id/toQuery"
+                android:id="@+id/bindFace"
                 android:layout_width="0dp"
                 android:layout_height="64dp"
                 android:layout_weight="1"
-                android:layout_margin="10dp"
+                android:layout_marginLeft="20dp"
                 style="@style/blue1ButtonStyle"
                 android:textSize="30px"
                 android:gravity="center"
                 android:textColor="@color/white"
-                android:text="查       询"/>
+                android:text="绑       定"/>
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="400dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/deleteFace"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:text="删除"/>
+            <TextView
+                android:id="@+id/toQuery"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:text="查询"/>
+        </LinearLayout>
+
     </LinearLayout>
 </RelativeLayout>
