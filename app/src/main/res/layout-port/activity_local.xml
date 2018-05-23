@@ -46,7 +46,7 @@
         android:layout_height="445dp"
         android:layout_centerHorizontal="true"
         android:background="@drawable/scan_bording"
-        android:padding="2dp"
+        android:padding="5dp"
         android:layout_marginTop="200dp">
         <com.shuli.root.faceproject.camera.CameraPreview
             android:id="@+id/preview"
@@ -59,10 +59,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <ImageView
-            android:id="@+id/scanHorizontalLineImageView"
+            android:id="@+id/scanVerticalLineImageView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/line_green" />
+            android:src="@drawable/line_blue2" />
     </FrameLayout>
     <TextView
         android:id="@+id/tv_result"

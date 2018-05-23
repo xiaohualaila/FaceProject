@@ -7,29 +7,35 @@
     android:focusableInTouchMode="true"
     android:background="@drawable/login_bg"
    >
-<LinearLayout
-    android:id="@+id/ll"
-    android:layout_marginTop="100dp"
-    android:layout_centerHorizontal="true"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
-    <SurfaceView
-        android:id="@+id/camera_sf"
-        android:layout_width="600dp"
-        android:layout_height="600dp"
-        />
-    <ImageView
-        android:id="@+id/takePhoto"
-        android:layout_below="@+id/camera_sf"
+    <LinearLayout
+        android:id="@+id/ll"
+        android:layout_marginTop="100dp"
+        android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:textColor="@color/white"
-        android:textSize="24px"
-        android:layout_gravity="center_horizontal"
-        android:src="@drawable/photo" />
-</LinearLayout>
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="380dp"
+            android:layout_height="445dp"
+            android:padding="10dp"
+            android:background="@drawable/bording_bg">
+            <SurfaceView
+                android:id="@+id/camera_sf"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/takePhoto"
+            android:layout_below="@+id/camera_sf"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:textColor="@color/white"
+            android:textSize="24px"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/photo" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"

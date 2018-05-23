@@ -10,4 +10,5 @@
     <color name="black">#333</color>
     <color name="black1">#2e2e2e</color>
     <color name="white_bg">#30ffffff</color>
+    <color name="white_bording">#60ffffff</color>
 </resources>

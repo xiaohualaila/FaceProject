@@ -159,14 +159,13 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
 //    private TextView face_fail_tv_result;
     private TextView tv_name;
     private TextView tv_num;
-
-    private ImageView iv_wangge;
+    
     private RelativeLayout layout_root;
     private LinearLayout ll_face_success;
     private Handler handler = new Handler();
     private AnimationDrawable frameAnimation1;
-    private ImageView mScanHorizontalLineImageView;
-//    private ImageView mScanVerticalLineImageView;
+    private ImageView mScanVerticalLineImageView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -535,7 +534,6 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         SettingVar.mHeight = heightPixels;
         SettingVar.mWidth = widthPixels;
 
-        AssetManager mgr = getAssets();
          faceView =  this.findViewById(R.id.fcview);
         SettingVar.cameraSettingOk = false;
 
@@ -544,11 +542,8 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         manager.setPreviewDisplay(cameraView);
         frameLayout =  findViewById(R.id.frame);
         face_img = findViewById(R.id.face_img);
-//        iv_wangge = findViewById(R.id.iv_wangge);
         ll_face_success = findViewById(R.id.ll_face_success);
-        mScanHorizontalLineImageView = (ImageView) findViewById(R.id.scanHorizontalLineImageView);
-//        mScanVerticalLineImageView = (ImageView) findViewById(R.id.scanVerticalLineImageView);
-//
+        mScanVerticalLineImageView = findViewById(R.id.scanVerticalLineImageView);
         /* 注册相机回调函数 */
         manager.setListener(this);
         //背景动画
@@ -556,7 +551,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         layout_root.setBackgroundResource(R.drawable.bg_animation);
         frameAnimation1 = (AnimationDrawable) layout_root.getBackground();
         frameAnimation1.start();
-//        Glide.with(this).load(R.drawable.bg).asGif().diskCacheStrategy(DiskCacheStrategy.NONE).into(iv_wangge);
+//        Glide.with(this).load(R.drawable.bg).asGif().diskCacheStrategy(DiskCacheStrategy.NONE).into(scanHorizontalLineImageView);
     }
 
     @Override
@@ -570,19 +565,15 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         cameraView.getLocationInWindow(location);
 
         // 模拟的mPreviewView的左右上下坐标坐标
-//        int left = cameraView.getLeft();
-//        int right = cameraView.getRight();
-//        int top = cameraView.getTop();
         int bottom = cameraView.getBottom();
         // 从上到下的平移动画
         Animation verticalAnimation = new TranslateAnimation(0, 0, -bottom, bottom);
-        verticalAnimation.setDuration(4000); // 动画持续时间
+        verticalAnimation.setDuration(5000); // 动画持续时间
         verticalAnimation.setRepeatCount(Animation.INFINITE); // 无限循环
 
         // 播放动画
-        mScanHorizontalLineImageView.setAnimation(verticalAnimation);
+        mScanVerticalLineImageView.setAnimation(verticalAnimation);
         verticalAnimation.startNow();
-
     }
 
     @Override
@@ -697,7 +688,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
     public void showToast(CharSequence text, int duration, boolean isSuccess, Bitmap bitmap) {
         LayoutInflater inflater = getLayoutInflater();
         View toastView = inflater.inflate(R.layout.toast, null);
-        LinearLayout toastLLayout = (LinearLayout) toastView.findViewById(R.id.toastll);
+        LinearLayout toastLLayout = toastView.findViewById(R.id.toastll);
         if (toastLLayout == null) {
             return;
         }
