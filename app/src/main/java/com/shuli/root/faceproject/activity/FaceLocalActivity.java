@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Power;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
@@ -199,6 +200,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
 
         mRecognizeThread = new RecognizeThread();
         mRecognizeThread.start();
+        Power.set_zysj_gpio_value(1,1);
     }
 
     private void initAndroidHandler() {
@@ -444,20 +446,22 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                     setViewAnimal();
                     SoundPoolUtil.play(1);
                     // TODO: 2018/5/9 开门
-                    //IOUtil.input_num_1("");
+                    Power.set_zysj_gpio_value(1,0);
+
                     if(people != null){
                         tv_name.setText(people.getName());
                         tv_num.setText(people.getGonghao());
                     }
                     face_success.setVisibility(View.VISIBLE);
                     face_success.setText("验证成功！");
+
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             face_success.setVisibility(View.INVISIBLE);
                             ll_face_success.setVisibility(View.GONE);
                             // TODO: 2018/5/9 关门
-                            //IOUtil.input_num_0("");
+                            Power.set_zysj_gpio_value(1,1);
 
                         }
                     },2000);
@@ -610,6 +614,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         if (manager != null) {
             manager.release();
         }
+        Power.set_zysj_gpio_value(1,0);
         super.onStop();
     }
 
