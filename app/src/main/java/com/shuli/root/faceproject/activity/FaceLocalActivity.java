@@ -413,8 +413,14 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                 frameAnimation2.start();
                 frameAnimation3.start();
                 if (isRecognizeOK) {
-                    People people = GreenDaoManager.getInstance().getSession().getPeopleDao().queryBuilder()
-                            .where(PeopleDao.Properties.Face_token.eq(token)).build().unique();
+                    People people ;
+                    try{
+                         people = GreenDaoManager.getInstance().getSession().getPeopleDao().queryBuilder()
+                                .where(PeopleDao.Properties.Face_token.eq(token)).build().unique();
+                    }catch (Exception e){
+                        e.printStackTrace();
+                        people = null;
+                    }
                     ll_face_success.setVisibility(View.VISIBLE);
                     face_fail_tv_result.setVisibility(View.GONE);
                     SoundPoolUtil.play(1);
@@ -430,7 +436,6 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                             ll_face_success.setVisibility(View.GONE);
                             stopAnimation();
                             // TODO: 2018/5/9 关门
-
 
                         }
                     }, 2000);
