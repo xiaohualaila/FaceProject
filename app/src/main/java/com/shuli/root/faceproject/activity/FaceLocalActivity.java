@@ -1,5 +1,6 @@
 package com.shuli.root.faceproject.activity;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -510,6 +511,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         SettingVar.isButtonInvisible = false;
     }
 
+    @SuppressLint("WrongViewCast")
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private void initView() {
 
