@@ -14,22 +14,21 @@ import rx.Observable;
  */
 public interface BaseApi {
 
-    @POST("adminLogin")
+    @POST("adminManage/adminLogin")
     Observable<JSONObject> login(
             @Query("account") String name,
             @Query("password") String secret
     );
 
 
-    @POST("adminRegister")
+    @POST("adminManage/adminRegister")
     Observable<JSONObject> regist(@Query("account") String name,
                               @Query("password") String secret);
-    @POST("addUser")
+    @POST("userManage/addUser")
     Observable<JSONObject> uploadFaceToken(
             @Query("faceToken") String faceToken,
             @Query("userName") String name,
-            @Query("") String gong_num,
-            @Query("bundleDeviceId") String bundleDeviceId);
+            @Query("workNum") String gong_num);
 
     @POST("f")
     Observable<JSONObject> getFaceToken();

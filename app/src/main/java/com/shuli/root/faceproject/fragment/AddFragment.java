@@ -70,7 +70,7 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
     private int CammeraIndex;
     private OnFragmentInteractionListener mListener;
     private DataCache mCache;
-    private String device_id;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_add;
@@ -82,7 +82,7 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
         holder = camera_sf.getHolder();
         holder.addCallback(this);
         holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-        device_id = MyUtil.getDeviceID(getActivity());//获取设备号
+
 
     }
 
@@ -99,7 +99,7 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
                 String faceToken = faceTokenEt.getText().toString();
                 String name = ce_name.getText().toString();
                 String gong_num = ce_gong_num.getText().toString();
-                String token = mCache.getUser().getToken();
+//                String token = mCache.getUser().getToken();
                 if(TextUtils.isEmpty(faceToken)){
                     showToastLong("请拍照，没有获取到人脸标识！");
                     return;
@@ -111,7 +111,7 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
                     return;
                 }
 
-                upload(faceToken,name,gong_num,device_id);
+                upload(faceToken,name,gong_num);
                 break;
             case R.id.iv_back:
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -175,9 +175,9 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
         }
     }
 
-    private void upload(String faceToken,String name,String gong_num,String token){
+    private void upload(String faceToken,String name,String gong_num){
         Api.getBaseApiWithOutFormat(ConnectUrl.URL)
-                .uploadFaceToken(faceToken, name,gong_num,token)
+                .uploadFaceToken(faceToken,name,gong_num)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<JSONObject>() {
@@ -189,13 +189,14 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
                                            showToastLong("绑定成功！");
                                            uploadFinish();
                                        } else {
-                                           showToastLong(jsonObject.optString("errMsg"));
+                                           showToastLong(jsonObject.optString("msg"));
                                        }
                                    }
                                }
                            }, new Action1<Throwable>() {
                                @Override
                                public void call(Throwable throwable) {
+                                   Log.i("sss", throwable.toString());
                                    showToastLong(throwable.toString());
                                }
                            }

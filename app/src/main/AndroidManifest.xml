@@ -20,15 +20,18 @@
         <activity android:name=".activity.FaceServerActivity" android:theme="@style/AppTheme.NoBar">
 
         </activity>
-        <activity android:name=".activity.QueryActivity" android:theme="@style/AppTheme.NoBar">
-
-        </activity>
-        <activity android:name=".activity.MainFragmentActivity" android:theme="@style/AppTheme.NoBar">
+        <activity android:name=".activity.FaceLocalActivity" android:theme="@style/AppTheme.NoBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".activity.QueryActivity" android:theme="@style/AppTheme.NoBar">
+
+        </activity>
+        <activity android:name=".activity.MainFragmentActivity" android:theme="@style/AppTheme.NoBar">
+
         </activity>
         <activity android:name=".activity.LoginActivity" android:theme="@style/AppTheme.NoBar">
 
