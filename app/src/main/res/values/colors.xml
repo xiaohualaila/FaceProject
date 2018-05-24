@@ -11,4 +11,5 @@
     <color name="black1">#2e2e2e</color>
     <color name="white_bg">#30ffffff</color>
     <color name="white_bording">#60ffffff</color>
+    <color name="gray">#787878</color>
 </resources>

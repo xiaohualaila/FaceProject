@@ -30,10 +30,10 @@
     <EditText
         android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:textColor="@color/black"
+        android:textColor="@color/black1"
         android:textSize="24sp"
         android:id="@+id/account"
-        android:textColorHint="@color/black1"
+        android:textColorHint="@color/gray"
         android:background="@null"
         android:hint="请输入用户名"
         android:paddingLeft="46dp"/>
@@ -58,12 +58,12 @@
     <EditText
         android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:textColor="@color/black"
+        android:textColor="@color/black1"
         android:textSize="24sp"
         android:id="@+id/secret"
         android:background="@null"
         android:hint="请输入密码"
-        android:textColorHint="@color/black1"
+        android:textColorHint="@color/gray"
         android:inputType="textPassword"
         android:paddingLeft="46dp"/>
 

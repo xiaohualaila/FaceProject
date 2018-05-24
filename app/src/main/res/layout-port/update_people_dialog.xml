@@ -28,11 +28,12 @@
         android:src="@drawable/user_dialog"/>
 
     <EditText
+        android:id="@+id/et_name"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:textColor="#333"
         android:textSize="24sp"
-        android:id="@+id/et_name"
+        android:textColorHint="@color/gray"
         android:background="@null"
         android:paddingLeft="46dp"/>
 
@@ -54,14 +55,14 @@
         android:src="@drawable/gonghao_1"/>
 
     <EditText
+        android:id="@+id/et_gonghao"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:textColor="#333"
         android:textSize="24sp"
-        android:id="@+id/et_gonghao"
+        android:textColorHint="@color/gray"
         android:background="@null"
         android:paddingLeft="46dp"/>
-
     </LinearLayout>
     <View
         android:layout_height="0.5dp"

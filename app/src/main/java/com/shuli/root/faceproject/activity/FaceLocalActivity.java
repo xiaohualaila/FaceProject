@@ -26,8 +26,11 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
 import android.view.animation.OvershootInterpolator;
+import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -156,9 +159,11 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
     private FaceImageCache mImageCache;
     private Handler mAndroidHandler;
     private TextView face_success;
-//    private TextView face_fail_tv_result;
+
     private TextView tv_name;
     private TextView tv_num;
+    private TextView xingming;
+    private TextView gonghao;
     
     private RelativeLayout layout_root;
     private LinearLayout ll_face_success;
@@ -424,6 +429,8 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                 Log.i("sss","活体分 = " + livenessScore + "\n");
 
                 if(isRecognizeOK){
+
+
                     try {
                         final Bitmap bitmap = mFacePassHandler.getFaceImage(token.getBytes());
                         if(bitmap != null){
@@ -436,13 +443,14 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                             .where(PeopleDao.Properties.Face_token.eq(token)).build().unique();
                     face_success.setVisibility(View.VISIBLE);
                     ll_face_success.setVisibility(View.VISIBLE);
-               //     face_fail_tv_result.setVisibility(View.GONE);
+                    setViewAnimal();
                     SoundPoolUtil.play(1);
                     // TODO: 2018/5/9 开门
                     //IOUtil.input_num_1("");
                     if(people != null){
                         tv_name.setText(people.getName());
                         tv_num.setText(people.getGonghao());
+
                     }
                     face_success.setVisibility(View.VISIBLE);
                     face_success.setText("验证成功！");
@@ -470,6 +478,25 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                 }
             }
         });
+    }
+
+    public void setViewAnimal(){
+        TranslateAnimation translateAnimation = new TranslateAnimation(
+                Animation.RELATIVE_TO_SELF,0.8f,
+                Animation.RELATIVE_TO_SELF,0f,
+                Animation.RELATIVE_TO_SELF,0f,
+                Animation.RELATIVE_TO_SELF,0f);
+        translateAnimation.setDuration(200);
+        translateAnimation.setRepeatCount(1);
+
+
+        AlphaAnimation alphaAnimation = new AlphaAnimation(0.1f,1);
+        alphaAnimation.setDuration(100);
+        alphaAnimation.setRepeatCount(1);
+        ll_face_success.setAnimation(alphaAnimation);
+        tv_name.startAnimation(translateAnimation);
+        tv_num.startAnimation(translateAnimation);
+
     }
 
 
@@ -523,6 +550,8 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         face_success = findViewById(R.id.tv_result);
         tv_name = findViewById(R.id.tv_name);
         tv_num = findViewById(R.id.tv_num);
+        xingming = findViewById(R.id.xingming);
+        gonghao = findViewById(R.id.gonghao);
         mFaceOperationBtn = findViewById(R.id.btn_face_operation);
         mFaceOperationBtn.setOnClickListener(this);
         quit = findViewById(R.id.quit);
@@ -567,8 +596,8 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         // 模拟的mPreviewView的左右上下坐标坐标
         int bottom = cameraView.getBottom();
         // 从上到下的平移动画
-        Animation verticalAnimation = new TranslateAnimation(0, 0, -bottom, bottom);
-        verticalAnimation.setDuration(5000); // 动画持续时间
+        Animation verticalAnimation = new TranslateAnimation(0, 0, -bottom , bottom);
+        verticalAnimation.setDuration(3000); // 动画持续时间
         verticalAnimation.setRepeatCount(Animation.INFINITE); // 无限循环
 
         // 播放动画

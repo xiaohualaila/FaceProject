@@ -45,8 +45,8 @@
         android:layout_width="380dp"
         android:layout_height="445dp"
         android:layout_centerHorizontal="true"
-        android:background="@drawable/scan_bording"
-        android:padding="5dp"
+        android:background="@drawable/bording_bg"
+        android:padding="10dp"
         android:layout_marginTop="200dp">
         <com.shuli.root.faceproject.camera.CameraPreview
             android:id="@+id/preview"
@@ -96,6 +96,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
                 <TextView
+                    android:id="@+id/xingming"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/white"
