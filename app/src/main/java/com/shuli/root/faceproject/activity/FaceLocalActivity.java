@@ -429,8 +429,6 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                 Log.i("sss","活体分 = " + livenessScore + "\n");
 
                 if(isRecognizeOK){
-
-
                     try {
                         final Bitmap bitmap = mFacePassHandler.getFaceImage(token.getBytes());
                         if(bitmap != null){
@@ -450,7 +448,6 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                     if(people != null){
                         tv_name.setText(people.getName());
                         tv_num.setText(people.getGonghao());
-
                     }
                     face_success.setVisibility(View.VISIBLE);
                     face_success.setText("验证成功！");
