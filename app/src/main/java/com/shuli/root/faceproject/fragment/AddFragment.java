@@ -30,6 +30,7 @@ import com.shuli.root.faceproject.retrofit.ConnectUrl;
 import com.shuli.root.faceproject.utils.ClearEditTextWhite;
 import com.shuli.root.faceproject.utils.DataCache;
 import com.shuli.root.faceproject.utils.FileUtil;
+import com.shuli.root.faceproject.utils.MyUtil;
 
 import org.json.JSONObject;
 
@@ -69,6 +70,7 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
     private int CammeraIndex;
     private OnFragmentInteractionListener mListener;
     private DataCache mCache;
+    private String device_id;
     @Override
     protected int getLayoutId() {
         return R.layout.activity_add;
@@ -80,6 +82,7 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
         holder = camera_sf.getHolder();
         holder.addCallback(this);
         holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        device_id = MyUtil.getDeviceID(getActivity());//获取设备号
 
     }
 
@@ -106,11 +109,9 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
                 }else if(TextUtils.isEmpty(gong_num)){
                     showToastLong("工号不能为空！");
                     return;
-                }else if(TextUtils.isEmpty(token)){
-                    showToastLong("令牌不能为空，请重新登录！");
-                    return;
                 }
-                upload(faceToken,name,gong_num,token);
+
+                upload(faceToken,name,gong_num,device_id);
                 break;
             case R.id.iv_back:
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
