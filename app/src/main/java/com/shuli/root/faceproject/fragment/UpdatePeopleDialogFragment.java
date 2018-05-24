@@ -84,6 +84,4 @@ public class UpdatePeopleDialogFragment extends DialogFragment {
         builder.setView(view);
         return builder.create();
     }
-
-
 }
