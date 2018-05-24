@@ -4,11 +4,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.drawable.AnimationDrawable;
@@ -17,13 +14,10 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
-import android.text.SpannableString;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.LruCache;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -31,38 +25,28 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
-//import com.shuli.faceproject.greendaodemo.greendao.GreenDaoManager;
-//import com.shuli.faceproject.greendaodemo.greendao.gen.AccountDao;
-//import com.shuli.faceproject.greendaodemo.greendao.gen.PeopleDao;
+import com.shuli.faceproject.greendaodemo.greendao.GreenDaoManager;
+import com.shuli.faceproject.greendaodemo.greendao.gen.PeopleDao;
 import com.shuli.root.faceproject.R;
-import com.shuli.root.faceproject.bean.Account;
 import com.shuli.root.faceproject.bean.People;
-import com.shuli.root.faceproject.bean.User;
 import com.shuli.root.faceproject.camera.CameraManager;
 import com.shuli.root.faceproject.camera.CameraPreview;
 import com.shuli.root.faceproject.camera.CameraPreviewData;
 import com.shuli.root.faceproject.face.FaceView;
-import com.shuli.root.faceproject.fragment.VersionDialogFragment;
-import com.shuli.root.faceproject.network.ByteRequest;
 import com.shuli.root.faceproject.retrofit.Api;
 import com.shuli.root.faceproject.retrofit.ConnectUrl;
 import com.shuli.root.faceproject.utils.FaceApi;
+import com.shuli.root.faceproject.utils.MyUtil;
 import com.shuli.root.faceproject.utils.SettingVar;
 import com.shuli.root.faceproject.utils.SharedPreferencesUtil;
 import com.shuli.root.faceproject.utils.SoundPoolUtil;
-
+import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-
 import megvii.facepass.FacePassException;
 import megvii.facepass.FacePassHandler;
 import megvii.facepass.types.FacePassConfig;
@@ -85,8 +69,6 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         MODE_ONLINE,
         MODE_OFFLINE
     }
-
-    ;
 
     private static FacePassSDKMode SDK_MODE = FacePassSDKMode.MODE_OFFLINE;
 
@@ -129,8 +111,8 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
 
     private int cameraRotation;
 
-    private static final int cameraWidth = 1920;
-    private static final int cameraHeight = 1080;
+    private static final int cameraWidth = 640;
+    private static final int cameraHeight = 480;
 
     private int heightPixels;
     private int widthPixels;
@@ -177,8 +159,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
     private AnimationDrawable frameAnimation2;
     private AnimationDrawable frameAnimation3;
     private boolean isAuto = true;
-    private Thread thread;
-
+    private Thread threadNet;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -204,8 +185,9 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
 
         mRecognizeThread = new RecognizeThread();
         mRecognizeThread.start();
-        thread = new Thread(task);
-        thread.start();
+
+        threadNet = new Thread(taskNet);
+        threadNet.start();
     }
 
     private void initAndroidHandler() {
@@ -401,10 +383,6 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                         if (recognizeResult != null && recognizeResult.length > 0) {
                             for (FacePassRecognitionResult result : recognizeResult) {
                                 String faceToken = new String(result.faceToken);
-//                                if (FacePassRecognitionResultType.RECOG_OK == result.facePassRecognitionResultType) {//成功显示对比的人脸图片
-//                                    getFaceImageByFaceToken(result.trackId, faceToken);
-//                                }
-
                                 showRecognizeResult(result.trackId, result.detail.searchScore, result.detail.livenessScore, !TextUtils.isEmpty(faceToken), faceToken);
                             }
                         }
@@ -435,24 +413,24 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                 frameAnimation2.start();
                 frameAnimation3.start();
                 if (isRecognizeOK) {
-//                    People people = GreenDaoManager.getInstance().getSession().getPeopleDao().queryBuilder()
-//                            .where(PeopleDao.Properties.Face_token.eq(token)).build().unique();
+                    People people = GreenDaoManager.getInstance().getSession().getPeopleDao().queryBuilder()
+                            .where(PeopleDao.Properties.Face_token.eq(token)).build().unique();
                     ll_face_success.setVisibility(View.VISIBLE);
                     face_fail_tv_result.setVisibility(View.GONE);
                     SoundPoolUtil.play(1);
                     // TODO: 2018/5/9 开门
-                    //IOUtil.input_num_1("");
-//                    if(people != null){
-//                        tv_name.setText(people.getName());
-//                        tv_num.setText(people.getGonghao());
-//                    }
+
+                    if(people != null){
+                        tv_name.setText(people.getName());
+                        tv_num.setText(people.getGonghao());
+                    }
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             ll_face_success.setVisibility(View.GONE);
                             stopAnimation();
                             // TODO: 2018/5/9 关门
-                            //IOUtil.input_num_0("");
+
 
                         }
                     }, 2000);
@@ -550,7 +528,6 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         SettingVar.mHeight = heightPixels;
         SettingVar.mWidth = widthPixels;
 
-        AssetManager mgr = getAssets();
         faceView = this.findViewById(R.id.fcview);
         SettingVar.cameraSettingOk = false;
 
@@ -671,70 +648,13 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         faceView.invalidate();
     }
 
-    public void showToast(CharSequence text, int duration, boolean isSuccess, Bitmap bitmap) {
-        LayoutInflater inflater = getLayoutInflater();
-        View toastView = inflater.inflate(R.layout.toast, null);
-        LinearLayout toastLLayout = (LinearLayout) toastView.findViewById(R.id.toastll);
-        if (toastLLayout == null) {
-            return;
-        }
-        toastLLayout.getBackground().setAlpha(100);
-        ImageView imageView = toastView.findViewById(R.id.toastImageView);
-        TextView idTextView = toastView.findViewById(R.id.toastTextView);
-        TextView stateView = toastView.findViewById(R.id.toastState);
-        SpannableString s;
-        if (isSuccess) {
-            s = new SpannableString("验证成功");
-            imageView.setImageResource(R.drawable.success);
-        } else {
-            s = new SpannableString("验证失败");
-            imageView.setImageResource(R.drawable.success);
-        }
-        if (bitmap != null) {
-            imageView.setImageBitmap(bitmap);
-        }
-        stateView.setText(s);
-        idTextView.setText(text);
-
-        Toast toast = new Toast(getApplicationContext());
-        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-        toast.setDuration(duration);
-        toast.setView(toastView);
-
-        if (mToastBlockQueue.size() == 0) {
-            mAndroidHandler.removeMessages(MSG_SHOW_TOAST);
-            mAndroidHandler.sendEmptyMessage(MSG_SHOW_TOAST);
-            mToastBlockQueue.offer(toast);
-        } else {
-            mToastBlockQueue.offer(toast);
-        }
-    }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_face_operation:
                 // 进入查询列表页面
-                final VersionDialogFragment dialogFragment = VersionDialogFragment.getInstance();
-                dialogFragment.show(getSupportFragmentManager(), new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        String account = dialogFragment.et_account.getText().toString();
-                        String secret = dialogFragment.et_secret.getText().toString();
-//                        Account a = GreenDaoManager.getInstance().getSession().getAccountDao().queryBuilder()
-//                                .where(AccountDao.Properties.Account_name.eq(account)).build().unique();
-//                        if(a!=null){
-//                            if(a.getAccount_secret().equals(secret)){
-//                                dialogFragment.dismiss();
-//                                toOtherActivity();
-//                            }else {
-//                                dialogFragment.tv_title.setText("密码错误！");
-//                            }
-//                        }else {
-//                            dialogFragment.tv_title.setText("用户名不存在！");
-//                        }
-                    }
-                });
+                toOtherActivity();
                 break;
             case R.id.quit:
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -769,61 +689,6 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         startActivity(new Intent(this, MainFragmentActivity.class));
     }
 
-    private void getFaceImageByFaceToken(final long trackId, String faceToken) {
-        if (TextUtils.isEmpty(faceToken)) {
-            return;
-        }
-
-        final String faceUrl = "http://" + serverIP + ":8080/api/image/v1/query?face_token=" + faceToken;
-
-        final Bitmap cacheBmp = mImageCache.getBitmap(faceUrl);
-        if (cacheBmp != null) {
-            mAndroidHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    Log.i(DEBUG_TAG, "getFaceImageByFaceToken cache not null");
-                    showToast("ID = " + String.valueOf(trackId), Toast.LENGTH_SHORT, true, cacheBmp);
-                }
-            });
-            return;
-        } else {
-            try {
-                final Bitmap bitmap = mFacePassHandler.getFaceImage(faceToken.getBytes());
-                mAndroidHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.i(DEBUG_TAG, "getFaceImageByFaceToken cache is null");
-                        showToast("ID = " + String.valueOf(trackId), Toast.LENGTH_SHORT, true, bitmap);
-                    }
-                });
-                if (bitmap != null) {
-                    return;
-                }
-            } catch (FacePassException e) {
-                e.printStackTrace();
-            }
-
-        }
-        ByteRequest request = new ByteRequest(Request.Method.GET, faceUrl, new Response.Listener<byte[]>() {
-            @Override
-            public void onResponse(byte[] response) {
-
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inJustDecodeBounds = false;
-                Bitmap bitmap = BitmapFactory.decodeByteArray(response, 0, response.length, options);
-                mImageCache.putBitmap(faceUrl, bitmap);
-                showToast("ID = " + String.valueOf(trackId), Toast.LENGTH_SHORT, true, bitmap);
-                Log.i(DEBUG_TAG, "getFaceImageByFaceToken response ");
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.i(DEBUG_TAG, "image load failed ! ");
-            }
-        });
-        request.setTag("load_image_request_tag");
-        requestQueue.add(request);
-    }
 
     /**
      * 根据facetoken下载图片缓存
@@ -855,49 +720,6 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         }
     }
 
-    Runnable task = new Runnable() {
-        @Override
-        public void run() {
-            boolean b = true;
-            while (true) {
-                if (isAuto) {
-                    upload();
-                    try {
-                        Thread.sleep(10000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-    };
-
-    private void upload() {
-        Api.getBaseApiWithOutFormat(ConnectUrl.URL)
-                .getFaceToken()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<JSONObject>() {
-                               @Override
-                               public void call(JSONObject jsonObject) {
-                                   Log.i("sss", jsonObject.toString());
-                                   if (jsonObject.optBoolean("result")) {
-
-                                      // bindGroupFaceToken(token,name,gonghao);
-                                   } else {
-                                       toast(jsonObject.optString("errMsg"));
-                                   }
-                               }
-                           }, new Action1<Throwable>() {
-                               @Override
-                               public void call(Throwable throwable) {
-                                   Log.i("sss", throwable.toString());
-
-                               }
-                           }
-                );
-    }
-
     /**
      * 绑定
      */
@@ -925,8 +747,8 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         try {
             b = mFacePassHandler.bindGroup(group_name, faceToken);
             if(b){
-//                PeopleDao peopleDao = GreenDaoManager.getInstance().getSession().getPeopleDao();
-//                peopleDao.insert(new People(name,gonghao,token));
+                PeopleDao peopleDao = GreenDaoManager.getInstance().getSession().getPeopleDao();
+                peopleDao.insert(new People(name,gonghao,token));
             }
             String result = b ? "成功 " : "失败";
             toast("绑定  " + result);
@@ -941,5 +763,60 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
 
     protected void toast(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
+
+
+
+    Runnable taskNet = new Runnable() {
+        @Override
+        public void run() {
+            while (true) {
+                if(isAuto){
+                    boolean isNetAble = MyUtil.isNetworkAvailable(FaceLocalActivity.this);
+                    if (isNetAble) {
+                        requestInfo();
+                    }
+                    Log.i("sss", ">>>>>>>>>sleep>>>>>>>>>>>>>");
+                    try {
+                        Thread.sleep(20000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    };
+
+    private void requestInfo(){
+        Log.i("sss", ">>>>>>>>>>>>>>>>>>>>>>");
+        int count = SharedPreferencesUtil.getIntByKey("count",this);
+        Api.getBaseApiWithOutFormat(ConnectUrl.URL)
+            .getFaceToken(count)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Action1<JSONObject>() {
+                   @Override
+                   public void call(JSONObject jsonObject) {
+                       Log.i("sss", jsonObject.toString());
+                       if (jsonObject != null) {
+                           if (jsonObject.optBoolean("result")) {
+                               JSONArray array = jsonObject.optJSONArray("userList");
+                               int num = array.length();
+                               JSONObject obj;
+                               for (int i = 0;i < num;i++) {
+                                   obj = array.optJSONObject(i);
+                                   bindGroupFaceToken(obj.optString("faceToken"),obj.optString("userName"),obj.optString("workNum"));
+                               }
+                               SharedPreferencesUtil.save("count",jsonObject.optInt("maxUserId"),FaceLocalActivity.this);
+                           }
+                       }
+                   }
+               }, new Action1<Throwable>() {
+                   @Override
+                   public void call(Throwable throwable) {
+                       Log.i("sss", throwable.toString());
+                   }
+               }
+            );
     }
 }

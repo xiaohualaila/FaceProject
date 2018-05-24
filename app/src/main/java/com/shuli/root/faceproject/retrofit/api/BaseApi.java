@@ -30,7 +30,9 @@ public interface BaseApi {
             @Query("userName") String name,
             @Query("workNum") String gong_num);
 
-    @POST("f")
-    Observable<JSONObject> getFaceToken();
+    @POST("userManage/userSynchronize")
+    Observable<JSONObject> getFaceToken(
+            @Query("userId") int count
+    );
 }
 
