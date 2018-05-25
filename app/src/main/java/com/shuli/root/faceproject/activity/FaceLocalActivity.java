@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Power;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -20,9 +21,13 @@ import android.util.Log;
 import android.util.LruCache;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.android.volley.RequestQueue;
@@ -47,6 +52,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import butterknife.ButterKnife;
 import megvii.facepass.FacePassException;
 import megvii.facepass.FacePassHandler;
 import megvii.facepass.types.FacePassConfig;
@@ -144,22 +151,18 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
     private ImageView quit;
     /*图片缓存*/
     private FaceImageCache mImageCache;
-
+    private ImageView mScanVerticalLineImageView;
     private Handler mAndroidHandler;
 
     private LinearLayout ll_face_success;
-    private TextView face_fail_tv_result;
     private TextView tv_name;
     private TextView tv_num;
-    private ImageView row_1;
-    private ImageView row_2;
-    private ImageView row_3;
+    private TextView face_success;
     private Handler handler = new Handler();
-    private AnimationDrawable frameAnimation1;
-    private AnimationDrawable frameAnimation2;
-    private AnimationDrawable frameAnimation3;
     private boolean isAuto = true;
     private Thread threadNet;
+    private RelativeLayout layout_root;
+    private AnimationDrawable frameAnimation1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -409,9 +412,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                 Log.i("sss", "ID = " + trackId + (isRecognizeOK ? "识别成功" : "识别失败") + "\n");
                 Log.i("sss", "识别分 = " + searchScore + "\n");
                 Log.i("sss", "活体分 = " + livenessScore + "\n");
-                frameAnimation1.start();
-                frameAnimation2.start();
-                frameAnimation3.start();
+
                 if (isRecognizeOK) {
                     People people ;
                     try{
@@ -421,11 +422,13 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                         e.printStackTrace();
                         people = null;
                     }
+                    face_success.setVisibility(View.VISIBLE);
                     ll_face_success.setVisibility(View.VISIBLE);
-                    face_fail_tv_result.setVisibility(View.GONE);
+                    face_success.setText("验证成功！");
+                    setViewAnimal();
                     SoundPoolUtil.play(1);
                     // TODO: 2018/5/9 开门
-
+                    Power.set_zysj_gpio_value(1,0);
                     if(people != null){
                         tv_name.setText(people.getName());
                         tv_num.setText(people.getGonghao());
@@ -433,33 +436,29 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
+                            face_success.setVisibility(View.INVISIBLE);
                             ll_face_success.setVisibility(View.GONE);
-                            stopAnimation();
-                            // TODO: 2018/5/9 关门
 
+                            // TODO: 2018/5/9 关门
+                            Power.set_zysj_gpio_value(1,1);
                         }
                     }, 2000);
 
                 } else {
-                    ll_face_success.setVisibility(View.GONE);
-                    face_fail_tv_result.setVisibility(View.VISIBLE);
+                    face_success.setText("验证失败！");
+                    face_success.setVisibility(View.VISIBLE);
+
                     // SoundPoolUtil.play(2);
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            face_fail_tv_result.setVisibility(View.GONE);
-                            stopAnimation();
+
+                            face_success.setVisibility(View.INVISIBLE);
                         }
                     }, 2000);
                 }
             }
         });
-    }
-
-    private void stopAnimation() {
-        frameAnimation1.stop();
-        frameAnimation2.stop();
-        frameAnimation3.stop();
     }
 
     private void adaptFrameLayout() {
@@ -507,25 +506,17 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
             screenState = 0;
         }
         setContentView(R.layout.activity_local);
+        ButterKnife.bind(this);
         ll_face_success = findViewById(R.id.ll_face_success);
-        face_fail_tv_result = findViewById(R.id.face_fail_tv_result);
+        face_success = findViewById(R.id.tv_result);
         tv_name = findViewById(R.id.tv_name);
         tv_num = findViewById(R.id.tv_num);
-
+        mScanVerticalLineImageView = findViewById(R.id.scanVerticalLineImageView);
         mFaceOperationBtn = findViewById(R.id.btn_face_operation);
         mFaceOperationBtn.setOnClickListener(this);
         quit = findViewById(R.id.quit);
         quit.setOnClickListener(this);
-        row_1 = findViewById(R.id.row_1);
-        row_2 = findViewById(R.id.row_2);
-        row_3 = findViewById(R.id.row_3);
-        row_1.setBackgroundResource(R.drawable.row1_animation);
-        row_2.setBackgroundResource(R.drawable.row2_animation);
-        row_3.setBackgroundResource(R.drawable.row3_animation);
 
-        frameAnimation1 = (AnimationDrawable) row_1.getBackground();
-        frameAnimation2 = (AnimationDrawable) row_2.getBackground();
-        frameAnimation3 = (AnimationDrawable) row_3.getBackground();
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         heightPixels = displayMetrics.heightPixels;
@@ -542,6 +533,35 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         frameLayout = findViewById(R.id.frame);
         /* 注册相机回调函数 */
         manager.setListener(this);
+
+        //背景动画
+        layout_root = findViewById(R.id.activity_main);
+        layout_root.setBackgroundResource(R.drawable.bg_animation);
+        frameAnimation1 = (AnimationDrawable) layout_root.getBackground();
+        frameAnimation1.start();
+    }
+
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+
+        int[] location = new int[2];
+
+        // getLocationInWindow方法要在onWindowFocusChanged方法里面调用
+        // 个人理解是onCreate时，View尚未被绘制，因此无法获得具体的坐标点
+        cameraView.getLocationInWindow(location);
+
+        // 模拟的mPreviewView的左右上下坐标坐标
+        int bottom = cameraView.getBottom();
+        // 从上到下的平移动画
+        Animation verticalAnimation = new TranslateAnimation(0, 0, -bottom , bottom);
+        verticalAnimation.setDuration(3000); // 动画持续时间
+        verticalAnimation.setRepeatCount(Animation.INFINITE); // 无限循环
+
+        // 播放动画
+        mScanVerticalLineImageView.setAnimation(verticalAnimation);
+        verticalAnimation.startNow();
     }
 
 
@@ -819,4 +839,24 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
     protected void toast(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
+
+    public void setViewAnimal(){
+        TranslateAnimation translateAnimation = new TranslateAnimation(
+                Animation.RELATIVE_TO_SELF,0.8f,
+                Animation.RELATIVE_TO_SELF,0f,
+                Animation.RELATIVE_TO_SELF,0f,
+                Animation.RELATIVE_TO_SELF,0f);
+        translateAnimation.setDuration(200);
+        translateAnimation.setRepeatCount(1);
+
+
+        AlphaAnimation alphaAnimation = new AlphaAnimation(0.1f,1);
+        alphaAnimation.setDuration(100);
+        alphaAnimation.setRepeatCount(1);
+        ll_face_success.setAnimation(alphaAnimation);
+        tv_name.startAnimation(translateAnimation);
+        tv_num.startAnimation(translateAnimation);
+
+    }
+
 }

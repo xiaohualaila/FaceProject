@@ -8,7 +8,29 @@
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:background="@color/tabBackground">
-
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:gravity="center_vertical"
+        android:background="@drawable/login_bording"
+        android:orientation="horizontal">
+        <com.shuli.root.faceproject.utils.ClearEditTextWhite
+            android:id="@+id/ct_factor_secret"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:textColor="@color/white"
+            android:hint="出厂密码"
+            android:textColorHint="@color/white"
+            android:background="@null"/>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/secret"/>
+    </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -90,5 +112,13 @@
             android:layout_marginTop="25dp"
             android:gravity="center"
             android:text="注册" />
+    <TextView
+        android:id="@+id/tv_login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/blue1"
+        android:text="去登录"/>
 </LinearLayout>
 

@@ -1,5 +1,6 @@
 package com.shuli.root.faceproject.fragment;
 
+import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
@@ -32,8 +33,7 @@ public class RegistFragment extends BaseFragment {
     @BindView(R.id.btn_login)
     Button btn_login;
     private DataCache mCache;
-    public RegistFragment() {
-    }
+    private OnRegistFragmentInteractionListener mListener;
 
     @Override
     protected int getLayoutId() {
@@ -45,7 +45,7 @@ public class RegistFragment extends BaseFragment {
         mCache = new DataCache(getActivity());
     }
 
-    @OnClick({R.id.btn_login})
+    @OnClick({R.id.btn_login,R.id.tv_login})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_login:
@@ -69,6 +69,9 @@ public class RegistFragment extends BaseFragment {
                     return;
                 }
                 upload(username,secret);
+                break;
+            case R.id.tv_login:
+                mListener.onRegistFragmentInteraction();
                 break;
         }
     }
@@ -106,4 +109,26 @@ public class RegistFragment extends BaseFragment {
             );
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnRegistFragmentInteractionListener) {
+            mListener = (OnRegistFragmentInteractionListener) context;
+        }
+        else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    public interface OnRegistFragmentInteractionListener {
+        // TODO: Update argument type and name
+        void onRegistFragmentInteraction();
+    }
 }

@@ -1,6 +1,7 @@
 package com.shuli.root.faceproject.fragment;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
@@ -33,7 +34,7 @@ public class LoginFragment extends BaseFragment {
     public LoginFragment() {
 
     }
-
+    private OnFragmentInteractionListener mListener;
     @Override
     protected int getLayoutId() {
         return R.layout.layout_login;
@@ -64,7 +65,7 @@ public class LoginFragment extends BaseFragment {
     }
 
 
-    @OnClick({R.id.checkbox, R.id.btn_login})
+    @OnClick({R.id.checkbox, R.id.btn_login,R.id.tv_regist})
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_login:
@@ -89,6 +90,9 @@ public class LoginFragment extends BaseFragment {
                     v.setTag("true");
                     checkbox.setImageResource(R.drawable.login_beixuan);
                 }
+                break;
+            case R.id.tv_regist:
+                mListener.onFragmentInteraction();
                 break;
         }
     }
@@ -136,5 +140,30 @@ public class LoginFragment extends BaseFragment {
                                }
                            }
                 );
+    }
+
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        }
+        else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        void onFragmentInteraction();
     }
 }

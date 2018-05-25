@@ -80,7 +80,7 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
 
     }
 
-    @OnClick({R.id.takePhoto,R.id.deleteFace,R.id.bindFace,R.id.iv_back})
+    @OnClick({R.id.takePhoto,R.id.deleteFace,R.id.bindFace})
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.takePhoto:
@@ -107,29 +107,29 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
 
                 upload(faceToken,name,gong_num);
                 break;
-            case R.id.iv_back:
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage("是否要退出?");
-                //点击对话框以外的区域是否让对话框消失
-                builder.setCancelable(true);
-                //设置正面按钮
-                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        getActivity().finish();
-                    }
-                });
-                //设置反面按钮
-                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                builder.create().show();
-
-                break;
+//            case R.id.iv_back:
+//                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//                builder.setMessage("是否要退出?");
+//                //点击对话框以外的区域是否让对话框消失
+//                builder.setCancelable(true);
+//                //设置正面按钮
+//                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        dialog.dismiss();
+//                        getActivity().finish();
+//                    }
+//                });
+//                //设置反面按钮
+//                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        dialog.dismiss();
+//                    }
+//                });
+//                builder.create().show();
+//
+//                break;
 //            case R.id.toActivity:
 //                String token = faceTokenEt.getText().toString();
 //                if(!TextUtils.isEmpty(token)){
