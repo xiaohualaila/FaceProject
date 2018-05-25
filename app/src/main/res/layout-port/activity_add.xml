@@ -116,7 +116,7 @@
                 android:layout_height="64dp"
                 android:layout_weight="1"
                 style="@style/blueButtonStyle"
-                android:textSize="30px"
+                android:textSize="26sp"
                 android:gravity="center"
                 android:textColor="@color/white"
                 android:text="删除人脸标识"/>
@@ -127,7 +127,7 @@
                 android:layout_weight="1"
                 android:layout_marginLeft="20dp"
                 style="@style/blue1ButtonStyle"
-                android:textSize="30px"
+                android:textSize="26sp"
                 android:gravity="center"
                 android:textColor="@color/white"
                 android:text="绑       定"/>
