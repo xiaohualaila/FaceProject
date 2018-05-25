@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import com.shuli.root.faceproject.R;
-import com.shuli.root.faceproject.activity.FaceServerActivity;
 import com.shuli.root.faceproject.activity.MainFragmentActivity;
 import com.shuli.root.faceproject.base.BaseFragment;
 import com.shuli.root.faceproject.bean.User;

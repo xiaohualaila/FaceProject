@@ -4,7 +4,6 @@ import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
@@ -16,21 +15,16 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 
 import com.shuli.root.faceproject.R;
-import com.shuli.root.faceproject.activity.FaceServerActivity;
-import com.shuli.root.faceproject.activity.MainFragmentActivity;
 import com.shuli.root.faceproject.base.BaseFragment;
-import com.shuli.root.faceproject.bean.User;
 import com.shuli.root.faceproject.retrofit.Api;
 import com.shuli.root.faceproject.retrofit.ConnectUrl;
 import com.shuli.root.faceproject.utils.ClearEditTextWhite;
 import com.shuli.root.faceproject.utils.DataCache;
 import com.shuli.root.faceproject.utils.FileUtil;
-import com.shuli.root.faceproject.utils.MyUtil;
 
 import org.json.JSONObject;
 

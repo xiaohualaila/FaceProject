@@ -35,7 +35,6 @@
         <activity android:name=".activity.LoginActivity" android:theme="@style/AppTheme.NoBar"/>
         <activity android:name=".activity.AddActivity" android:theme="@style/AppTheme.NoBar"/>
         <activity android:name=".activity.QueryActivity" android:theme="@style/AppTheme.NoBar"/>
-        <activity android:name=".activity.FaceServerActivity" android:theme="@style/AppTheme.NoBar"/>
     </application>
 
 </manifest>

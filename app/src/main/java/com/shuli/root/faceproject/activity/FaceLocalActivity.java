@@ -728,49 +728,40 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
     /**
      * 绑定
      */
-    public boolean bindGroupFaceToken(String token, String name,String gonghao) {
-        boolean b = false;
+    public void bindGroupFaceToken(String token, String name,String gonghao) {
         if (mFacePassHandler == null) {
-            toast("请检查网络或者人脸检测受限! ");
-            return b;
+            return;
         }
 
         byte[] faceToken = token.getBytes();
         if (faceToken == null || faceToken.length == 0 || TextUtils.isEmpty(group_name)) {
-            toast("没有人脸特征值！");
-            return b;
+            return;
         }
 
         if (TextUtils.isEmpty(name)){
-            toast("姓名不能为空！");
-            return b;
+            return;
         }
         if (TextUtils.isEmpty(gonghao)){
-            toast("工号不能为空！");
-            return b;
+            return;
+        }
+
+        People people = GreenDaoManager.getInstance().getSession().getPeopleDao().queryBuilder().where(PeopleDao.Properties.Face_token.eq(faceToken)).unique();
+        if(people != null){
+            return;
         }
         try {
-            b = mFacePassHandler.bindGroup(group_name, faceToken);
+          boolean b  = mFacePassHandler.bindGroup(group_name, faceToken);
             if(b){
                 PeopleDao peopleDao = GreenDaoManager.getInstance().getSession().getPeopleDao();
                 peopleDao.insert(new People(name,gonghao,token));
             }
-            String result = b ? "成功 " : "失败";
-            toast("绑定  " + result);
 
         } catch (Exception e) {
             e.printStackTrace();
             toast(e.getMessage());
-            b = false;
         }
-        return b;
+        return ;
     }
-
-    protected void toast(String msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-    }
-
-
 
     Runnable taskNet = new Runnable() {
         @Override
@@ -823,5 +814,9 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                    }
                }
             );
+    }
+
+    protected void toast(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 }

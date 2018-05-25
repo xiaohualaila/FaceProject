@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import com.shuli.root.faceproject.R;
-import com.shuli.root.faceproject.activity.FaceServerActivity;
 import com.shuli.root.faceproject.activity.MainFragmentActivity;
 import com.shuli.root.faceproject.base.BaseFragment;
 import com.shuli.root.faceproject.bean.User;
@@ -14,15 +13,11 @@ import com.shuli.root.faceproject.retrofit.Api;
 import com.shuli.root.faceproject.retrofit.ConnectUrl;
 import com.shuli.root.faceproject.utils.ClearEditTextWhite;
 import com.shuli.root.faceproject.utils.DataCache;
-import com.shuli.root.faceproject.utils.SharedPreferencesUtil;
 
 import org.json.JSONObject;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
