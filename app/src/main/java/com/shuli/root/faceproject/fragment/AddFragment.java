@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
@@ -16,31 +17,26 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.TextView;
-
-
 import com.shuli.root.faceproject.R;
+import com.shuli.root.faceproject.activity.FaceLocalActivity;
 import com.shuli.root.faceproject.base.BaseFragment;
 import com.shuli.root.faceproject.retrofit.Api;
 import com.shuli.root.faceproject.retrofit.ConnectUrl;
 import com.shuli.root.faceproject.utils.ClearEditTextWhite;
 import com.shuli.root.faceproject.utils.DataCache;
 import com.shuli.root.faceproject.utils.FileUtil;
-
 import org.json.JSONObject;
-
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
-
 import butterknife.BindView;
 import butterknife.OnClick;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
-
 
 /**
  * Created by dhht on 16/9/29.
@@ -63,7 +59,6 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
     private int height = 720;
     private int CammeraIndex;
     private OnFragmentInteractionListener mListener;
-    private DataCache mCache;
 
     @Override
     protected int getLayoutId() {
@@ -72,15 +67,12 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
 
     @Override
     protected void init() {
-        mCache = new DataCache(getActivity());
         holder = camera_sf.getHolder();
         holder.addCallback(this);
         holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-
-
     }
 
-    @OnClick({R.id.takePhoto,R.id.deleteFace,R.id.bindFace})
+    @OnClick({R.id.takePhoto,R.id.deleteFace,R.id.bindFace,R.id.quit,R.id.toActivity})
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.takePhoto:
@@ -93,7 +85,6 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
                 String faceToken = faceTokenEt.getText().toString();
                 String name = ce_name.getText().toString();
                 String gong_num = ce_gong_num.getText().toString();
-//                String token = mCache.getUser().getToken();
                 if(TextUtils.isEmpty(faceToken)){
                     showToastLong("请拍照，没有获取到人脸标识！");
                     return;
@@ -107,40 +98,38 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
 
                 upload(faceToken,name,gong_num);
                 break;
-//            case R.id.iv_back:
-//                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//                builder.setMessage("是否要退出?");
-//                //点击对话框以外的区域是否让对话框消失
-//                builder.setCancelable(true);
-//                //设置正面按钮
-//                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        dialog.dismiss();
-//                        getActivity().finish();
-//                    }
-//                });
-//                //设置反面按钮
-//                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        dialog.dismiss();
-//                    }
-//                });
-//                builder.create().show();
-//
-//                break;
-//            case R.id.toActivity:
-//                String token = faceTokenEt.getText().toString();
-//                if(!TextUtils.isEmpty(token)){
-//                    deleteFace();
-//                }
-//                closeCamera();
-//                startActivity(new Intent(getActivity(),FaceServerActivity.class));
-//                getActivity().finish();
+            case R.id.quit:
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setMessage("是否要退出?");
+                //点击对话框以外的区域是否让对话框消失
+                builder.setCancelable(true);
+                //设置正面按钮
+                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        getActivity().finish();
+                    }
+                });
+                //设置反面按钮
+                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                builder.create().show();
 
-
-//                break;
+                break;
+            case R.id.toActivity:
+                String token = faceTokenEt.getText().toString();
+                if(!TextUtils.isEmpty(token)){
+                    deleteFace();
+                }
+                closeCamera();
+                startActivity(new Intent(getActivity(),FaceLocalActivity.class));
+                getActivity().finish();
+                break;
 //            case R.id.toQuery:
 //             mListener.toQueryActivity();
 //                break;
@@ -148,16 +137,6 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
 
     }
 
-
-  //  private void bindGroupFaceToken() {
-
-//        if(!TextUtils.isEmpty(token)){
-//            boolean b= mListener.bindGroupFaceToken(token,name,gong_num);
-//            if(b){
-//                uploadFinish();
-//            }
-//        }
-  //  }
 
     private void deleteFace() {
        String token = faceTokenEt.getText().toString();
@@ -293,16 +272,6 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
     public void onDestroy() {
         super.onDestroy();
         closeCamera();
-    }
-
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-//        if (hidden) {
-//            isReading = true;
-//        } else {
-//            isReading = false;
-//        }
     }
 
     @Override

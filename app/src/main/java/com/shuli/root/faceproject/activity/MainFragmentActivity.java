@@ -308,10 +308,6 @@ public class MainFragmentActivity extends BaseAppCompatActivity implements AddFr
         }
         try {
              b = mFacePassHandler.bindGroup(group_name, faceToken);
-            if(b){
-//                PeopleDao peopleDao = GreenDaoManager.getInstance().getSession().getPeopleDao();
-//                peopleDao.insert(new People(name,gonghao,token));
-            }
             String result = b ? "成功 " : "失败";
             toast("绑定  " + result);
 
@@ -373,12 +369,6 @@ public class MainFragmentActivity extends BaseAppCompatActivity implements AddFr
                         }
                     }
                 }
-//                People people = GreenDaoManager.getInstance().getSession().getPeopleDao().queryBuilder()
-//                        .where(PeopleDao.Properties.Face_token.eq(token)).build().unique();
-//                if(people != null){
-//                    GreenDaoManager.getInstance().getSession().getPeopleDao().delete(people);
-//                }
-
             }
         } catch (Exception e) {
             e.printStackTrace();

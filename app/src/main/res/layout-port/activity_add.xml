@@ -7,6 +7,13 @@
     android:focusableInTouchMode="true"
     android:background="@drawable/login_bg"
    >
+    <ImageView
+        android:id="@+id/quit"
+        android:layout_margin="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/face_setup"
+        android:layout_alignParentRight="true"/>
     <LinearLayout
         android:id="@+id/ll"
         android:layout_marginTop="100dp"
@@ -104,7 +111,7 @@
             android:layout_height="match_parent"
             android:orientation="horizontal">
             <TextView
-                android:id="@+id/toActivity"
+                android:id="@+id/deleteFace"
                 android:layout_width="0dp"
                 android:layout_height="64dp"
                 android:layout_weight="1"
@@ -112,7 +119,7 @@
                 android:textSize="30px"
                 android:gravity="center"
                 android:textColor="@color/white"
-                android:text="人脸识别"/>
+                android:text="删除人脸标识"/>
             <TextView
                 android:id="@+id/bindFace"
                 android:layout_width="0dp"
@@ -125,29 +132,13 @@
                 android:textColor="@color/white"
                 android:text="绑       定"/>
         </LinearLayout>
-        <LinearLayout
-            android:layout_width="400dp"
+        <TextView
+            android:id="@+id/toActivity"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-            <TextView
-                android:id="@+id/deleteFace"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:textSize="18sp"
-                android:text="删除"/>
-            <TextView
-                android:id="@+id/toQuery"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:gravity="right"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:textSize="18sp"
-                android:text="查询"/>
-        </LinearLayout>
-
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="30dp"
+            android:textColor="@color/white"
+            android:text="跳转 人脸识别--->"/>
     </LinearLayout>
 </RelativeLayout>
