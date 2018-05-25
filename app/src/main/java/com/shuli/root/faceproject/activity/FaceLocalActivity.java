@@ -53,7 +53,9 @@ import org.json.JSONObject;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import megvii.facepass.FacePassException;
 import megvii.facepass.FacePassHandler;
 import megvii.facepass.types.FacePassConfig;
@@ -71,29 +73,22 @@ import rx.schedulers.Schedulers;
 
 
 public class FaceLocalActivity extends AppCompatActivity implements CameraManager.CameraListener, View.OnClickListener {
-
-    private enum FacePassSDKMode {
-        MODE_ONLINE,
-        MODE_OFFLINE
-    }
-
-    private static FacePassSDKMode SDK_MODE = FacePassSDKMode.MODE_OFFLINE;
-
+    /* 在预览界面圈出人脸 */
+    @BindView(R.id.fcview)
+    FaceView faceView;
+    @BindView(R.id.ll_face_success)
+    LinearLayout ll_face_success;
+    @BindView(R.id.tv_name)
+    TextView tv_name;
+    @BindView(R.id.tv_num)
+    TextView tv_num;
+    @BindView(R.id.tv_result)
+    TextView face_success;
+    @BindView(R.id.scanVerticalLineImageView)
+    ImageView mScanVerticalLineImageView;
     private static final String DEBUG_TAG = "FacePassDemo";
-
     private static final int MSG_SHOW_TOAST = 1;
-
     private static final int DELAY_MILLION_SHOW_TOAST = 2000;
-
-    /* 识别服务器IP */
-
-    private static final String serverIP_offline = "10.104.44.50";//offline
-
-    private static final String serverIP_online = "10.199.1.14";
-
-    private static String serverIP;
-
-    private static String url;
 
     /* 人脸识别Group */
     private static final String group_name = "face-pass-test-x";
@@ -109,9 +104,6 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
     private CameraPreview cameraView;
 
     private boolean isLocalGroupExist = false;
-
-    /* 在预览界面圈出人脸 */
-    private FaceView faceView;
 
     /* 相机是否使用前置摄像头 */
     private static boolean cameraFacingFront = true;
@@ -147,17 +139,8 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
     /*recognize thread*/
     RecognizeThread mRecognizeThread;
 
-    private ImageView mFaceOperationBtn;
-    private ImageView quit;
-    /*图片缓存*/
-    private FaceImageCache mImageCache;
-    private ImageView mScanVerticalLineImageView;
     private Handler mAndroidHandler;
 
-    private LinearLayout ll_face_success;
-    private TextView tv_name;
-    private TextView tv_num;
-    private TextView face_success;
     private Handler handler = new Handler();
     private boolean isAuto = true;
     private Thread threadNet;
@@ -166,22 +149,13 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mImageCache = new FaceImageCache();
+//        mImageCache = new FaceImageCache();
         mToastBlockQueue = new LinkedBlockingQueue<>();
         mDetectResultQueue = new ArrayBlockingQueue<byte[]>(5);
         initAndroidHandler();
-        if (FacePassSDKMode.MODE_ONLINE == SDK_MODE) {
-            url = "http://" + serverIP_online + ":8080/api/service/recognize/v1";
-            serverIP = serverIP_online;
-        } else {
-            serverIP = serverIP_offline;
-        }
-
         /* 初始化界面 */
         initView();
-
         initFacePassSDK();
-
         initFaceHandler();
         /* 初始化网络请求库 */
         requestQueue = Volley.newRequestQueue(getApplicationContext());
@@ -287,7 +261,6 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         initToast();
         /* 打开相机 */
         manager.open(getWindowManager(), cameraFacingFront, cameraWidth, cameraHeight);
-
         adaptFrameLayout();
         super.onResume();
     }
@@ -365,7 +338,6 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
             mDetectResultQueue.offer(detectionResult.message);
             Log.d(DEBUG_TAG, "1 mDetectResultQueue.size = " + mDetectResultQueue.size());
         }
-
     }
 
     private class RecognizeThread extends Thread {
@@ -447,12 +419,9 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                 } else {
                     face_success.setText("验证失败！");
                     face_success.setVisibility(View.VISIBLE);
-
-                    // SoundPoolUtil.play(2);
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-
                             face_success.setVisibility(View.INVISIBLE);
                         }
                     }, 2000);
@@ -507,15 +476,6 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         }
         setContentView(R.layout.activity_local);
         ButterKnife.bind(this);
-        ll_face_success = findViewById(R.id.ll_face_success);
-        face_success = findViewById(R.id.tv_result);
-        tv_name = findViewById(R.id.tv_name);
-        tv_num = findViewById(R.id.tv_num);
-        mScanVerticalLineImageView = findViewById(R.id.scanVerticalLineImageView);
-        mFaceOperationBtn = findViewById(R.id.btn_face_operation);
-        mFaceOperationBtn.setOnClickListener(this);
-        quit = findViewById(R.id.quit);
-        quit.setOnClickListener(this);
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -524,7 +484,6 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         SettingVar.mHeight = heightPixels;
         SettingVar.mWidth = widthPixels;
 
-        faceView = this.findViewById(R.id.fcview);
         SettingVar.cameraSettingOk = false;
 
         manager = new CameraManager();
@@ -586,7 +545,6 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
     @Override
     protected void onDestroy() {
         mRecognizeThread.isInterrupt = true;
-
         mRecognizeThread.interrupt();
         if (requestQueue != null) {
             requestQueue.cancelAll("upload_detect_result_tag");
@@ -674,7 +632,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
     }
 
 
-    @Override
+    @OnClick({R.id.btn_face_operation,R.id.quit})
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_face_operation:
@@ -714,36 +672,6 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         startActivity(new Intent(this, MainFragmentActivity.class));
     }
 
-
-    /**
-     * 根据facetoken下载图片缓存
-     */
-    private static class FaceImageCache implements ImageLoader.ImageCache {
-
-        private static final int CACHE_SIZE = 6 * 1024 * 1024;
-
-        LruCache<String, Bitmap> mCache;
-
-        public FaceImageCache() {
-            mCache = new LruCache<String, Bitmap>(CACHE_SIZE) {
-
-                @Override
-                protected int sizeOf(String key, Bitmap value) {
-                    return value.getRowBytes() * value.getHeight();
-                }
-            };
-        }
-
-        @Override
-        public Bitmap getBitmap(String url) {
-            return mCache.get(url);
-        }
-
-        @Override
-        public void putBitmap(String url, Bitmap bitmap) {
-            mCache.put(url, bitmap);
-        }
-    }
 
     /**
      * 绑定
@@ -848,7 +776,6 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                 Animation.RELATIVE_TO_SELF,0f);
         translateAnimation.setDuration(200);
         translateAnimation.setRepeatCount(1);
-
 
         AlphaAnimation alphaAnimation = new AlphaAnimation(0.1f,1);
         alphaAnimation.setDuration(100);
