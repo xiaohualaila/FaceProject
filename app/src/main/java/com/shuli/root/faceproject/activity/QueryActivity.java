@@ -186,7 +186,7 @@ public class QueryActivity extends Activity {
                   }
 
                   try {
-                      byte[] faceToken = faceTokenAdapter.getData().get(position).getBytes();
+                      byte[] faceToken = faceTokenAdapter.getData().get(position).getFace_token().getBytes();
                       boolean b = mFacePassHandler.deleteFace(faceToken);
                       String result = b ? "success " : "failed";
                       toast("delete face " + result);
@@ -221,7 +221,7 @@ public class QueryActivity extends Activity {
                   }
 
                   try {
-                      byte[] faceToken = faceTokenAdapter.getData().get(position).getBytes();
+                      byte[] faceToken = faceTokenAdapter.getData().get(position).getFace_token().getBytes();
                       boolean b = mFacePassHandler.unBindGroup(group_name, faceToken);
                       String result = b ? "success " : "failed";
                       toast("unbind " + result);
