@@ -18,7 +18,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
+        <!-- 人脸识别 -->
         <activity android:name=".activity.FaceLocalActivity" android:theme="@style/AppTheme.NoBar">
 
         </activity>

@@ -140,5 +140,13 @@
             android:layout_marginTop="30dp"
             android:textColor="@color/white"
             android:text="跳转 人脸识别--->"/>
+        <TextView
+            android:id="@+id/toQuery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="30dp"
+            android:textColor="@color/white"
+            android:text="跳转 信息查询--->"/>
     </LinearLayout>
 </RelativeLayout>

@@ -10,6 +10,8 @@ import android.widget.Toast;
 import com.shuli.root.faceproject.R;
 import com.shuli.root.faceproject.adapter.FaceTokenAdapter;
 import com.shuli.root.faceproject.base.BaseFragment;
+import com.shuli.root.faceproject.bean.People;
+
 import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -27,8 +29,11 @@ public class QueryFragment  extends BaseFragment {
     @Override
     protected void init() {
         faceTokenAdapter = new FaceTokenAdapter();
-        ArrayList<String> list =  mListener.QueryData();
+        ArrayList<People> list =  mListener.QueryData();
         if(list != null &&list.size()>0){
+
+
+
             faceTokenAdapter.setData(list);
             lv_info.setAdapter(faceTokenAdapter);
         }
@@ -105,7 +110,7 @@ public class QueryFragment  extends BaseFragment {
 
     public interface OnQueryFragmentInteractionListener {
         void toCameraActivity();
-        ArrayList<String> QueryData();
+        ArrayList<People> QueryData();
         ArrayList<String> unbindData(String token);
     }
 }

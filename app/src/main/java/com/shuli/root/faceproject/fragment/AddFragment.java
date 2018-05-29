@@ -72,7 +72,7 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
         holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
     }
 
-    @OnClick({R.id.takePhoto,R.id.deleteFace,R.id.bindFace,R.id.quit,R.id.toActivity})
+    @OnClick({R.id.takePhoto,R.id.deleteFace,R.id.bindFace,R.id.quit,R.id.toActivity,R.id.toQuery})
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.takePhoto:
@@ -130,9 +130,9 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
                 startActivity(new Intent(getActivity(),FaceLocalActivity.class));
                 getActivity().finish();
                 break;
-//            case R.id.toQuery:
-//             mListener.toQueryActivity();
-//                break;
+            case R.id.toQuery:
+             mListener.toQueryActivity();
+                break;
         }
 
     }

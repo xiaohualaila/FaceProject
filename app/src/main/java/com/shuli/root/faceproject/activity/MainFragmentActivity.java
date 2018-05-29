@@ -10,11 +10,18 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+
+import com.shuli.faceproject.greendaodemo.greendao.GreenDaoManager;
+import com.shuli.faceproject.greendaodemo.greendao.gen.PeopleDao;
 import com.shuli.root.faceproject.R;
 import com.shuli.root.faceproject.base.BaseAppCompatActivity;
+import com.shuli.root.faceproject.bean.People;
 import com.shuli.root.faceproject.fragment.AddFragment;
 import com.shuli.root.faceproject.fragment.QueryFragment;
 import com.shuli.root.faceproject.utils.FaceApi;
+
+import org.greenrobot.greendao.query.QueryBuilder;
+
 import java.io.File;
 import java.util.ArrayList;
 import butterknife.BindView;
@@ -320,8 +327,8 @@ public class MainFragmentActivity extends BaseAppCompatActivity implements AddFr
     }
 
     @Override
-    public ArrayList<String> QueryData(){
-        ArrayList<String> faceTokenList = new ArrayList<>();
+    public ArrayList<People> QueryData(){
+        ArrayList<People> faceTokenList = new ArrayList<>();
         if (mFacePassHandler == null) {
             toast("请检查网络或者人脸检测受限! ");
             return faceTokenList;
@@ -329,10 +336,16 @@ public class MainFragmentActivity extends BaseAppCompatActivity implements AddFr
 
         try {
             byte[][] faceTokens = mFacePassHandler.getLocalGroupInfo(group_name);
+            String string;
             if (faceTokens != null && faceTokens.length > 0) {
                 for (int j = 0; j < faceTokens.length; j++) {
                     if (faceTokens[j].length > 0) {
-                        faceTokenList.add(new String(faceTokens[j]));
+                        string = new String(faceTokens[j]);
+                        People people = GreenDaoManager.getInstance().getSession().getPeopleDao()
+                                .queryBuilder().where(PeopleDao.Properties.Face_token.eq(string)).unique();
+                        if(people != null){
+                            faceTokenList.add(people);
+                        }
                     }
                 }
             }
