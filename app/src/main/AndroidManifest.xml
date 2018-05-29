@@ -35,8 +35,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.AddActivity" android:theme="@style/AppTheme.NoBar"/>
-        <activity android:name=".activity.QueryActivity" android:theme="@style/AppTheme.NoBar"/>
     </application>
 
 </manifest>

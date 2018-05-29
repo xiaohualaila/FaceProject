@@ -336,15 +336,18 @@ public class MainFragmentActivity extends BaseAppCompatActivity implements AddFr
 
         try {
             byte[][] faceTokens = mFacePassHandler.getLocalGroupInfo(group_name);
-            String string;
+            String face_token;
             if (faceTokens != null && faceTokens.length > 0) {
                 for (int j = 0; j < faceTokens.length; j++) {
                     if (faceTokens[j].length > 0) {
-                        string = new String(faceTokens[j]);
+                        face_token = new String(faceTokens[j]);
                         People people = GreenDaoManager.getInstance().getSession().getPeopleDao()
-                                .queryBuilder().where(PeopleDao.Properties.Face_token.eq(string)).unique();
+                                .queryBuilder().where(PeopleDao.Properties.Face_token.eq(face_token)).unique();
                         if(people != null){
                             faceTokenList.add(people);
+                        } else {
+                            //解绑无用的人脸标识
+                            mFacePassHandler.unBindGroup(group_name, face_token.getBytes());
                         }
                     }
                 }

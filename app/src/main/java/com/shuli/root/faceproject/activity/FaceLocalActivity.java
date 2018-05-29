@@ -693,7 +693,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
             return;
         }
 
-        People people = GreenDaoManager.getInstance().getSession().getPeopleDao().queryBuilder().where(PeopleDao.Properties.Face_token.eq(faceToken)).unique();
+        People people = GreenDaoManager.getInstance().getSession().getPeopleDao().queryBuilder().where(PeopleDao.Properties.Face_token.eq(token)).unique();
         if(people != null){
             return;
         }
@@ -722,7 +722,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                     }
                     Log.i("sss", ">>>>>>>>>sleep>>>>>>>>>>>>>");
                     try {
-                        Thread.sleep(20000);
+                        Thread.sleep(10000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
