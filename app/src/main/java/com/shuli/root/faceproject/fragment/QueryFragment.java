@@ -34,7 +34,7 @@ public class QueryFragment  extends BaseFragment {
 
 
 
-            faceTokenAdapter.setData(list);
+        //    faceTokenAdapter.setData(list);
             lv_info.setAdapter(faceTokenAdapter);
         }
         unbindButton();
