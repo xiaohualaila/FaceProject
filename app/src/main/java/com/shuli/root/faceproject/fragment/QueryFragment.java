@@ -4,9 +4,13 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.shuli.faceproject.greendaodemo.greendao.GreenDaoManager;
+import com.shuli.faceproject.greendaodemo.greendao.gen.PeopleDao;
 import com.shuli.root.faceproject.R;
 import com.shuli.root.faceproject.adapter.FaceTokenAdapter;
 import com.shuli.root.faceproject.base.BaseFragment;
@@ -31,10 +35,7 @@ public class QueryFragment  extends BaseFragment {
         faceTokenAdapter = new FaceTokenAdapter();
         ArrayList<People> list =  mListener.QueryData();
         if(list != null &&list.size()>0){
-
-
-
-        //    faceTokenAdapter.setData(list);
+            faceTokenAdapter.setData(list);
             lv_info.setAdapter(faceTokenAdapter);
         }
         unbindButton();
@@ -67,12 +68,36 @@ public class QueryFragment  extends BaseFragment {
         faceTokenAdapter.setOnItemButtonClickListener(new FaceTokenAdapter.ItemButtonClickListener() {
             @Override
             public void onItemDeleteButtonClickListener(int position) {
-
+                final String token = faceTokenAdapter.getData().get(position).getFace_token();
+                final People people = GreenDaoManager.getInstance().getSession().getPeopleDao().queryBuilder()
+                        .where(PeopleDao.Properties.Face_token.eq(token)).build().unique();
+                final UpdatePeopleDialogFragment dialog =  UpdatePeopleDialogFragment.getInstance(people.getName(),people.getGonghao());
+                dialog.show(getFragmentManager(), new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String name =dialog.et_name.getText().toString();
+                        String gonghao =dialog.et_gonghao.getText().toString();
+                        if(TextUtils.isEmpty(name)&&TextUtils.isEmpty(gonghao)){
+                            dialog.tv_title.setText("姓名工号不能为空！");
+                        }else {
+                            people.setName(name);
+                            people.setGonghao(gonghao);
+                            GreenDaoManager.getInstance().getSession().getPeopleDao().save(people);
+                            ArrayList<People> list = mListener.QueryData();
+                            if(list != null &&list.size()>0) {
+                                faceTokenAdapter.setData(list);
+                                lv_info.setAdapter(faceTokenAdapter);
+                            }
+                            showToastLong("更新成功！");
+                            dialog.dismiss();
+                        }
+                    }
+                });
             }
 
             @Override
             public void onItemUnbindButtonClickListener(int position) {
-                final String token = faceTokenAdapter.getData().get(position);
+                final String token = faceTokenAdapter.getData().get(position).getFace_token();
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle("解绑");
@@ -83,8 +108,9 @@ public class QueryFragment  extends BaseFragment {
                 builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        ArrayList<String> list = mListener.unbindData(token);
+                        ArrayList<People> list = mListener.unbindData(token);
                         if(list != null &&list.size()>0) {
+
                             faceTokenAdapter.setData(list);
                             lv_info.setAdapter(faceTokenAdapter);
                         }else {
@@ -111,6 +137,6 @@ public class QueryFragment  extends BaseFragment {
     public interface OnQueryFragmentInteractionListener {
         void toCameraActivity();
         ArrayList<People> QueryData();
-        ArrayList<String> unbindData(String token);
+        ArrayList<People> unbindData(String token);
     }
 }

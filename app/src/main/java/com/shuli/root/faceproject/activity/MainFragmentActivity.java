@@ -358,8 +358,8 @@ public class MainFragmentActivity extends BaseAppCompatActivity implements AddFr
     }
 
     @Override
-    public ArrayList<String> unbindData(String token) {
-        ArrayList<String> faceTokenList = new ArrayList<>();
+    public ArrayList<People> unbindData(String token) {
+        ArrayList<People> faceTokenList = new ArrayList<>();
         /**
          * 解绑
          */
@@ -378,7 +378,10 @@ public class MainFragmentActivity extends BaseAppCompatActivity implements AddFr
                 if (faceTokens != null && faceTokens.length > 0) {
                     for (int j = 0; j < faceTokens.length; j++) {
                         if (faceTokens[j].length > 0) {
-                            faceTokenList.add(new String(faceTokens[j]));
+                           String string = new String(faceTokens[j]);
+                            People people = GreenDaoManager.getInstance().getSession().getPeopleDao()
+                                    .queryBuilder().where(PeopleDao.Properties.Face_token.eq(string)).unique();
+                            faceTokenList.add(people);
                         }
                     }
                 }

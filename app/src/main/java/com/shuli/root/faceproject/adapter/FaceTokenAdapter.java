@@ -21,7 +21,7 @@ import java.util.List;
 
 public class FaceTokenAdapter extends BaseAdapter {
 
-    private List<String> mFaceTokens;
+    private List<People> mFaceTokens;
     private LayoutInflater mLayoutInflater;
     private ItemButtonClickListener mItemButtonClickListener;
 
@@ -29,11 +29,11 @@ public class FaceTokenAdapter extends BaseAdapter {
         super();
     }
 
-    public List<String> getData() {
+    public List<People> getData() {
         return mFaceTokens;
     }
 
-    public void setData(List<String> data) {
+    public void setData(List<People> data) {
         mFaceTokens = data;
     }
 
@@ -119,11 +119,11 @@ public class FaceTokenAdapter extends BaseAdapter {
                 return true;
             }
         });
-        String token = mFaceTokens.get(position);
-        holder.faceTokenNameTv.setText(token);
+        People people = mFaceTokens.get(position);
+        holder.faceTokenNameTv.setText(people.getFace_token());
 
-            holder.name.setText("");
-            holder.gonghao.setText("");
+            holder.name.setText(people.getName());
+            holder.gonghao.setText(people.getGonghao());
 
         return convertView;
     }
