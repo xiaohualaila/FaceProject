@@ -375,10 +375,11 @@ public class MainFragmentActivity extends BaseAppCompatActivity implements AddFr
             toast("解绑 " + result);
             if (b) {
                 byte[][] faceTokens = mFacePassHandler.getLocalGroupInfo(group_name);
+                String string;
                 if (faceTokens != null && faceTokens.length > 0) {
                     for (int j = 0; j < faceTokens.length; j++) {
                         if (faceTokens[j].length > 0) {
-                           String string = new String(faceTokens[j]);
+                            string = new String(faceTokens[j]);
                             People people = GreenDaoManager.getInstance().getSession().getPeopleDao()
                                     .queryBuilder().where(PeopleDao.Properties.Face_token.eq(string)).unique();
                             faceTokenList.add(people);
