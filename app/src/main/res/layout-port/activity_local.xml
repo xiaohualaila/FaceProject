@@ -18,6 +18,7 @@
             android:layout_height="35dp"
             android:layout_margin="10dp"
             android:clickable="true"
+            android:visibility="invisible"
             android:src="@drawable/back_row"/>
         <TextView
             android:layout_width="wrap_content"

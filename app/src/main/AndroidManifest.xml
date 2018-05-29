@@ -28,6 +28,9 @@
         <activity android:name=".activity.MainFragmentActivity" android:theme="@style/AppTheme.NoBar">
 
         </activity>
+        <activity android:name=".activity.QueryActivity" android:theme="@style/AppTheme.NoBar">
+
+        </activity>
         <activity android:name=".activity.LoginActivity" android:theme="@style/AppTheme.NoBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

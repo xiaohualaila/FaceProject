@@ -146,6 +146,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
     private Thread threadNet;
     private RelativeLayout layout_root;
     private AnimationDrawable frameAnimation1;
+    private boolean isRepeat = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -386,35 +387,40 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                 Log.i("sss", "活体分 = " + livenessScore + "\n");
 
                 if (isRecognizeOK) {
-                    People people ;
-                    try{
-                         people = GreenDaoManager.getInstance().getSession().getPeopleDao().queryBuilder()
-                                .where(PeopleDao.Properties.Face_token.eq(token)).build().unique();
-                    }catch (Exception e){
-                        e.printStackTrace();
-                        people = null;
+                    if(isRepeat){
+                        return;
                     }
-                    face_success.setVisibility(View.VISIBLE);
-                    ll_face_success.setVisibility(View.VISIBLE);
-                    face_success.setText("验证成功！");
-                    setViewAnimal();
-                    SoundPoolUtil.play(1);
-                    // TODO: 2018/5/9 开门
-                    Power.set_zysj_gpio_value(1,0);
-                    if(people != null){
-                        tv_name.setText(people.getName());
-                        tv_num.setText(people.getGonghao());
-                    }
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            face_success.setVisibility(View.INVISIBLE);
-                            ll_face_success.setVisibility(View.GONE);
-
-                            // TODO: 2018/5/9 关门
-                            Power.set_zysj_gpio_value(1,1);
+                    isRepeat = true;
+                        People people ;
+                        try{
+                             people = GreenDaoManager.getInstance().getSession().getPeopleDao().queryBuilder()
+                                    .where(PeopleDao.Properties.Face_token.eq(token)).build().unique();
+                        }catch (Exception e){
+                            e.printStackTrace();
+                            people = null;
                         }
-                    }, 2000);
+                        face_success.setVisibility(View.VISIBLE);
+                        ll_face_success.setVisibility(View.VISIBLE);
+                        face_success.setText("验证成功！");
+                        setViewAnimal();
+                        SoundPoolUtil.play(1);
+                        // TODO: 2018/5/9 开门
+                        Power.set_zysj_gpio_value(1,0);
+                        if(people != null){
+                            tv_name.setText(people.getName());
+                            tv_num.setText(people.getGonghao());
+                        }
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                face_success.setVisibility(View.INVISIBLE);
+                                ll_face_success.setVisibility(View.GONE);
+    
+                                // TODO: 2018/5/9 关门
+                                Power.set_zysj_gpio_value(1,1);
+                                isRepeat = false;
+                            }
+                        }, 2000);
 
                 } else {
                     face_success.setText("验证失败！");
@@ -566,6 +572,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         if (mFacePassHandler != null) {
             mFacePassHandler.release();
         }
+        isAuto = false;
         super.onDestroy();
     }
 
@@ -636,10 +643,6 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_face_operation:
-                // 进入查询列表页面
-                toOtherActivity();
-                break;
-            case R.id.quit:
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setMessage("是否要退出?");
                 //点击对话框以外的区域是否让对话框消失
@@ -664,13 +667,13 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         }
     }
 
-    private void toOtherActivity() {
-        if (manager != null) {
-            manager.release();
-        }
-        finish();
-        startActivity(new Intent(this, MainFragmentActivity.class));
-    }
+//    private void toOtherActivity() {
+//        if (manager != null) {
+//            manager.release();
+//        }
+//        finish();
+//        startActivity(new Intent(this, QueryActivity.class));
+//    }
 
 
     /**
@@ -708,7 +711,6 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
             e.printStackTrace();
             toast(e.getMessage());
         }
-        return ;
     }
 
     Runnable taskNet = new Runnable() {
