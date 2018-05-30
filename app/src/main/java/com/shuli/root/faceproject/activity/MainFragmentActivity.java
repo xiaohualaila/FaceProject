@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.WindowManager;
@@ -65,13 +66,13 @@ public class MainFragmentActivity extends BaseAppCompatActivity implements AddFr
     FacePassModel searchModel;
     FacePassModel detectModel;
 
-    private Fragment mCurrentFrag;
-    private FragmentManager fm;
+
     private Fragment cameraFragment;
     private Fragment queryFragment;
 
     private boolean isAuto = true;
     private Thread threadNet;
+
     @Override
     protected void init() {
 
@@ -81,11 +82,7 @@ public class MainFragmentActivity extends BaseAppCompatActivity implements AddFr
         initFacePassSDK();
 
         initFaceHandler();
-
-        fm = getSupportFragmentManager();
-        cameraFragment = new AddFragment();
-        queryFragment = new QueryFragment();
-        switchContent(cameraFragment);//切换页面
+        switchCameraContent();
         threadNet = new Thread(taskNet);
         threadNet.start();
     }
@@ -96,20 +93,25 @@ public class MainFragmentActivity extends BaseAppCompatActivity implements AddFr
     }
 
 
-    public void switchContent(Fragment to) {
-        if (mCurrentFrag != to) {
-            if (!to.isAdded()) {// 如果to fragment没有被add则增加一个fragment
-                if (mCurrentFrag != null) {
-                    fm.beginTransaction().hide(mCurrentFrag).commit();
-                }
-                fm.beginTransaction()
-                        .add(R.id.fl_content, to)
-                        .commit();
-            } else {
-                fm.beginTransaction().hide(mCurrentFrag).show(to).commit(); // 隐藏当前的fragment，显示下一个
-            }
-            mCurrentFrag = to;
+    public void switchQueryContent() {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        if(queryFragment == null) {
+            queryFragment = new QueryFragment();
         }
+        transaction.replace(R.id.fl_content, queryFragment);
+        //提交事务
+        transaction.commit();
+
+    }
+
+    public void switchCameraContent() {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        if(cameraFragment == null) {
+            cameraFragment = new AddFragment();
+        }
+        transaction.replace(R.id.fl_content, cameraFragment);
+        //提交事务
+        transaction.commit();
     }
 
     private void initView() {
@@ -447,19 +449,6 @@ public class MainFragmentActivity extends BaseAppCompatActivity implements AddFr
             boolean b = mFacePassHandler.unBindGroup(group_name, faceToken);
             String result = b ? "成功 " : "失败";
             toast("解绑 " + result);
-            if (b) {
-                byte[][] faceTokens = mFacePassHandler.getLocalGroupInfo(group_name);
-                String string;
-                if (faceTokens != null && faceTokens.length > 0) {
-                    for (int j = 0; j < faceTokens.length; j++) {
-                        if (faceTokens[j].length > 0) {
-                            string = new String(faceTokens[j]);
-                            GreenDaoManager.getInstance().getSession().getPeopleDao()
-                             .queryBuilder().where(PeopleDao.Properties.Face_token.eq(string)).unique();
-                        }
-                    }
-                }
-            }
         } catch (Exception e) {
             e.printStackTrace();
             toast("解绑失败!");
@@ -533,12 +522,12 @@ public class MainFragmentActivity extends BaseAppCompatActivity implements AddFr
 
     @Override
     public void toQueryActivity() {
-        switchContent(queryFragment);
+        switchQueryContent();
     }
 
     @Override
     public void toCameraActivity() {
-        switchContent(cameraFragment);
+        switchCameraContent();
     }
 }
 

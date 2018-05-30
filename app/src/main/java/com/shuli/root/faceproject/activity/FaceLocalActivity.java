@@ -732,19 +732,6 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
             boolean b = mFacePassHandler.unBindGroup(group_name, faceToken);
             String result = b ? "成功 " : "失败";
          //   toast("解绑 " + result);
-            if (b) {
-                byte[][] faceTokens = mFacePassHandler.getLocalGroupInfo(group_name);
-                String string;
-                if (faceTokens != null && faceTokens.length > 0) {
-                    for (int j = 0; j < faceTokens.length; j++) {
-                        if (faceTokens[j].length > 0) {
-                            string = new String(faceTokens[j]);
-                            GreenDaoManager.getInstance().getSession().getPeopleDao()
-                                    .queryBuilder().where(PeopleDao.Properties.Face_token.eq(string)).unique();
-                        }
-                    }
-                }
-            }
         } catch (Exception e) {
             e.printStackTrace();
             toast("解绑失败!");
