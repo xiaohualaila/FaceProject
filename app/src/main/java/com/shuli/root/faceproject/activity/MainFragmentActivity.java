@@ -289,7 +289,7 @@ public class MainFragmentActivity extends BaseAppCompatActivity implements AddFr
     }
 
     /**
-     * 绑定
+     * 绑定 人脸信息，并向数据库中保存人员信息
      */
     @Override
     public boolean bindGroupFaceToken(String token, String name,String gonghao) {
@@ -326,6 +326,10 @@ public class MainFragmentActivity extends BaseAppCompatActivity implements AddFr
         return b;
     }
 
+    /**
+     * 从人脸底库中获取所有的人脸标识并查询与人脸标识对应的人员信息
+     * @return 返回人员信息L集合
+     */
     @Override
     public ArrayList<People> QueryData(){
         ArrayList<People> faceTokenList = new ArrayList<>();
@@ -343,7 +347,7 @@ public class MainFragmentActivity extends BaseAppCompatActivity implements AddFr
                         face_token = new String(faceTokens[j]);
                         People people = GreenDaoManager.getInstance().getSession().getPeopleDao()
                                 .queryBuilder().where(PeopleDao.Properties.Face_token.eq(face_token)).unique();
-                        if(people != null){
+                        if(people != null){//将不等于null的对象添加
                             faceTokenList.add(people);
                         } else {
                             //解绑无用的人脸标识
@@ -360,6 +364,11 @@ public class MainFragmentActivity extends BaseAppCompatActivity implements AddFr
         }
     }
 
+    /**
+     * 解绑数据 通过传入的token,解绑成功并删除相应数据库的人员信息，
+     * @param token
+     * @return 如果解绑成功，重新获取人员信息列表
+     */
     @Override
     public ArrayList<People> unbindData(String token) {
         ArrayList<People> faceTokenList = new ArrayList<>();
@@ -374,7 +383,7 @@ public class MainFragmentActivity extends BaseAppCompatActivity implements AddFr
         try {
             byte[] faceToken = token.getBytes();
             boolean b = mFacePassHandler.unBindGroup(group_name, faceToken);
-            String result = b ? "success " : "failed";
+            String result = b ? "成功 " : "失败";
             toast("解绑 " + result);
             if (b) {
                 byte[][] faceTokens = mFacePassHandler.getLocalGroupInfo(group_name);
@@ -389,10 +398,12 @@ public class MainFragmentActivity extends BaseAppCompatActivity implements AddFr
                         }
                     }
                 }
+            }else {
+                toast("解绑 " + result);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            toast("绑定失败!");
+            toast("解绑!");
         }finally {
             return faceTokenList;
         }
