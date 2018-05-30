@@ -730,7 +730,15 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         try {
             byte[] faceToken = token.getBytes();
             boolean b = mFacePassHandler.unBindGroup(group_name, faceToken);
-            String result = b ? "成功 " : "失败";
+//            String result = b ? "成功 " : "失败";
+
+            if(b){
+                People people = GreenDaoManager.getInstance().getSession().getPeopleDao()
+                        .queryBuilder().where(PeopleDao.Properties.Face_token.eq(token)).unique();
+                if(people != null){
+                    GreenDaoManager.getInstance().getSession().getPeopleDao().delete(people);
+                }
+            }
          //   toast("解绑 " + result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -787,6 +795,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                                if(num2 > 0){
                                    for (int i = 0;i < num2; i++) {
                                        String delete_str = deleteArray.optString(i);
+                                       Log.i("sss",delete_str);
                                        unbindDeleteData(delete_str);
                                    }
                                }
