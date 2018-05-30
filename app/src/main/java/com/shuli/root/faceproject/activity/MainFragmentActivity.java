@@ -18,9 +18,15 @@ import com.shuli.root.faceproject.base.BaseAppCompatActivity;
 import com.shuli.root.faceproject.bean.People;
 import com.shuli.root.faceproject.fragment.AddFragment;
 import com.shuli.root.faceproject.fragment.QueryFragment;
+import com.shuli.root.faceproject.retrofit.Api;
+import com.shuli.root.faceproject.retrofit.ConnectUrl;
 import com.shuli.root.faceproject.utils.FaceApi;
+import com.shuli.root.faceproject.utils.MyUtil;
+import com.shuli.root.faceproject.utils.SharedPreferencesUtil;
 
 import org.greenrobot.greendao.query.QueryBuilder;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -32,6 +38,9 @@ import megvii.facepass.types.FacePassConfig;
 import megvii.facepass.types.FacePassImageRotation;
 import megvii.facepass.types.FacePassModel;
 import megvii.facepass.types.FacePassPose;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 public class MainFragmentActivity extends BaseAppCompatActivity implements AddFragment.OnFragmentInteractionListener,QueryFragment.OnQueryFragmentInteractionListener {
     @BindView(R.id.fl_content)
@@ -60,6 +69,9 @@ public class MainFragmentActivity extends BaseAppCompatActivity implements AddFr
     private FragmentManager fm;
     private Fragment cameraFragment;
     private Fragment queryFragment;
+
+    private boolean isAuto = true;
+    private Thread threadNet;
     @Override
     protected void init() {
 
@@ -74,6 +86,8 @@ public class MainFragmentActivity extends BaseAppCompatActivity implements AddFr
         cameraFragment = new AddFragment();
         queryFragment = new QueryFragment();
         switchContent(cameraFragment);//切换页面
+        threadNet = new Thread(taskNet);
+        threadNet.start();
     }
 
     @Override
@@ -222,6 +236,7 @@ public class MainFragmentActivity extends BaseAppCompatActivity implements AddFr
         if (mFacePassHandler != null) {
             mFacePassHandler.release();
         }
+        isAuto = false;
         super.onDestroy();
     }
 
@@ -313,8 +328,16 @@ public class MainFragmentActivity extends BaseAppCompatActivity implements AddFr
             toast("工号不能为空！");
             return b;
         }
+        People people = GreenDaoManager.getInstance().getSession().getPeopleDao().queryBuilder().where(PeopleDao.Properties.Face_token.eq(token)).unique();
+        if(people != null){
+            return b;
+        }
         try {
              b = mFacePassHandler.bindGroup(group_name, faceToken);
+            if(b){
+                PeopleDao peopleDao = GreenDaoManager.getInstance().getSession().getPeopleDao();
+                peopleDao.insert(new People(name,gonghao,token));
+            }
             String result = b ? "成功 " : "失败";
             toast("绑定  " + result);
 
@@ -398,15 +421,113 @@ public class MainFragmentActivity extends BaseAppCompatActivity implements AddFr
                         }
                     }
                 }
-            }else {
-                toast("解绑 " + result);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            toast("解绑!");
+            toast("解绑失败!");
         }finally {
             return faceTokenList;
         }
+    }
+
+    /**
+     * 解绑数据 通过传入的token,解绑成功并删除相应数据库的人员信息，
+     * @param token
+     */
+    public void unbindDeleteData(String token) {
+        /**
+         * 解绑
+         */
+        if (mFacePassHandler == null) {
+            toast("请检查网络或者人脸检测受限! ");
+            return;
+        }
+        try {
+            byte[] faceToken = token.getBytes();
+            boolean b = mFacePassHandler.unBindGroup(group_name, faceToken);
+            String result = b ? "成功 " : "失败";
+            toast("解绑 " + result);
+            if (b) {
+                byte[][] faceTokens = mFacePassHandler.getLocalGroupInfo(group_name);
+                String string;
+                if (faceTokens != null && faceTokens.length > 0) {
+                    for (int j = 0; j < faceTokens.length; j++) {
+                        if (faceTokens[j].length > 0) {
+                            string = new String(faceTokens[j]);
+                            GreenDaoManager.getInstance().getSession().getPeopleDao()
+                             .queryBuilder().where(PeopleDao.Properties.Face_token.eq(string)).unique();
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            toast("解绑失败!");
+        }
+    }
+
+    Runnable taskNet = new Runnable() {
+        @Override
+        public void run() {
+            while (true) {
+                if(isAuto){
+                    boolean isNetAble = MyUtil.isNetworkAvailable(MainFragmentActivity.this);
+                    if (isNetAble) {
+                        requestInfo();
+                    }
+                    Log.i("sss", ">>>>>>>>>sleep>>>>>>>>>>>>>");
+                    try {
+                        Thread.sleep(10000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    };
+
+    private void requestInfo(){
+        Log.i("sss", ">>>>>>>>>>>>>>>>>>>>>>");
+        int count = SharedPreferencesUtil.getIntByKey("count",this);
+        Api.getBaseApiWithOutFormat(ConnectUrl.URL)
+                .getFaceToken(count)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<JSONObject>() {
+                               @Override
+                               public void call(JSONObject jsonObject) {
+                                   Log.i("sss", jsonObject.toString());
+                                   if (jsonObject != null) {
+                                       if (jsonObject.optBoolean("result")) {
+                                           JSONArray array = jsonObject.optJSONArray("userList");
+                                           int num = array.length();
+                                           if(num > 0){
+                                               JSONObject obj;
+                                               for (int i = 0;i < num;i++) {
+                                                   obj = array.optJSONObject(i);
+                                                   bindGroupFaceToken(obj.optString("faceToken"),obj.optString("userName"),obj.optString("workNum"));
+                                               }
+                                               SharedPreferencesUtil.save("count",jsonObject.optInt("maxUserId"),MainFragmentActivity.this);
+                                           }
+                                           JSONArray deleteArray = jsonObject.optJSONArray("deletedUserList");
+                                           int num2 = deleteArray.length();
+                                           if(num2 > 0){
+                                               for (int i = 0;i < num2; i++) {
+                                                   String delete_str = deleteArray.optString(i);
+                                                   unbindDeleteData(delete_str);
+                                               }
+                                           }
+                                       }
+
+                                   }
+                               }
+                           }, new Action1<Throwable>() {
+                               @Override
+                               public void call(Throwable throwable) {
+                                   Log.i("sss", throwable.toString());
+                               }
+                           }
+                );
     }
 
 

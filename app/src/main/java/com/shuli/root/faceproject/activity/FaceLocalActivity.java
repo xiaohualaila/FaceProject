@@ -695,7 +695,9 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         if (TextUtils.isEmpty(gonghao)){
             return;
         }
-
+        /**
+         * 防止服务器传过来的数据重复造成重复绑定
+         */
         People people = GreenDaoManager.getInstance().getSession().getPeopleDao().queryBuilder().where(PeopleDao.Properties.Face_token.eq(token)).unique();
         if(people != null){
             return;
@@ -710,6 +712,42 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         } catch (Exception e) {
             e.printStackTrace();
             toast(e.getMessage());
+        }
+    }
+
+    /**
+     * 解绑数据 通过传入的token,解绑成功并删除相应数据库的人员信息，
+     * @param token
+     */
+    public void unbindDeleteData(String token) {
+        /**
+         * 解绑
+         */
+        if (mFacePassHandler == null) {
+            toast("请检查网络或者人脸检测受限! ");
+            return;
+        }
+        try {
+            byte[] faceToken = token.getBytes();
+            boolean b = mFacePassHandler.unBindGroup(group_name, faceToken);
+            String result = b ? "成功 " : "失败";
+         //   toast("解绑 " + result);
+            if (b) {
+                byte[][] faceTokens = mFacePassHandler.getLocalGroupInfo(group_name);
+                String string;
+                if (faceTokens != null && faceTokens.length > 0) {
+                    for (int j = 0; j < faceTokens.length; j++) {
+                        if (faceTokens[j].length > 0) {
+                            string = new String(faceTokens[j]);
+                            GreenDaoManager.getInstance().getSession().getPeopleDao()
+                                    .queryBuilder().where(PeopleDao.Properties.Face_token.eq(string)).unique();
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            toast("解绑失败!");
         }
     }
 
@@ -748,12 +786,24 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                            if (jsonObject.optBoolean("result")) {
                                JSONArray array = jsonObject.optJSONArray("userList");
                                int num = array.length();
-                               JSONObject obj;
-                               for (int i = 0;i < num;i++) {
-                                   obj = array.optJSONObject(i);
-                                   bindGroupFaceToken(obj.optString("faceToken"),obj.optString("userName"),obj.optString("workNum"));
+                               if(num>0){
+                                   JSONObject obj;
+                                   for (int i = 0;i < num;i++) {
+                                       obj = array.optJSONObject(i);
+                                       bindGroupFaceToken(obj.optString("faceToken"),obj.optString("userName"),obj.optString("workNum"));
+                                       SharedPreferencesUtil.save("count",jsonObject.optInt("maxUserId"),FaceLocalActivity.this);
+                                   }
                                }
-                               SharedPreferencesUtil.save("count",jsonObject.optInt("maxUserId"),FaceLocalActivity.this);
+
+                               JSONArray deleteArray = jsonObject.optJSONArray("deletedUserList");
+                               int num2 = deleteArray.length();
+                               if(num2 > 0){
+                                   for (int i = 0;i < num2; i++) {
+                                       String delete_str = deleteArray.optString(i);
+                                       unbindDeleteData(delete_str);
+                                   }
+                               }
+
                            }
                        }
                    }

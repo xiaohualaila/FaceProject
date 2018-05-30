@@ -42,7 +42,6 @@ public class QueryFragment  extends BaseFragment {
     }
 
 
-
     @OnClick(R.id.tv_back)
     public void onClick(View view) {
         switch (view.getId()) {
