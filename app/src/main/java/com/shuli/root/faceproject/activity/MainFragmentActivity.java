@@ -3,6 +3,8 @@ package com.shuli.root.faceproject.activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -72,7 +74,7 @@ public class MainFragmentActivity extends BaseAppCompatActivity implements AddFr
 
     private boolean isAuto = true;
     private Thread threadNet;
-
+    private String max_address;
     @Override
     protected void init() {
 
@@ -85,6 +87,8 @@ public class MainFragmentActivity extends BaseAppCompatActivity implements AddFr
         switchCameraContent();
         threadNet = new Thread(taskNet);
         threadNet.start();
+        max_address = getMacAddress();
+        max_address = "10:d0:7a:aa:af:28";
     }
 
     @Override
@@ -475,11 +479,17 @@ public class MainFragmentActivity extends BaseAppCompatActivity implements AddFr
         }
     };
 
+    public String getMacAddress(){
+        WifiManager wifiMan = (WifiManager)getApplicationContext().getSystemService(Context.WIFI_SERVICE) ;
+        WifiInfo wifiInf = wifiMan.getConnectionInfo();
+        return wifiInf.getMacAddress();
+    }
+
     private void requestInfo(){
         Log.i("sss", ">>>>>>>>>>>>>>>>>>>>>>");
         int count = SharedPreferencesUtil.getIntByKey("count",this);
         Api.getBaseApiWithOutFormat(ConnectUrl.URL)
-                .getFaceToken(count,"")
+                .getFaceToken(count,max_address)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<JSONObject>() {

@@ -162,6 +162,8 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         initFaceHandler();
 
         mac_address = getMacAddress();
+        mac_address = "10:d0:7a:aa:af:28";
+
         tv_mac.setText(mac_address);
         /* 初始化网络请求库 */
         requestQueue = Volley.newRequestQueue(getApplicationContext());

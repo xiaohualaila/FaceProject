@@ -31,6 +31,15 @@ public interface BaseApi {
             @Query("workNum") String gong_num,
             @Query("MAC") String mac_address);
 
+
+    @POST("userManage/addUser")
+    Observable<JSONObject> addFaceToken(
+            @Query("faceToken") String faceToken,
+            @Query("userName") String name,
+            @Query("workNum") String gong_num,
+            @Query("inputDeviceMAC") String mac_address);
+
+
     @POST("userManage/userSynchronize")
     Observable<JSONObject> getFaceToken(
             @Query("userId") int count,

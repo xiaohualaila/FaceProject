@@ -53,6 +53,9 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
     ClearEditTextWhite ce_name;
     @BindView(R.id.ce_gong_num)
     ClearEditTextWhite ce_gong_num;
+    @BindView(R.id.max_str)
+    TextView max_str;
+
     private Camera camera;
     private String filePath;
     private SurfaceHolder holder;
@@ -73,6 +76,8 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
         holder.addCallback(this);
         holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         max_address = getMacAddress();
+        max_address = "10:d0:7a:aa:af:28";
+        max_str.setText(max_address);
     }
 
     @OnClick({R.id.takePhoto,R.id.deleteFace,R.id.bindFace,R.id.quit,R.id.toActivity,R.id.toQuery})
@@ -159,7 +164,7 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
 
     private void upload(String faceToken,String name,String gong_num){
         Api.getBaseApiWithOutFormat(ConnectUrl.URL)
-                .uploadFaceToken(faceToken,name,gong_num,max_address)
+                .addFaceToken(faceToken,name,gong_num,max_address)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<JSONObject>() {
