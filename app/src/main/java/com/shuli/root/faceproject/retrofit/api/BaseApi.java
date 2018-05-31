@@ -17,13 +17,13 @@ public interface BaseApi {
     @POST("adminManage/adminLogin")
     Observable<JSONObject> login(
             @Query("account") String name,
-            @Query("password") String secret
-    );
-
+            @Query("password") String secret);
 
     @POST("adminManage/adminRegister")
-    Observable<JSONObject> regist(@Query("account") String name,
-                              @Query("password") String secret);
+    Observable<JSONObject> regist(
+            @Query("account") String name,
+            @Query("password") String secret);
+
     @POST("userManage/addUser")
     Observable<JSONObject> uploadFaceToken(
             @Query("faceToken") String faceToken,
