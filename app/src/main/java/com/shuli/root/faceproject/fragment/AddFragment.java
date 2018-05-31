@@ -10,6 +10,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.hardware.Camera;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Surface;
@@ -59,7 +61,7 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
     private int height = 720;
     private int CammeraIndex;
     private OnFragmentInteractionListener mListener;
-
+    private String max_address;
     @Override
     protected int getLayoutId() {
         return R.layout.activity_add;
@@ -70,6 +72,7 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
         holder = camera_sf.getHolder();
         holder.addCallback(this);
         holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        max_address = getMacAddress();
     }
 
     @OnClick({R.id.takePhoto,R.id.deleteFace,R.id.bindFace,R.id.quit,R.id.toActivity,R.id.toQuery})
@@ -148,9 +151,15 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
         }
     }
 
+    public String getMacAddress(){
+        WifiManager wifiMan = (WifiManager)getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE) ;
+        WifiInfo wifiInf = wifiMan.getConnectionInfo();
+        return wifiInf.getMacAddress();
+    }
+
     private void upload(String faceToken,String name,String gong_num){
         Api.getBaseApiWithOutFormat(ConnectUrl.URL)
-                .uploadFaceToken(faceToken,name,gong_num)
+                .uploadFaceToken(faceToken,name,gong_num,max_address)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<JSONObject>() {

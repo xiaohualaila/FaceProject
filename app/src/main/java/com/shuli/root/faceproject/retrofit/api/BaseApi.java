@@ -28,7 +28,8 @@ public interface BaseApi {
     Observable<JSONObject> uploadFaceToken(
             @Query("faceToken") String faceToken,
             @Query("userName") String name,
-            @Query("workNum") String gong_num);
+            @Query("workNum") String gong_num,
+            @Query("MAC") String mac_address);
 
     @POST("userManage/userSynchronize")
     Observable<JSONObject> getFaceToken(
