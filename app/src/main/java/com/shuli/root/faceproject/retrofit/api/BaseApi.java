@@ -33,7 +33,7 @@ public interface BaseApi {
     @POST("userManage/userSynchronize")
     Observable<JSONObject> getFaceToken(
             @Query("userId") int count,
-            @Query("mac") String mac_address
+            @Query("MAC") String mac_address
     );
 }
 

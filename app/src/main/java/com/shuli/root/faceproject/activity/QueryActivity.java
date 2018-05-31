@@ -5,38 +5,26 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Environment;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.Toast;
-
 import com.shuli.faceproject.greendaodemo.greendao.GreenDaoManager;
 import com.shuli.faceproject.greendaodemo.greendao.gen.PeopleDao;
 import com.shuli.root.faceproject.R;
 import com.shuli.root.faceproject.adapter.FaceTokenAdapter;
 import com.shuli.root.faceproject.base.BaseAppCompatActivity;
 import com.shuli.root.faceproject.bean.People;
-import com.shuli.root.faceproject.fragment.AddFragment;
-import com.shuli.root.faceproject.fragment.QueryFragment;
 import com.shuli.root.faceproject.fragment.UpdatePeopleDialogFragment;
 import com.shuli.root.faceproject.utils.FaceApi;
-
-import java.io.File;
 import java.util.ArrayList;
-
 import butterknife.BindView;
 import butterknife.OnClick;
 import megvii.facepass.FacePassException;
 import megvii.facepass.FacePassHandler;
-import megvii.facepass.types.FacePassAddFaceResult;
 import megvii.facepass.types.FacePassConfig;
 import megvii.facepass.types.FacePassImageRotation;
 import megvii.facepass.types.FacePassModel;
