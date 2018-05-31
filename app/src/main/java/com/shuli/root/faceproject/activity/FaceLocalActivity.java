@@ -302,7 +302,6 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         }
     }
 
-
     /* 相机回调函数 */
     @Override
     public void onPictureTaken(CameraPreviewData cameraPreviewData) {
