@@ -9,6 +9,8 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.drawable.AnimationDrawable;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -86,6 +88,11 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
     TextView face_success;
     @BindView(R.id.scanVerticalLineImageView)
     ImageView mScanVerticalLineImageView;
+    @BindView(R.id.tv_mac)
+    TextView tv_mac;
+    /* 相机预览界面 */
+    @BindView(R.id.preview)
+    CameraPreview cameraView;
     private static final String DEBUG_TAG = "FacePassDemo";
     private static final int MSG_SHOW_TOAST = 1;
     private static final int DELAY_MILLION_SHOW_TOAST = 2000;
@@ -98,10 +105,6 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
 
     /* 相机实例 */
     private CameraManager manager;
-
-
-    /* 相机预览界面 */
-    private CameraPreview cameraView;
 
     private boolean isLocalGroupExist = false;
 
@@ -128,8 +131,6 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
     FacePassModel searchModel;
     FacePassModel detectModel;
 
-    FrameLayout frameLayout;
-
     /*Toast 队列*/
     LinkedBlockingQueue<Toast> mToastBlockQueue;
 
@@ -147,6 +148,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
     private RelativeLayout layout_root;
     private AnimationDrawable frameAnimation1;
     private boolean isRepeat = false;
+    private String mac_address = "";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -158,6 +160,9 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         initView();
         initFacePassSDK();
         initFaceHandler();
+
+        mac_address = getMacAddress();
+        tv_mac.setText(mac_address);
         /* 初始化网络请求库 */
         requestQueue = Volley.newRequestQueue(getApplicationContext());
 
@@ -493,9 +498,9 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         SettingVar.cameraSettingOk = false;
 
         manager = new CameraManager();
-        cameraView = findViewById(R.id.preview);
+//        cameraView = findViewById(R.id.preview);
         manager.setPreviewDisplay(cameraView);
-        frameLayout = findViewById(R.id.frame);
+
         /* 注册相机回调函数 */
         manager.setListener(this);
 
@@ -504,6 +509,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         layout_root.setBackgroundResource(R.drawable.bg_animation);
         frameAnimation1 = (AnimationDrawable) layout_root.getBackground();
         frameAnimation1.start();
+
     }
 
 
@@ -770,7 +776,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         Log.i("sss", ">>>>>>>>>>>>>>>>>>>>>>");
         int count = SharedPreferencesUtil.getIntByKey("count",this);
         Api.getBaseApiWithOutFormat(ConnectUrl.URL)
-            .getFaceToken(count)
+            .getFaceToken(count,mac_address)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(new Action1<JSONObject>() {
@@ -811,6 +817,16 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                }
             );
     }
+
+    public String getMacAddress(){
+        WifiManager wifiMan = (WifiManager)getApplicationContext().getSystemService(Context.WIFI_SERVICE) ;
+        WifiInfo wifiInf = wifiMan.getConnectionInfo();
+        return wifiInf.getMacAddress();
+    }
+
+
+
+
 
     protected void toast(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();

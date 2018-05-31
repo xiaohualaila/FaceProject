@@ -479,7 +479,7 @@ public class MainFragmentActivity extends BaseAppCompatActivity implements AddFr
         Log.i("sss", ">>>>>>>>>>>>>>>>>>>>>>");
         int count = SharedPreferencesUtil.getIntByKey("count",this);
         Api.getBaseApiWithOutFormat(ConnectUrl.URL)
-                .getFaceToken(count)
+                .getFaceToken(count,"")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<JSONObject>() {
