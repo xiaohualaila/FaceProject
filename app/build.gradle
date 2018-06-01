@@ -36,7 +36,7 @@ buildscript {
 }
 
 greendao {
-    schemaVersion 3
+    schemaVersion 4
     daoPackage 'com.shuli.faceproject.greendaodemo.greendao.gen'//设置DaoMaster、DaoSession、Dao包名
     targetGenDir 'src/main/java'//设置DaoMaster、DaoSession、Dao目录
 }
