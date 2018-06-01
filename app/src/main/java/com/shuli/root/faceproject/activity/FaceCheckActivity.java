@@ -3,9 +3,7 @@ package com.shuli.root.faceproject.activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.drawable.AnimationDrawable;
@@ -20,20 +18,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.LruCache;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 import com.shuli.faceproject.greendaodemo.greendao.GreenDaoManager;
 import com.shuli.faceproject.greendaodemo.greendao.gen.PeopleDao;
@@ -74,7 +69,7 @@ import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 
-public class FaceLocalActivity extends AppCompatActivity implements CameraManager.CameraListener, View.OnClickListener {
+public class FaceCheckActivity extends AppCompatActivity implements CameraManager.CameraListener, View.OnClickListener {
     /* 在预览界面圈出人脸 */
     @BindView(R.id.fcview)
     FaceView faceView;
@@ -751,7 +746,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         public void run() {
             while (true) {
                 if(isAuto){
-                    boolean isNetAble = MyUtil.isNetworkAvailable(FaceLocalActivity.this);
+                    boolean isNetAble = MyUtil.isNetworkAvailable(FaceCheckActivity.this);
                     if (isNetAble) {
                         requestInfo();
                     }
@@ -786,7 +781,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                                    for (int i = 0;i < num;i++) {
                                        obj = array.optJSONObject(i);
                                        bindGroupFaceToken(obj.optString("faceToken"),obj.optString("userName"),obj.optString("workNum"));
-                                       SharedPreferencesUtil.save("count",jsonObject.optInt("maxUserId"),FaceLocalActivity.this);
+                                       SharedPreferencesUtil.save("count",jsonObject.optInt("maxUserId"),FaceCheckActivity.this);
                                    }
                                }
 

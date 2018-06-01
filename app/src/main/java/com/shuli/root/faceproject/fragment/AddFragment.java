@@ -20,12 +20,11 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.widget.TextView;
 import com.shuli.root.faceproject.R;
-import com.shuli.root.faceproject.activity.FaceLocalActivity;
+import com.shuli.root.faceproject.activity.FaceCheckActivity;
 import com.shuli.root.faceproject.base.BaseFragment;
 import com.shuli.root.faceproject.retrofit.Api;
 import com.shuli.root.faceproject.retrofit.ConnectUrl;
 import com.shuli.root.faceproject.utils.ClearEditTextWhite;
-import com.shuli.root.faceproject.utils.DataCache;
 import com.shuli.root.faceproject.utils.FileUtil;
 import org.json.JSONObject;
 import java.io.BufferedOutputStream;
@@ -135,7 +134,7 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
                     deleteFace();
                 }
                 closeCamera();
-                startActivity(new Intent(getActivity(),FaceLocalActivity.class));
+                startActivity(new Intent(getActivity(),FaceCheckActivity.class));
                 getActivity().finish();
                 break;
             case R.id.toQuery:

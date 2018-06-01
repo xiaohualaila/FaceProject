@@ -170,7 +170,7 @@ public class QueryActivity extends BaseAppCompatActivity {
         switch (view.getId()) {
             case R.id.tv_back:
                 finish();
-                startActivity(new Intent(this, FaceLocalActivity.class));
+                startActivity(new Intent(this, FaceCheckActivity.class));
                 break;
         }
     }
