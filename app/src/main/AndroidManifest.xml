@@ -23,11 +23,7 @@
         android:theme="@style/AppTheme">
         <!-- 人脸识别 -->
         <activity android:name=".activity.FaceCheckActivity" android:theme="@style/AppTheme.NoBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
 
@@ -39,7 +35,11 @@
 
         </activity>
         <activity android:name=".activity.LoginActivity" android:theme="@style/AppTheme.NoBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 
