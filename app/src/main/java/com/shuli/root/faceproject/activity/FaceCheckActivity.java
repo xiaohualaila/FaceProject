@@ -153,6 +153,7 @@ public class FaceCheckActivity extends AppCompatActivity implements CameraManage
         initAndroidHandler();
         /* 初始化界面 */
         initView();
+        /*初始化face++sdk*/
         initFacePassSDK();
         initFaceHandler();
 
@@ -342,6 +343,9 @@ public class FaceCheckActivity extends AppCompatActivity implements CameraManage
         }
     }
 
+    /**
+     * 人脸对比核心部分，将识别的人脸跟底库里的人脸进行对比
+     */
     private class RecognizeThread extends Thread {
 
         boolean isInterrupt;
@@ -379,6 +383,14 @@ public class FaceCheckActivity extends AppCompatActivity implements CameraManage
         }
     }
 
+    /**
+     * 对比成功显示出结果
+     * @param trackId
+     * @param searchScore
+     * @param livenessScore
+     * @param isRecognizeOK
+     * @param token
+     */
     private void showRecognizeResult(final long trackId, final float searchScore, final float livenessScore, final boolean isRecognizeOK, final String token) {
         mAndroidHandler.post(new Runnable() {
             @Override
