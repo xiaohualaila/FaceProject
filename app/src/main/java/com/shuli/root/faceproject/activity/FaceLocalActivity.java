@@ -154,17 +154,12 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
 
     private Handler mAndroidHandler;
 
-    private LinearLayout ll_face_success;
-    private TextView face_fail_tv_result;
     private TextView tv_name;
     private TextView tv_num;
-    private ImageView row_1;
-    private ImageView row_2;
-    private ImageView row_3;
+    private TextView tv_result;
+
     private Handler handler = new Handler();
-    private AnimationDrawable frameAnimation1;
-    private AnimationDrawable frameAnimation2;
-    private AnimationDrawable frameAnimation3;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -416,14 +411,11 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                 Log.i("sss","ID = " + trackId + (isRecognizeOK ? "识别成功" : "识别失败") + "\n");
                 Log.i("sss","识别分 = " + searchScore + "\n");
                 Log.i("sss","活体分 = " + livenessScore + "\n");
-                frameAnimation1.start();
-                frameAnimation2.start();
-                frameAnimation3.start();
+
                 if(isRecognizeOK){
                     People people = GreenDaoManager.getInstance().getSession().getPeopleDao().queryBuilder()
                             .where(PeopleDao.Properties.Face_token.eq(token)).build().unique();
-                    ll_face_success.setVisibility(View.VISIBLE);
-                    face_fail_tv_result.setVisibility(View.GONE);
+
                     SoundPoolUtil.play(1);
                     // TODO: 2018/5/9 开门
                     //IOUtil.input_num_1("");
@@ -431,26 +423,24 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                         tv_name.setText(people.getName());
                         tv_num.setText(people.getGonghao());
                     }
+                    tv_result.setText("验证成功");
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            ll_face_success.setVisibility(View.GONE);
-                            stopAnimation();
+                            tv_result.setText("");
                             // TODO: 2018/5/9 关门
-                            //IOUtil.input_num_0("");
+
 
                         }
                     },2000);
 
                 }else {
-                    ll_face_success.setVisibility(View.GONE);
-                    face_fail_tv_result.setVisibility(View.VISIBLE);
+                    tv_result.setText("验证失败");
                    // SoundPoolUtil.play(2);
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            face_fail_tv_result.setVisibility(View.GONE);
-                            stopAnimation();
+                            tv_result.setText("");
                         }
                     },2000);
                 }
@@ -458,11 +448,6 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         });
     }
 
-    private void stopAnimation(){
-        frameAnimation1.stop();
-        frameAnimation2.stop();
-        frameAnimation3.stop();
-    }
 
     private void adaptFrameLayout() {
         SettingVar.isButtonInvisible = false;
@@ -487,12 +472,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         }
         Log.i(DEBUG_TAG, "cameraRation: " + cameraRotation);
         cameraFacingFront = true;
-//        SharedPreferences preferences = getSharedPreferences(SettingVar.SharedPrefrence, Context.MODE_PRIVATE);
-//        SettingVar.isSettingAvailable = preferences.getBoolean("isSettingAvailable", SettingVar.isSettingAvailable);
-//        SettingVar.isCross = preferences.getBoolean("isCross", SettingVar.isCross);
-//        SettingVar.faceRotation = preferences.getInt("faceRotation", SettingVar.faceRotation);
-//        SettingVar.cameraPreviewRotation = preferences.getInt("cameraPreviewRotation", SettingVar.cameraPreviewRotation);
-//        SettingVar.cameraFacingFront = preferences.getBoolean("cameraFacingFront", SettingVar.cameraFacingFront);
+
 
         SettingVar.isSettingAvailable = true;
         SettingVar.isCross = false;
@@ -515,25 +495,14 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
             screenState = 0;
         }
         setContentView(R.layout.activity_local);
-        ll_face_success = findViewById(R.id.ll_face_success);
-        face_fail_tv_result = findViewById(R.id.face_fail_tv_result);
         tv_name = findViewById(R.id.tv_name);
         tv_num = findViewById(R.id.tv_num);
-
+        tv_result = findViewById(R.id.tv_result);
         mFaceOperationBtn = findViewById(R.id.btn_face_operation);
         mFaceOperationBtn.setOnClickListener(this);
         quit = findViewById(R.id.quit);
         quit.setOnClickListener(this);
-        row_1 = findViewById(R.id.row_1);
-        row_2 = findViewById(R.id.row_2);
-        row_3 = findViewById(R.id.row_3);
-        row_1.setBackgroundResource(R.drawable.row1_animation);
-        row_2.setBackgroundResource(R.drawable.row2_animation);
-        row_3.setBackgroundResource(R.drawable.row3_animation);
 
-        frameAnimation1 = (AnimationDrawable) row_1.getBackground();
-        frameAnimation2 = (AnimationDrawable) row_2.getBackground();
-        frameAnimation3 = (AnimationDrawable) row_3.getBackground();
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         heightPixels = displayMetrics.heightPixels;
@@ -706,26 +675,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         switch (v.getId()) {
             case R.id.btn_face_operation:
                // 进入查询列表页面
-                final VersionDialogFragment dialogFragment = VersionDialogFragment.getInstance();
-                dialogFragment.show(getSupportFragmentManager(), new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        String account = dialogFragment.et_account.getText().toString();
-                        String secret = dialogFragment.et_secret.getText().toString();
-                        Account a = GreenDaoManager.getInstance().getSession().getAccountDao().queryBuilder()
-                                .where(AccountDao.Properties.Account_name.eq(account)).build().unique();
-                        if(a!=null){
-                            if(a.getAccount_secret().equals(secret)){
-                                dialogFragment.dismiss();
-                                toOtherActivity();
-                            }else {
-                                dialogFragment.tv_title.setText("密码错误！");
-                            }
-                        }else {
-                            dialogFragment.tv_title.setText("用户名不存在！");
-                        }
-                    }
-                });
+                toOtherActivity();
                 break;
             case R.id.quit:
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
