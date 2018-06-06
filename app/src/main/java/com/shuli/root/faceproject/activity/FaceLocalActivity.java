@@ -1352,8 +1352,6 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
     class NetworkChangeReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Toast.makeText(context, "network changes",
-                    Toast.LENGTH_SHORT).show();
             net_state.setText("网路改变..");
             //得到网络连接管理器
             ConnectivityManager connectionManager = (ConnectivityManager)
@@ -1362,13 +1360,9 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
             NetworkInfo networkInfo = connectionManager.getActiveNetworkInfo();
             //判断是否连接
             if (networkInfo != null && networkInfo.isAvailable()) {
-                Toast.makeText(context, "network is available",
-                        Toast.LENGTH_SHORT).show();
                 net_state.setText("网路正常");
 
             } else {
-                Toast.makeText(context, "network is unavailable",
-                        Toast.LENGTH_SHORT).show();
                 net_state.setText("网络未连接！");
             }
         }
