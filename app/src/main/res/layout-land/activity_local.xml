@@ -88,5 +88,62 @@
             android:textSize="36sp"
             android:textColor="@color/white" />
     </LinearLayout>
+    <LinearLayout
+        android:id="@+id/ll_code"
+        android:layout_marginTop="50dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginLeft="20dp"
+        android:layout_below="@+id/ll_face_success"
+        android:layout_toRightOf="@+id/frame">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="30sp"
+            android:textColor="@color/white"
+            android:text="二维码:"/>
+        <TextView
+            android:id="@+id/tv_code"
+            android:textSize="20sp"
+            android:textColor="@color/white"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/ll_zhuce"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="50dp"
+        android:layout_below="@+id/ll_code"
+        android:layout_toRightOf="@+id/frame">
+        <Button
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="OnClickBtnRegister"
+            android:textSize="24sp"
+            android:text="注册"/>
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="OnClickBtnIdentify"
+            android:layout_marginLeft="20dp"
+            android:textSize="24sp"
+            android:text="验证"/>
+
+    </LinearLayout>
+    <TextView
+        android:id="@+id/fingerTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_toRightOf="@+id/frame"
+        android:textSize="20sp"
+        android:textColor="@color/white"
+        android:layout_below="@+id/ll_zhuce"/>
 </RelativeLayout>
