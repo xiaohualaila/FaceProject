@@ -64,6 +64,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
+        android:layout_marginTop="100dp"
         android:orientation="vertical"
         android:layout_toRightOf="@+id/frame"
         >
@@ -122,16 +123,18 @@
         android:layout_toRightOf="@+id/frame">
         <Button
             android:id="@+id/button"
-            android:layout_width="wrap_content"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:onClick="OnClickBtnRegister"
+            style="@style/blueButtonStyle"
             android:textSize="24sp"
             android:text="注册"/>
         <Button
             android:id="@+id/button2"
-            android:layout_width="wrap_content"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:onClick="OnClickBtnIdentify"
+            style="@style/blueButtonStyle"
             android:layout_marginLeft="20dp"
             android:textSize="24sp"
             android:text="验证"/>
@@ -139,6 +142,7 @@
     </LinearLayout>
     <TextView
         android:id="@+id/fingerTextView"
+        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"

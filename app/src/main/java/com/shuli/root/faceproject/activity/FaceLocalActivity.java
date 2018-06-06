@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Power;
 import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -162,6 +163,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
     private TextView tv_name;
     private TextView tv_num;
     private TextView tv_result;
+    private boolean isOpenDoor = false;
 
     private Handler handler = new Handler();
 
@@ -218,7 +220,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         InitOperations();
         doBtnEnumDevice();
         iniCodeView();
-
+        Power.set_zysj_gpio_value(1,1);//do2底 开门
     }
 
     private void initAndroidHandler() {
@@ -450,8 +452,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                             .where(PeopleDao.Properties.Face_token.eq(token)).build().unique();
 
                     SoundPoolUtil.play(1);
-                    // TODO: 2018/5/9 开门
-
+                    Power.set_zysj_gpio_value(1,0);//do2底 开门
                     if(people != null){
                         tv_name.setText(people.getName());
                         tv_num.setText(people.getGonghao());
@@ -460,10 +461,10 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
+                            tv_name.setText("");
+                            tv_num.setText("");
                             tv_result.setText("");
-                            // TODO: 2018/5/9 关门
-
-
+                        Power.set_zysj_gpio_value(1,1);//do2高 关门
                         }
                     },2000);
 
@@ -853,7 +854,10 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                         int num = code.indexOf("\n");
                         code = code.substring(0,num);
                     }
-
+                    if(code.equals("suriot -> open gate")){
+                        isOpenDoor = true;
+                        Power.set_zysj_gpio_value(1,0);//do2底 开门
+                    }
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -862,6 +866,16 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                             code = "";
                         }
                     });
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            tv_code.setText("");
+                            if(isOpenDoor){
+                                Power.set_zysj_gpio_value(1,1);//do2高 关门
+                                isOpenDoor = false;
+                            }
+                        }
+                    },2000);
 
                 } else {
                     code += str;
@@ -879,7 +893,6 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
             }
         }
     }
-
 
     //初始化
     private void InitOperations(){
@@ -1233,6 +1246,10 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                 byte[] aiTemplateData = mAIUserData.TemplateData(); //获取AI自学习的特征数据
                 byte[] aiTemplateBuff = new byte[UserData.D_USER_TEMPLATE_SIZE*3]; //准备3个模板大小的缓冲区用于自动学习
                 byte[] mergeTemplateData = mergeBytes(regTemplateData, aiTemplateData); //把注册时采集的特征数据和AI自学习的数据合并起来验证
+                if(mergeTemplateData == null){
+                    DisplayNoticeMsg("没有注册的指静脉！！！", 0);
+                    return;
+                }
                 byte securityLevel = 4;
                 int[] diff = new int[1];
                 int[] AIDataLen = new int[1];
