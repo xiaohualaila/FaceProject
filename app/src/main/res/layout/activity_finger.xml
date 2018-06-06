@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/face_layout"
+    tools:context=".activity.FingerActivity">
+    <LinearLayout
+        android:layout_alignParentRight="true"
+        android:layout_width="800dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <LinearLayout
+            android:id="@+id/ll_finger"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="OnClickBtnRegister"
+                style="@style/blueButtonStyle"
+                android:layout_margin="20dp"
+                android:text="注册"
+                />
+
+            <Button
+                android:id="@+id/button2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/blueButtonStyle"
+                android:onClick="OnClickBtnIdentify"
+                android:layout_margin="20dp"
+                android:text="验证" />
+
+            <Button
+                android:id="@+id/button3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="OnWhileIdentify2"
+                style="@style/blueButtonStyle"
+                android:layout_margin="20dp"
+                android:text="循环读取" />
+
+        </LinearLayout>
+        <TextView
+            android:id="@+id/textView"
+            android:layout_marginLeft="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:layout_below="@+id/ll_finger"/>
+
+        <TextView
+            android:id="@+id/code_title"
+            android:layout_below="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:textSize="20sp"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/white"
+            android:text="二维码："/>
+
+        <TextView
+            android:id="@+id/tv_finger_code"
+            android:textSize="20sp"
+            android:layout_below="@+id/code_title"
+            android:textColor="@color/white"
+            android:layout_width="match_parent"
+            android:text="123456789"
+            android:layout_marginTop="20dp"
+            android:layout_height="30dp" />
+        <Button
+            android:layout_below="@+id/tv_finger_code"
+            android:layout_width="500dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:onClick="toActivity"
+            android:layout_margin="20dp"
+            style="@style/blueButtonStyle"
+            android:text="跳转到人脸识别二维吗指静脉" />
+
+    </LinearLayout>
+
+</RelativeLayout>

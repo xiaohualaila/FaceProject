@@ -1,15 +1,19 @@
 package com.shuli.root.faceproject.activity;
 
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.RectF;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -162,7 +166,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
 
     private TextView tv_name;
     private TextView tv_num;
-    private TextView tv_result;
+    private TextView tv_result,net_state,tv_mac;
     private boolean isOpenDoor = false;
 
     private Handler handler = new Handler();
@@ -192,6 +196,8 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         }
     };
     ////
+    IntentFilter intentFilter;
+    NetworkChangeReceiver networkChangeReceiver;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -220,7 +226,15 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         InitOperations();
         doBtnEnumDevice();
         iniCodeView();
-        Power.set_zysj_gpio_value(1,1);//do2底 开门
+        Power.set_zysj_gpio_value(1,1);//do2高 关门
+        Power.set_zysj_gpio_value(2,1);//do1高 关门
+        Power.set_zysj_gpio_value(3,0);//dz2底
+        Power.set_zysj_gpio_value(4,0);//dz1底
+        intentFilter = new IntentFilter();
+        intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+        networkChangeReceiver = new NetworkChangeReceiver();
+        //动态注册
+        registerReceiver(networkChangeReceiver, intentFilter);
     }
 
     private void initAndroidHandler() {
@@ -453,6 +467,9 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
 
                     SoundPoolUtil.play(1);
                     Power.set_zysj_gpio_value(1,0);//do2底 开门
+                    Power.set_zysj_gpio_value(2,0);//do1底
+                    Power.set_zysj_gpio_value(3,0);//dz2底
+                    Power.set_zysj_gpio_value(4,0);//dz1底
                     if(people != null){
                         tv_name.setText(people.getName());
                         tv_num.setText(people.getGonghao());
@@ -464,7 +481,10 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                             tv_name.setText("");
                             tv_num.setText("");
                             tv_result.setText("");
-                        Power.set_zysj_gpio_value(1,1);//do2高 关门
+                            Power.set_zysj_gpio_value(1,1);//do2高 关门
+                            Power.set_zysj_gpio_value(2,1);//do1底
+                            Power.set_zysj_gpio_value(3,1);//dz2底
+                            Power.set_zysj_gpio_value(4,1);//dz1底
                         }
                     },2000);
 
@@ -532,6 +552,8 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         tv_name = findViewById(R.id.tv_name);
         tv_num = findViewById(R.id.tv_num);
         tv_result = findViewById(R.id.tv_result);
+        net_state = findViewById(R.id.net_state);
+        tv_mac = findViewById(R.id.tv_mac);
         //二维码
         tv_code = findViewById(R.id.tv_code);
         //指静脉
@@ -607,6 +629,8 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         serialHelper.close();
 
         doCloseDevice();
+        //解除广播
+        unregisterReceiver(networkChangeReceiver);
         super.onDestroy();
     }
 
@@ -857,6 +881,9 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                     if(code.equals("suriot -> open gate")){
                         isOpenDoor = true;
                         Power.set_zysj_gpio_value(1,0);//do2底 开门
+                        Power.set_zysj_gpio_value(2,0);//do1底
+                        Power.set_zysj_gpio_value(3,0);//dz2底
+                        Power.set_zysj_gpio_value(4,0);//dz1底
                     }
                     handler.post(new Runnable() {
                         @Override
@@ -872,6 +899,9 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
                             tv_code.setText("");
                             if(isOpenDoor){
                                 Power.set_zysj_gpio_value(1,1);//do2高 关门
+                                Power.set_zysj_gpio_value(2,1);//do1高
+                                Power.set_zysj_gpio_value(3,1);//dz2高
+                                Power.set_zysj_gpio_value(4,1);//dz1高
                                 isOpenDoor = false;
                             }
                         }
@@ -1314,5 +1344,33 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
         }
     };
 
+    public void toActivity(View view) {
+        startActivity(new Intent(this,FingerActivity.class));
+        finish();
+    }
 
+    class NetworkChangeReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Toast.makeText(context, "network changes",
+                    Toast.LENGTH_SHORT).show();
+            net_state.setText("网路改变..");
+            //得到网络连接管理器
+            ConnectivityManager connectionManager = (ConnectivityManager)
+                    getSystemService(Context.CONNECTIVITY_SERVICE);
+            //通过管理器得到网络实例
+            NetworkInfo networkInfo = connectionManager.getActiveNetworkInfo();
+            //判断是否连接
+            if (networkInfo != null && networkInfo.isAvailable()) {
+                Toast.makeText(context, "network is available",
+                        Toast.LENGTH_SHORT).show();
+                net_state.setText("网路正常");
+
+            } else {
+                Toast.makeText(context, "network is unavailable",
+                        Toast.LENGTH_SHORT).show();
+                net_state.setText("网络未连接！");
+            }
+        }
+    }
 }
