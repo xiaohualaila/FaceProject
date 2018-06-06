@@ -451,7 +451,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
 
                     SoundPoolUtil.play(1);
                     // TODO: 2018/5/9 开门
-                    //IOUtil.input_num_1("");
+
                     if(people != null){
                         tv_name.setText(people.getName());
                         tv_num.setText(people.getGonghao());
@@ -845,7 +845,7 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
 //                Log.i("sss",FuncUtil.ByteArrToHex(comBean.bRec));
                 String str = new String(comBean.bRec);
                      Log.i("sss","xxxxx " + str);
-                String s = str.substring(str.length() - 1, str.length()).trim();
+                String s = str.substring(str.length() - 1, str.length());
                 if (s.equals("\n")) {
                     s = str.substring(0, str.length() - 1);
                     code = code + s;
