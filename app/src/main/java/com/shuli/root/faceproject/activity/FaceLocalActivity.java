@@ -14,6 +14,9 @@ import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -1362,9 +1365,19 @@ public class FaceLocalActivity extends AppCompatActivity implements CameraManage
             if (networkInfo != null && networkInfo.isAvailable()) {
                 net_state.setText("网路正常");
 
+                tv_mac.setText(getMacAddress());
             } else {
                 net_state.setText("网络未连接！");
             }
         }
     }
+
+    public String getMacAddress(){
+        WifiManager wifiMan = (WifiManager)getApplicationContext().getSystemService(Context.WIFI_SERVICE) ;
+        WifiInfo wifiInf = wifiMan.getConnectionInfo();
+        return wifiInf.getMacAddress();
+    }
+
+
+
 }
