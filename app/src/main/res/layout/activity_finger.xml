@@ -45,12 +45,13 @@
                 android:onClick="OnWhileIdentify"
                 style="@style/blueButtonStyle"
                 android:layout_margin="20dp"
+                android:visibility="invisible"
                 android:text="循环读取" />
 
         </LinearLayout>
         <TextView
             android:id="@+id/textView"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="30dp"
             android:layout_width="match_parent"
             android:textColor="@color/white"
             android:layout_height="wrap_content"
