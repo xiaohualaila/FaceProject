@@ -1,10 +1,10 @@
 package com.shuli.root.faceproject.activity;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.ConnectivityManager;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -13,8 +13,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.bjw.bean.ComBean;
 import com.bjw.utils.SerialHelper;
 import com.shuli.root.faceproject.R;
@@ -28,9 +26,8 @@ import WedoneBioVein.VeinMatchCaller;
 import android_serialport_api.SerialPortFinder;
 import static java.lang.Thread.sleep;
 
-public class FingerActivity extends AppCompatActivity {
+public class FingerActivity extends AppCompatActivity implements NetworkChangeReceiver.NetCallback {
     private SdkMain mSdkMain = null;
-    List<UserData> mRegUserDatalist = new ArrayList<>();
     UserData mRegUserData = new UserData(); //用于保存采集(注册)的模板
     UserData mAIUserData = new UserData(); //用于保存验证时通过自动学习生成的模板，在比对时也作为比对模板的一部分
     int mUserCnt = 0;
@@ -40,7 +37,7 @@ public class FingerActivity extends AppCompatActivity {
     byte[][] mVeinDevIdList = null;
     int mVeinDevCnt = 0;
 
-    private TextView textView,tv_code;
+    private TextView textView,tv_code,net_state,tv_mac;
     Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -63,13 +60,17 @@ public class FingerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_finger);
         textView = findViewById(R.id.textView);
         tv_code = findViewById(R.id.tv_finger_code);
+        net_state = findViewById(R.id.net_state);
+        tv_mac = findViewById(R.id.tv_mac);
         InitOperations();
         doBtnEnumDevice();
         iniview2();
-        //new readThread().start();//开始串口的监听线程
+       //接收广播
         intentFilter = new IntentFilter();
         intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
         networkChangeReceiver = new NetworkChangeReceiver();
+        networkChangeReceiver.setNetCallback(this);
+
         //动态注册
         registerReceiver(networkChangeReceiver, intentFilter);
     }
@@ -243,7 +244,7 @@ public class FingerActivity extends AppCompatActivity {
                     boolean isWaitSuccess = true;
                     msg = "正在{" + devId + "}上采集第" + (readCnt + 1) + "个静脉特征:";
                     DisplayNoticeMsg("采集第" + (readCnt + 1)  + "个静脉特征，"+"请放入手指！", 0);
-                    SoundPoolUtil.play(1);
+                    SoundPoolUtil.play(8);
                     isWaitSuccess = WaitFingerStatus(mVeinDevIdList[devIdx], (byte) 0x03, 20, 500, msg + "请放手指!");
                     if (!isWaitSuccess) {
                         DisplayNoticeMsg("没有发现手指", 0);
@@ -266,7 +267,7 @@ public class FingerActivity extends AppCompatActivity {
                     //Wedone:检测手指，直到检测到手指已经移开才进行后续读操作，确保每次采集都是重新放置了手指而不是手指一直放着不动
                     msg = "读取完成第" + (readCnt + 1) + "个静脉特征:";
                     DisplayNoticeMsg("请移开手指！", 0);
-                    SoundPoolUtil.play(2);
+                    SoundPoolUtil.play(9);
                     isWaitSuccess = WaitFingerStatus(mVeinDevIdList[devIdx], (byte) 0x00, 20, 500, msg + "请移开手指!");
                     if (!isWaitSuccess) {
                         DisplayNoticeMsg("没有移开手指！", 0);
@@ -332,7 +333,7 @@ public class FingerActivity extends AppCompatActivity {
                         handler.postDelayed(runnable, 1000);
                         // TODO: 2018/4/18 将获取到的模板数组上传服务器
                         byte[] regTemplateData = mRegUserData.TemplateData(); //获取注册采集的特征数据
-                        mRegUserDatalist.add(mRegUserData);
+
 //                        MessageFinger messageFinger = new MessageFinger();
 //                        messageFinger.setRegTemplateData(regTemplateData);
 //                        messageFinger.setName("xxxxx");
@@ -349,6 +350,150 @@ public class FingerActivity extends AppCompatActivity {
         return;
     }
 
+
+    //注册1根手指(1次)按钮
+    public void OnClickOneBtnRegister(View v) {
+        if (0 >= mVeinDevCnt) {
+
+            Log.i("sss","不存在有效的指静脉设备，请先进行枚举设备操作！");
+            DisplayNoticeMsg("不存在有效的指静脉设备，请先进行枚举设备操作！", 0);
+            return;
+        }
+        if (mRegUserData.D_USER_TEMPLATE_NUM <= mRegUserData.GetTemplateNum()) {
+            Log.i("sss","单个用户最多只能注册20个模板！\n");
+            return;
+        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int retVal;
+                String devId = null, msg = "";
+                int readCnt = 0; //读取模板次数的计数器
+                int retryCnt = 0;
+                byte[] featureData = new byte[SdkMain.FV_CONST_FEATURE_LEN];
+                int devIdx = 0; //Wedone:指定在第一台设备上进行操作
+
+                devId = new String(mVeinDevIdList[devIdx]);
+                if (0 == devId.trim().length()) {//Wedone:无效的设备ID，则直接返回
+                    return;
+                }
+
+                //清除上次注册的数据
+                mRegUserData.ClearData();
+                mAIUserData.ClearData();
+
+                while(true) {
+                    if(6 <= retryCnt)break; //已经重试了6次，结束采集
+                    retryCnt++;
+                    //Wedone:检测手指，直到检测到手指已经放好才进行后续读取静脉特征的操作
+                    boolean isWaitSuccess = true;
+                    msg = "正在{" + devId + "}上采集第" + (readCnt + 1) + "个静脉特征:";
+                    DisplayNoticeMsg("采集第" + (readCnt + 1)  + "个静脉特征，"+"请放入手指！", 0);
+                    SoundPoolUtil.play(8);
+                    isWaitSuccess = WaitFingerStatus(mVeinDevIdList[devIdx], (byte) 0x03, 20, 500, msg + "请放手指!");
+                    if (!isWaitSuccess) {
+                        DisplayNoticeMsg("没有发现手指", 0);
+                        SoundPoolUtil.play(7);
+                        handler.postDelayed(runnable, 1000);
+                        return;
+                    }
+
+                    //Wedone:读取指静脉特征模板数据
+                    retVal = mSdkMain.FV_GrabFeature(mVeinDevIdList[devIdx], featureData, (byte) 0);
+                    if (mSdkMain.FV_ERRCODE_SUCCESS == retVal) {
+                          DisplayNoticeMsg("读取成功！", 0);
+                    } else {
+                        DisplayNoticeMsg("读取失败！", 0);
+                        SoundPoolUtil.play(6);
+                        handler.postDelayed(runnable, 1000);
+                        break; //Wedone: 采集过程中发生错误，则直接退出
+                    }
+
+                    //Wedone:检测手指，直到检测到手指已经移开才进行后续读操作，确保每次采集都是重新放置了手指而不是手指一直放着不动
+                 //   msg = "读取完成第" + (readCnt + 1) + "个静脉特征:";
+                    DisplayNoticeMsg("请移开手指！", 0);
+                    SoundPoolUtil.play(9);
+                    isWaitSuccess = WaitFingerStatus(mVeinDevIdList[devIdx], (byte) 0x00, 20, 500, msg + "请移开手指!");
+                    if (!isWaitSuccess) {
+                        DisplayNoticeMsg("没有移开手指！", 0);
+                        handler.postDelayed(runnable, 1000);
+                        return;
+                    }
+
+                    //Wedone:确认采集的指静脉特征数据是否有效
+                    retVal = VeinMatchCaller.FvmIsValidFeature(featureData, (byte)0x01);
+                    if(SdkMain.FV_ERRCODE_SUCCESS != retVal){
+                        DisplayNoticeMsg("错误：指静脉特征数据无效！", 0);
+                        SoundPoolUtil.play(3);
+                        continue;
+                    }
+
+                    //Wedone:调用FV_GrabFeature返回成功的话，第二个参数的缓冲区中就保存了所读取的模板数据，
+                    if (0 == readCnt) {
+                        //采集完成第一个静脉特征，生成对应的用户信息
+                        mUserCnt++;
+                        byte bUserId[] = new byte[mRegUserData.D_USER_HDR_USERID_LEN];
+                        byte bUserName[] = new byte[mRegUserData.D_USER_HDR_USERNAME_LEN];
+
+                        mRegUserData.SetUid((long) mUserCnt);
+
+                        bUserId[0] = 'I';
+                        bUserId[1] = 'D';
+                        bUserId[2] = (byte) (0x30 + (mUserCnt % 10000) / 1000);
+                        bUserId[3] = (byte) (0x30 + (mUserCnt % 1000) / 100);
+                        bUserId[4] = (byte) (0x30 + (mUserCnt % 100) / 10);
+                        bUserId[5] = (byte) (0x30 + (mUserCnt % 10));
+                        mRegUserData.SetUserId(bUserId, (short) 6);
+
+                        bUserName[0] = 'U';
+                        bUserName[1] = 'S';
+                        bUserName[2] = 'E';
+                        bUserName[3] = 'R';
+                        bUserName[4] = (byte) (0x30 + (mUserCnt % 10000) / 1000);
+                        bUserName[5] = (byte) (0x30 + (mUserCnt % 1000) / 100);
+                        bUserName[6] = (byte) (0x30 + (mUserCnt % 100) / 10);
+                        bUserName[7] = (byte) (0x30 + (mUserCnt % 10));
+                        mRegUserData.SetUserName(bUserName, (short) 8);
+                    }
+                    if(0 < readCnt){ //Wedone:之前已经有采集的特征，把当前采集的静脉特征与之前采集的进行验证是否属于同一根手指
+                        byte[] regTemplateData = mRegUserData.TemplateData();
+                        //Wedone: 注册过程中，检测采集的静脉特征是否属于同一根手指
+                        retVal = VeinMatchCaller.FvmIsSameFinger(featureData,//本次采集的指静脉特征值
+                                regTemplateData,  //包含之前采集的指静脉特征值数据
+                                (byte)readCnt, //第二个参数中包含的指静脉特征值的个数
+                                (byte)0x03); //加密方式，当前请固定为3
+                        if(SdkMain.FV_ERRCODE_SUCCESS != retVal){
+                            DisplayNoticeMsg("错误：注册过程中采集的特征必须属于同一根手指！\r\n", 0);
+                            SoundPoolUtil.play(4);
+                            continue;
+                        }
+                    }
+                    //Wedone：采集的特征值符合要求，保存到本地缓冲区中
+                    mRegUserData.AddTemplateData(featureData, (short) featureData.length);
+                  //  readCnt++;
+
+               //     if(3 <= readCnt){
+                        DisplayNoticeMsg("采集指静脉特征成功！已采集" + mRegUserData.GetTemplateNum() + "个特征模板", 0);
+                        SoundPoolUtil.play(5);
+                        handler.postDelayed(runnable, 1000);
+                        // TODO: 2018/4/18 将获取到的模板数组上传服务器
+                        byte[] regTemplateData = mRegUserData.TemplateData(); //获取注册采集的特征数据
+
+//                        MessageFinger messageFinger = new MessageFinger();
+//                        messageFinger.setRegTemplateData(regTemplateData);
+//                        messageFinger.setName("xxxxx");
+//                        Gson gson = new Gson();
+//                        String postInfoStr = gson.toJson(messageFinger);
+//                        Log.i("sss","postInfoStr" + postInfoStr);
+//                        upload(postInfoStr);
+
+                        break; //采集完成3个有效模板，则结束采集
+                 //   }
+                }
+            }
+        }).start();
+        return;
+    }
 
    Runnable runnable = new Runnable() {
        @Override
@@ -389,10 +534,8 @@ public class FingerActivity extends AppCompatActivity {
                 //Wedone:读取指静脉特征模板数据
                 retVal = mSdkMain.FV_GrabFeature(mVeinDevIdList[devIdx], featureData, (byte) 0);
                 if (mSdkMain.FV_ERRCODE_SUCCESS == retVal) {
-                    msg += "成功";
                     DisplayNoticeMsg("读取成功！", 0);
                 } else {
-                    msg += "err=" + retVal;
                     DisplayNoticeMsg("失败！", 0);
                     return; //Wedone: 采集过程中发生错误，则直接退出
                 }
@@ -408,25 +551,21 @@ public class FingerActivity extends AppCompatActivity {
                 //Wedone:确认采集的指静脉特征数据是否有效
                 retVal = VeinMatchCaller.FvmIsValidFeature(featureData, (byte)0x01);
                 if(SdkMain.FV_ERRCODE_SUCCESS != retVal){
-                    DisplayNoticeMsg("错误：指静脉特征数据无效！\r\n", 0);
+                    DisplayNoticeMsg("错误：指静脉特征数据无效！", 0);
                     return;
                 }
-                /////////////////
-                for(int i = 0;i<mRegUserDatalist.size();i++){
 
-
-              //  int regTemplateCnt = mRegUserData.GetTemplateNum();
-                    int regTemplateCnt = mRegUserDatalist.get(i).GetTemplateNum();
+                    int regTemplateCnt = mRegUserData.GetTemplateNum();
                     int aiTemplateCnt = mAIUserData.GetTemplateNum();
                     byte[] regTemplateData = mRegUserData.TemplateData(); //获取注册采集的特征数据
                     byte[] aiTemplateData = mAIUserData.TemplateData(); //获取AI自学习的特征数据
-                    byte[] aiTemplateBuff = new byte[UserData.D_USER_TEMPLATE_SIZE*3]; //准备3个模板大小的缓冲区用于自动学习
+                    byte[] aiTemplateBuff = new byte[UserData.D_USER_TEMPLATE_SIZE*1]; //准备3个模板大小的缓冲区用于自动学习
                     byte[] mergeTemplateData = mergeBytes(regTemplateData, aiTemplateData); //把注册时采集的特征数据和AI自学习的数据合并起来验证
                     byte securityLevel = 4;
                     int[] diff = new int[1];
                     int[] AIDataLen = new int[1];
                     diff[0] = 10000;
-                    AIDataLen[0] = UserData.D_USER_TEMPLATE_SIZE*3;
+                    AIDataLen[0] = UserData.D_USER_TEMPLATE_SIZE*1;
                     SdkMain.DebugStringPrint("指静脉比对:regTemplateCnt=" + regTemplateCnt + ",aiTemplateCnt=" + aiTemplateCnt);
                     //Wedone: 调用静脉特征值比对接口进行比对，各个参数意义如下说明
                     retVal = VeinMatchCaller.FvmMatchFeature(featureData, //采集的用于验证的指静脉特征值
@@ -447,79 +586,14 @@ public class FingerActivity extends AppCompatActivity {
                         mAIUserData.SetTemplateData(aiTemplateBuff, (short)AIDataLen[0]);
                     }
                     DisplayNoticeMsg("验证通过！差异度=" + diff[0] + "，学习数据长度=" + AIDataLen[0], 0);
+                    handler.postDelayed(runnable,1000);
                 }
-            }
         }).start();
         return;
     }
 
     //循环读取指静脉
     public void OnWhileIdentify(View v) {
-        if (0 >= mVeinDevCnt) {
-            DisplayNoticeMsg("不存在有效的指静脉设备，请先进行枚举设备操作！", 0);
-            return;
-        }
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                int retVal;
-                String devId = null, msg = "";
-                byte[] featureData = new byte[SdkMain.FV_CONST_FEATURE_LEN];
-                int devIdx = 0; //Wedone:指定在第一台设备上进行操作
-
-                devId = new String(mVeinDevIdList[devIdx]);
-                if (0 == devId.trim().length()) {//Wedone:无效的设备ID，则直接返回
-                    return;
-                }
-
-                while (true){
-                    //Wedone:检测手指，直到检测到手指已经放好才进行后续读取静脉特征的操作
-                    boolean isWaitSuccess = true;
-                    msg = "正在{" + devId + "}上进行验证：";
-                    DisplayNoticeMsg("请放手指!", 0);
-                    isWaitSuccess = WaitFingerStatus(mVeinDevIdList[devIdx], (byte) 0x03, 20, 500, msg + "请放手指!");
-                    if (isWaitSuccess) {
-                        //Wedone:读取指静脉特征模板数据
-                        retVal = mSdkMain.FV_GrabFeature(mVeinDevIdList[devIdx], featureData, (byte) 0);
-                        if (mSdkMain.FV_ERRCODE_SUCCESS == retVal) {
-//                            DisplayNoticeMsg("读取成功！", 0);
-                            //Wedone:检测手指，直到检测到手指已经移开才进行后续读操作，确保每次采集都是重新放置了手指而不是手指一直放着不动
-                            DisplayNoticeMsg("请移开手指!", 0);
-                            isWaitSuccess = WaitFingerStatus(mVeinDevIdList[devIdx], (byte) 0x00, 20, 500, msg + "请移开手指!");
-                            if (isWaitSuccess) {
-                                //Wedone:确认采集的指静脉特征数据是否有效
-                                retVal = VeinMatchCaller.FvmIsValidFeature(featureData, (byte)0x01);
-                                if(SdkMain.FV_ERRCODE_SUCCESS != retVal){
-                                    DisplayNoticeMsg("错误：指静脉特征数据无效！\r\n", 0);
-                                } else {
-                                    DisplayNoticeMsg("指静脉特征数据有效！", 0);
-                                    // TODO: 2018/4/18 向服务器发送数据
-
-
-                                }
-
-                            }else {
-                                DisplayNoticeMsg("没有移开手指！", 0);
-                            }
-                        } else {
-                            DisplayNoticeMsg("采集过程中发生错误！", 0);
-                        }
-                        try {
-                            sleep(500);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    Log.i("sss",">>>>>>>>>>");
-
-                }
-            }
-        }).start();
-        return;
-    }
-
-    //循环读取指静脉
-    public void OnWhileIdentify2(View v) {
         if (0 >= mVeinDevCnt) {
             DisplayNoticeMsg("不存在有效的指静脉设备，请先进行枚举设备操作！", 0);
             return;
@@ -638,7 +712,6 @@ public class FingerActivity extends AppCompatActivity {
         return;
     }
 
-
     private void iniview2() {
 
         serialPortFinder = new SerialPortFinder();
@@ -707,7 +780,29 @@ public class FingerActivity extends AppCompatActivity {
         finish();
     }
 
+    @Override
+    public void setNetState(int state) {
+        switch (state){
+            case 1:
+                net_state.setText("状态改变");
+                tv_mac.setText("");
+                break;
+            case 2:
+                net_state.setText("正常");
+                tv_mac.setText(getMacAddress());
+                break;
+            case 3:
+                net_state.setText("未连接！");
+                tv_mac.setText("");
+                break;
+        }
+    }
 
+    public String getMacAddress(){
+        WifiManager wifiMan = (WifiManager)getApplicationContext().getSystemService(Context.WIFI_SERVICE) ;
+        WifiInfo wifiInf = wifiMan.getConnectionInfo();
+        return wifiInf.getMacAddress();
+    }
 }
 
 
