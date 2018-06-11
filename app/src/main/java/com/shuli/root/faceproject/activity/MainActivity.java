@@ -27,7 +27,7 @@ import WedoneBioVein.VeinMatchCaller;
 import android_serialport_api.SerialPortFinder;
 import static java.lang.Thread.sleep;
 
-public class FingerActivity extends AppCompatActivity implements NetworkChangeReceiver.NetCallback {
+public class MainActivity extends AppCompatActivity implements NetworkChangeReceiver.NetCallback {
     private SdkMain mSdkMain = null;
     UserData mRegUserData = new UserData(); //用于保存采集(注册)的模板
     UserData mAIUserData = new UserData(); //用于保存验证时通过自动学习生成的模板，在比对时也作为比对模板的一部分

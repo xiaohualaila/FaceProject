@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/face_layout"
-    tools:context=".activity.FingerActivity">
+    tools:context=".activity.MainActivity">
     <LinearLayout
         android:layout_alignParentRight="true"
         android:layout_width="500dp"
