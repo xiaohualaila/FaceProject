@@ -203,151 +203,6 @@ public class FingerActivity extends AppCompatActivity implements NetworkChangeRe
         unregisterReceiver(networkChangeReceiver);
     }
 
-    //注册1根手指(3次)按钮
-    public void OnClickBtnRegister(View v) {
-        if (0 >= mVeinDevCnt) {
-
-            Log.i("sss","不存在有效的指静脉设备，请先进行枚举设备操作！");
-            DisplayNoticeMsg("不存在有效的指静脉设备，请先进行枚举设备操作！", 0);
-            return;
-        }
-        if (mRegUserData.D_USER_TEMPLATE_NUM <= mRegUserData.GetTemplateNum()) {
-            Log.i("sss","单个用户最多只能注册20个模板！\n");
-            return;
-        }
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                int retVal;
-                String devId = null, msg = "";
-                int readCnt = 0; //读取模板次数的计数器
-                int retryCnt = 0;
-                byte[] featureData = new byte[SdkMain.FV_CONST_FEATURE_LEN];
-                int devIdx = 0; //Wedone:指定在第一台设备上进行操作
-
-                devId = new String(mVeinDevIdList[devIdx]);
-                if (0 == devId.trim().length()) {//Wedone:无效的设备ID，则直接返回
-                    return;
-                }
-
-                //清除上次注册的数据
-                mRegUserData.ClearData();
-                mAIUserData.ClearData();
-
-                while(true) {
-                    if(6 <= retryCnt)break; //已经重试了6次，结束采集
-                    retryCnt++;
-                    //Wedone:检测手指，直到检测到手指已经放好才进行后续读取静脉特征的操作
-                    boolean isWaitSuccess = true;
-                    msg = "正在{" + devId + "}上采集第" + (readCnt + 1) + "个静脉特征:";
-                    DisplayNoticeMsg("采集第" + (readCnt + 1)  + "个静脉特征，"+"请放入手指！", 0);
-                    SoundPoolUtil.play(8);
-                    isWaitSuccess = WaitFingerStatus(mVeinDevIdList[devIdx], (byte) 0x03, 20, 500, msg + "请放手指!");
-                    if (!isWaitSuccess) {
-                        DisplayNoticeMsg("没有发现手指", 0);
-                        SoundPoolUtil.play(7);
-                        handler.postDelayed(runnable, 1000);
-                        return;
-                    }
-
-                    //Wedone:读取指静脉特征模板数据
-                    retVal = mSdkMain.FV_GrabFeature(mVeinDevIdList[devIdx], featureData, (byte) 0);
-                    if (mSdkMain.FV_ERRCODE_SUCCESS == retVal) {
-                      //  DisplayNoticeMsg("读取成功！", 0);
-                    } else {
-                        DisplayNoticeMsg("读取失败！", 0);
-                        SoundPoolUtil.play(6);
-                        handler.postDelayed(runnable, 1000);
-                        break; //Wedone: 采集过程中发生错误，则直接退出
-                    }
-
-                    //Wedone:检测手指，直到检测到手指已经移开才进行后续读操作，确保每次采集都是重新放置了手指而不是手指一直放着不动
-                    msg = "读取完成第" + (readCnt + 1) + "个静脉特征:";
-                    DisplayNoticeMsg("请移开手指！", 0);
-                    SoundPoolUtil.play(9);
-                    isWaitSuccess = WaitFingerStatus(mVeinDevIdList[devIdx], (byte) 0x00, 20, 500, msg + "请移开手指!");
-                    if (!isWaitSuccess) {
-                        DisplayNoticeMsg("没有移开手指！", 0);
-                        handler.postDelayed(runnable, 1000);
-                        return;
-                    }
-
-                    //Wedone:确认采集的指静脉特征数据是否有效
-                    retVal = VeinMatchCaller.FvmIsValidFeature(featureData, (byte)0x01);
-                    if(SdkMain.FV_ERRCODE_SUCCESS != retVal){
-                        DisplayNoticeMsg("错误：指静脉特征数据无效！\r\n", 0);
-                        SoundPoolUtil.play(3);
-                        continue;
-                    }
-
-                    //Wedone:调用FV_GrabFeature返回成功的话，第二个参数的缓冲区中就保存了所读取的模板数据，
-                    if (0 == readCnt) {
-                        //采集完成第一个静脉特征，生成对应的用户信息
-                        mUserCnt++;
-                        byte bUserId[] = new byte[mRegUserData.D_USER_HDR_USERID_LEN];
-                        byte bUserName[] = new byte[mRegUserData.D_USER_HDR_USERNAME_LEN];
-
-                        mRegUserData.SetUid((long) mUserCnt);
-
-                        bUserId[0] = 'I';
-                        bUserId[1] = 'D';
-                        bUserId[2] = (byte) (0x30 + (mUserCnt % 10000) / 1000);
-                        bUserId[3] = (byte) (0x30 + (mUserCnt % 1000) / 100);
-                        bUserId[4] = (byte) (0x30 + (mUserCnt % 100) / 10);
-                        bUserId[5] = (byte) (0x30 + (mUserCnt % 10));
-                        mRegUserData.SetUserId(bUserId, (short) 6);
-
-                        bUserName[0] = 'U';
-                        bUserName[1] = 'S';
-                        bUserName[2] = 'E';
-                        bUserName[3] = 'R';
-                        bUserName[4] = (byte) (0x30 + (mUserCnt % 10000) / 1000);
-                        bUserName[5] = (byte) (0x30 + (mUserCnt % 1000) / 100);
-                        bUserName[6] = (byte) (0x30 + (mUserCnt % 100) / 10);
-                        bUserName[7] = (byte) (0x30 + (mUserCnt % 10));
-                        mRegUserData.SetUserName(bUserName, (short) 8);
-                    }
-                    if(0 < readCnt){ //Wedone:之前已经有采集的特征，把当前采集的静脉特征与之前采集的进行验证是否属于同一根手指
-                        byte[] regTemplateData = mRegUserData.TemplateData();
-                        //Wedone: 注册过程中，检测采集的静脉特征是否属于同一根手指
-                        retVal = VeinMatchCaller.FvmIsSameFinger(featureData,//本次采集的指静脉特征值
-                                regTemplateData,  //包含之前采集的指静脉特征值数据
-                                (byte)readCnt, //第二个参数中包含的指静脉特征值的个数
-                                (byte)0x03); //加密方式，当前请固定为3
-                        if(SdkMain.FV_ERRCODE_SUCCESS != retVal){
-                           DisplayNoticeMsg("错误：注册过程中采集的特征必须属于同一根手指！\r\n", 0);
-                            SoundPoolUtil.play(4);
-                            continue;
-                        }
-                    }
-                    //Wedone：采集的特征值符合要求，保存到本地缓冲区中
-                    mRegUserData.AddTemplateData(featureData, (short) featureData.length);
-                    readCnt++;
-
-                    if(3 <= readCnt){
-                        DisplayNoticeMsg("采集指静脉特征成功！已采集" + mRegUserData.GetTemplateNum() + "个特征模板\r\n", 0);
-                        SoundPoolUtil.play(5);
-                        handler.postDelayed(runnable, 1000);
-                        // TODO: 2018/4/18 将获取到的模板数组上传服务器
-                        byte[] regTemplateData = mRegUserData.TemplateData(); //获取注册采集的特征数据
-
-//                        MessageFinger messageFinger = new MessageFinger();
-//                        messageFinger.setRegTemplateData(regTemplateData);
-//                        messageFinger.setName("xxxxx");
-//                        Gson gson = new Gson();
-//                        String postInfoStr = gson.toJson(messageFinger);
-//                        Log.i("sss","postInfoStr" + postInfoStr);
-//                        upload(postInfoStr);
-
-                        break; //采集完成3个有效模板，则结束采集
-                    }
-                }
-            }
-        }).start();
-        return;
-    }
-
-
     /**
      *   注册1根手指(1次)按钮
      */
@@ -718,7 +573,6 @@ public class FingerActivity extends AppCompatActivity implements NetworkChangeRe
             @Override
             protected void onDataReceived(final ComBean comBean) {
                 String str = new String(comBean.bRec).trim();
-                String sss  =FuncUtil.ByteArrToHex(comBean.bRec);
                 Log.i("sss","xxxxx " + str);
                 if(TextUtils.isEmpty(str)){
                     return;
@@ -735,8 +589,6 @@ public class FingerActivity extends AppCompatActivity implements NetworkChangeRe
                         isOpenDoor = true;
                         IOUtil.setGpio("PB7",false,0);//DZ
                         IOUtil.setGpio("PB2",false,0);//DZ
-//                        IOUtil.setGpio("PH8",false,0);//DO
-//                        IOUtil.setGpio("PB3",false,0);//DO
                     }
                     handler.post(new Runnable() {
                         @Override
@@ -753,8 +605,6 @@ public class FingerActivity extends AppCompatActivity implements NetworkChangeRe
                             if(isOpenDoor){
                                 IOUtil.setGpio("PB7",false,1);//DZ
                                 IOUtil.setGpio("PB2",false,1);//DZ
-//                                IOUtil.setGpio("PH8",false,1);//DO
-//                                IOUtil.setGpio("PB3",false,1);//DO
                                 isOpenDoor = false;
                             }
                         }
@@ -775,11 +625,6 @@ public class FingerActivity extends AppCompatActivity implements NetworkChangeRe
                 e.printStackTrace();
             }
         }
-    }
-
-    public void toActivity(View view) {
-        startActivity(new Intent(this,FaceLocalActivity.class));
-        finish();
     }
 
     @Override
@@ -804,6 +649,10 @@ public class FingerActivity extends AppCompatActivity implements NetworkChangeRe
         WifiManager wifiMan = (WifiManager)getApplicationContext().getSystemService(Context.WIFI_SERVICE) ;
         WifiInfo wifiInf = wifiMan.getConnectionInfo();
         return wifiInf.getMacAddress();
+    }
+
+    public void doFinish(View view) {
+        finish();
     }
 }
 

@@ -22,24 +22,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.FaceServerActivity" android:theme="@style/AppTheme.NoBar">
-
-        </activity>
-        <activity android:name=".activity.FaceLocalActivity" android:theme="@style/AppTheme.NoBar">
-
-        </activity>
-        <activity android:name=".activity.QueryActivity" android:theme="@style/AppTheme.NoBar">
-
-        </activity>
-        <activity android:name=".activity.MainFragmentActivity" android:theme="@style/AppTheme.NoBar">
-
-        </activity>
-        <activity android:name=".activity.LoginActivity" android:theme="@style/AppTheme.NoBar">
-
-        </activity>
-        <activity android:name=".activity.AddActivity" android:theme="@style/AppTheme.NoBar">
-
-        </activity>
         <activity android:name=".activity.FingerActivity" android:theme="@style/AppTheme.NoBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
