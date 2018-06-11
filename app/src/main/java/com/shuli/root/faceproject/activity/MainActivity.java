@@ -63,10 +63,10 @@ public class MainActivity extends AppCompatActivity implements NetworkChangeRece
         tv_code = findViewById(R.id.tv_finger_code);
         net_state = findViewById(R.id.net_state);
         tv_mac = findViewById(R.id.tv_mac);
-        iniview2();//二维码部分
+
         InitOperations();
         doBtnEnumDevice();
-
+        iniview2();
        //接收广播
         intentFilter = new IntentFilter();
         intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
@@ -572,7 +572,7 @@ public class MainActivity extends AppCompatActivity implements NetworkChangeRece
         serialHelper = new SerialHelper() {
             @Override
             protected void onDataReceived(final ComBean comBean) {
-                String str = new String(comBean.bRec).trim();
+                String str = new String(comBean.bRec);
                 Log.i("sss","xxxxx " + str);
                 if(TextUtils.isEmpty(str)){
                     return;
@@ -615,7 +615,7 @@ public class MainActivity extends AppCompatActivity implements NetworkChangeRece
                 }
             }
         };
-        serialHelper.setPort("/dev/ttyS2");
+        serialHelper.setPort("/dev/ttyS1");
         serialHelper.setBaudRate("9600");
 
         if(!serialHelper.isOpen()){
