@@ -129,12 +129,7 @@ public class SerialPortFinder {
             itdriv = getDrivers().iterator();
             while(itdriv.hasNext()) {
                 Driver driver = itdriv.next();
-				// TODO: 2018/5/21 此处对厂家代码做修改 厂家代码部分
-//                if(0 != driver.getName().toUpperCase().compareTo("UART")){
-//                    continue;
-//                }
-				// TODO: 2018/5/21 此处对厂家代码做修改
-				if(-3 != driver.getName().toUpperCase().compareTo("UART")){
+                if(0 != driver.getName().toUpperCase().compareTo("UART")){
                     continue;
                 }
                 Iterator<File> itdev = driver.getDevices().iterator();

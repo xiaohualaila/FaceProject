@@ -87,6 +87,7 @@
             android:layout_margin="20dp"
             android:paddingLeft="30dp"
             android:paddingRight="30dp"
+            android:visibility="invisible"
             style="@style/blueButtonStyle"
             android:text="跳转到人脸识别界面" />
 

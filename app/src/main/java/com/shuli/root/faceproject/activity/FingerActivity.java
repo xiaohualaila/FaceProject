@@ -8,18 +8,19 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Power;
+
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import com.bjw.bean.ComBean;
+import com.bjw.utils.FuncUtil;
 import com.bjw.utils.SerialHelper;
 import com.shuli.root.faceproject.R;
+import com.shuli.root.faceproject.utils.IOUtil;
 import com.shuli.root.faceproject.utils.SoundPoolUtil;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import WedoneBioVein.SdkMain;
 import WedoneBioVein.UserData;
 import WedoneBioVein.VeinMatchCaller;
@@ -62,17 +63,19 @@ public class FingerActivity extends AppCompatActivity implements NetworkChangeRe
         tv_code = findViewById(R.id.tv_finger_code);
         net_state = findViewById(R.id.net_state);
         tv_mac = findViewById(R.id.tv_mac);
+        iniview2();//二维码部分
         InitOperations();
         doBtnEnumDevice();
-        iniview2();
+
        //接收广播
         intentFilter = new IntentFilter();
         intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
         networkChangeReceiver = new NetworkChangeReceiver();
         networkChangeReceiver.setNetCallback(this);
 
-        //动态注册
         registerReceiver(networkChangeReceiver, intentFilter);
+        IOUtil.setGpio("PB7",false,1);//DZ
+        IOUtil.setGpio("PB2",false,1);//DZ
     }
 
     //初始化
@@ -87,7 +90,6 @@ public class FingerActivity extends AppCompatActivity implements NetworkChangeRe
             mAIUserData.ClearData();
         }
     }
-
 
     private  byte[] mergeBytes(byte[] part1, byte[] part2){
         int p1Len = (null == part1)?0:part1.length;
@@ -107,7 +109,6 @@ public class FingerActivity extends AppCompatActivity implements NetworkChangeRe
         SdkMain.DebugStringPrint("mergeBytes:p1Len=" + p1Len + ",p2Len=" + p2Len);
         return ret;
     }
-
 
     //枚举设备按钮
     /**/
@@ -135,13 +136,11 @@ public class FingerActivity extends AppCompatActivity implements NetworkChangeRe
                 Log.i("sss","枚举设备成功！" +msg);
                 doBtnInitDevice();
             }
-        }
-        else{
+        } else{
             Log.i("sss","枚举初始化失败！");
         }
         return;
     }
-
 
     //初始化设备按钮
     public void doBtnInitDevice() {
@@ -168,8 +167,6 @@ public class FingerActivity extends AppCompatActivity implements NetworkChangeRe
         }
         return;
     }
-
-
 
     //关闭设备按钮
     public void doCloseDevice() {
@@ -351,7 +348,9 @@ public class FingerActivity extends AppCompatActivity implements NetworkChangeRe
     }
 
 
-    //注册1根手指(1次)按钮
+    /**
+     *   注册1根手指(1次)按钮
+     */
     public void OnClickOneBtnRegister(View v) {
         if (0 >= mVeinDevCnt) {
 
@@ -502,8 +501,9 @@ public class FingerActivity extends AppCompatActivity implements NetworkChangeRe
        }
    };
 
-
-    //验证手指按钮
+    /**
+     *  验证手指按钮
+     */
     public void OnClickBtnIdentify(View v) {
         if (0 >= mVeinDevCnt) {
             DisplayNoticeMsg("不存在有效的指静脉设备，请先进行枚举设备操作！", 0);
@@ -713,14 +713,16 @@ public class FingerActivity extends AppCompatActivity implements NetworkChangeRe
     }
 
     private void iniview2() {
-
         serialPortFinder = new SerialPortFinder();
         serialHelper = new SerialHelper() {
             @Override
             protected void onDataReceived(final ComBean comBean) {
-//                Log.i("sss",FuncUtil.ByteArrToHex(comBean.bRec));
-                String str = new String(comBean.bRec);
+                String str = new String(comBean.bRec).trim();
+                String sss  =FuncUtil.ByteArrToHex(comBean.bRec);
                 Log.i("sss","xxxxx " + str);
+                if(TextUtils.isEmpty(str)){
+                    return;
+                }
                 String s = str.substring(str.length() - 1, str.length());
                 if (s.equals("\n")) {
                     s = str.substring(0, str.length() - 1);
@@ -731,10 +733,10 @@ public class FingerActivity extends AppCompatActivity implements NetworkChangeRe
                     }
                     if(code.equals("suriot -> open gate")){
                         isOpenDoor = true;
-                        Power.set_zysj_gpio_value(1,0);//do2底 开门
-                        Power.set_zysj_gpio_value(2,0);//do1底
-                        Power.set_zysj_gpio_value(3,0);//dz2底
-                        Power.set_zysj_gpio_value(4,0);//dz1底
+                        IOUtil.setGpio("PB7",false,0);//DZ
+                        IOUtil.setGpio("PB2",false,0);//DZ
+//                        IOUtil.setGpio("PH8",false,0);//DO
+//                        IOUtil.setGpio("PB3",false,0);//DO
                     }
                     handler.post(new Runnable() {
                         @Override
@@ -749,10 +751,10 @@ public class FingerActivity extends AppCompatActivity implements NetworkChangeRe
                         public void run() {
                             tv_code.setText("");
                             if(isOpenDoor){
-                                Power.set_zysj_gpio_value(1,1);//do2高 关门
-                                Power.set_zysj_gpio_value(2,1);//do1高
-                                Power.set_zysj_gpio_value(3,1);//dz2高
-                                Power.set_zysj_gpio_value(4,1);//dz1高
+                                IOUtil.setGpio("PB7",false,1);//DZ
+                                IOUtil.setGpio("PB2",false,1);//DZ
+//                                IOUtil.setGpio("PH8",false,1);//DO
+//                                IOUtil.setGpio("PB3",false,1);//DO
                                 isOpenDoor = false;
                             }
                         }
@@ -763,7 +765,7 @@ public class FingerActivity extends AppCompatActivity implements NetworkChangeRe
                 }
             }
         };
-        serialHelper.setPort("/dev/ttyS1");
+        serialHelper.setPort("/dev/ttyS2");
         serialHelper.setBaudRate("9600");
 
         if(!serialHelper.isOpen()){

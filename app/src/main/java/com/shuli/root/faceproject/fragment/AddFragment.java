@@ -59,15 +59,6 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
     protected int getLayoutId() {
         return R.layout.activity_add;
     }
-
-
-//    SupportedPictureSizes : 1280x720
-//    SupportedPictureSizes : 320x240
-//    SupportedPictureSizes : 800x600
-//    SupportedPreviewSizes : 640x480
-//    SupportedPreviewSizes : 1280x720
-//    SupportedPreviewSizes : 320x240
-//    SupportedPreviewSizes : 800x600
     @Override
     protected void init() {
         holder = camera_sf.getHolder();
@@ -333,11 +324,17 @@ public class AddFragment extends BaseFragment implements SurfaceHolder.Callback 
         }
     }
 
+    /**
+     * 设置相机显示角度
+     * @param cameraId
+     * @param camera
+     */
+
     public void setCameraDisplayOrientation(int cameraId, Camera camera) {
         Camera.CameraInfo info = new Camera.CameraInfo();
         Camera.getCameraInfo(cameraId, info);
         int rotation = getActivity().getWindowManager().getDefaultDisplay().getRotation();
-     //   rotation = 0;
+        rotation = 1;
         int degrees = 0;
         switch (rotation) {
             case Surface.ROTATION_0:

@@ -214,6 +214,7 @@ public class MainFragmentActivity extends BaseAppCompatActivity implements AddFr
 
     @Override
     protected void onDestroy() {
+
         if (mFacePassHandler != null) {
             mFacePassHandler.release();
         }
